@@ -21,8 +21,10 @@ public class XtreamCodesService {
     private static final String CREDENTIALS_URL = "https://raw.githubusercontent.com/DEYVIDYT/CineStream-Pro/refs/heads/main/credentials_base64.txt";
     private Credential selectedCredential; // Armazenar a credencial selecionada
 
-    // Método para buscar, decodificar e selecionar credencial (síncrono)
-    // Retorna a credencial para que possa ser usada para construir a URL do stream mais tarde.
+    public XtreamCodesService() {
+        // Construtor padrão
+    }
+
     public Credential fetchAndSelectRandomCredential() throws IOException, JSONException {
         String base64Credentials = httpGet(CREDENTIALS_URL);
         if (base64Credentials == null || base64Credentials.isEmpty()) {
@@ -51,7 +53,6 @@ public class XtreamCodesService {
         return selectedCredential;
     }
 
-    // Método para buscar canais (síncrono)
     public List<Channel> fetchLiveStreams(Credential credential) throws IOException, JSONException {
         if (credential == null) {
             throw new IOException("Credential cannot be null to fetch live streams.");
@@ -73,14 +74,12 @@ public class XtreamCodesService {
                      throw new IOException("Authentication failed with Xtream Codes API. Message: " + userInfo.optString("message", "No message") + " Server: " + credential.getServer());
                 }
             }
-            // Se não for erro de auth mas ainda for um objeto, pode ser outro tipo de erro ou formato inesperado
             throw new JSONException("Expected JSON array of channels, but got an object: " + jsonResponse.substring(0, Math.min(jsonResponse.length(), 200)));
         }
 
         JSONArray channelsArray = new JSONArray(jsonResponse);
         List<Channel> channelList = new ArrayList<>();
         for (int i = 0; i < channelsArray.length(); i++) {
-            // Adicionar apenas streams do tipo "live"
             JSONObject channelJson = channelsArray.getJSONObject(i);
             if ("live".equals(channelJson.optString("stream_type"))) {
                 channelList.add(Channel.fromJson(channelJson));
@@ -89,8 +88,6 @@ public class XtreamCodesService {
         return channelList;
     }
 
-    // Método para construir a URL de streaming de um canal
-    // Usa a `selectedCredential` que foi armazenada
     public String getChannelStreamUrl(int streamId) {
         if (selectedCredential == null) return null;
         return selectedCredential.getServer() + "/live/" + selectedCredential.getUsername() + "/" + selectedCredential.getPassword() + "/" + streamId + ".m3u8";
@@ -101,7 +98,6 @@ public class XtreamCodesService {
         return getChannelStreamUrl(channel.getStreamId());
     }
 
-    // Getter para a credencial selecionada, caso a MainActivity precise dela.
     public Credential getSelectedCredential() {
         return selectedCredential;
     }
@@ -121,7 +117,6 @@ public class XtreamCodesService {
 
             int responseCode = urlConnection.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK) {
-                // Ler a resposta de erro, se houver
                 InputStream errorStream = urlConnection.getErrorStream();
                 String errorBody = "No error body";
                 if (errorStream != null) {
