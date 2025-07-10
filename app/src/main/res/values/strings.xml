@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">CineStream Live</string>
     <string name="loading_channels">Carregando canais...</string>
+    <string name="epg_data_unavailable">EPG indisponível</string>
 </resources>

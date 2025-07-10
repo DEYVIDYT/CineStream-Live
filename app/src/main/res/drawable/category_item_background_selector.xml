@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Estado selecionado e focado -->
+    <item android:state_selected="true" android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#AA00ACC1" /> <!-- Teal mais escuro para selecionado e focado -->
+        </shape>
+    </item>
+    <!-- Estado selecionado -->
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#8800ACC1" /> <!-- Teal um pouco mais claro para selecionado -->
+        </shape>
+    </item>
+    <!-- Estado focado -->
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#5500ACC1" /> <!-- Teal translúcido para focado -->
+        </shape>
+    </item>
+    <!-- Estado padrão (pressionado) -->
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#3300ACC1" /> <!-- Teal bem translúcido para pressionado -->
+        </shape>
+    </item>
+    <!-- Estado padrão -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+        </shape>
+    </item>
+</selector>

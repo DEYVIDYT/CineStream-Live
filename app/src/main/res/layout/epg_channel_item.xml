@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@drawable/category_item_background_selector"
+    android:focusable="true"
+    android:clickable="true">
+
+    <!-- Usarei o mesmo seletor de categoria por enquanto, podemos refinar depois -->
+
+    <ImageView
+        android:id="@+id/channel_epg_logo"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:src="@mipmap/ic_launcher"
+        android:scaleType="centerInside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="12dp"/>
+
+    <TextView
+        android:id="@+id/channel_epg_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="167"
+        android:textColor="@android:color/white"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/channel_epg_logo"
+        app:layout_constraintTop_toTopOf="@id/channel_epg_logo" />
+
+    <TextView
+        android:id="@+id/channel_epg_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:text="AMC HD"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/channel_epg_number"
+        app:layout_constraintTop_toTopOf="@id/channel_epg_number"
+        app:layout_constraintEnd_toStartOf="@+id/channel_epg_favorite_icon"
+        app:layout_constraintHorizontal_bias="0"
+        android:ellipsize="end"
+        android:maxLines="1"/>
+
+    <TextView
+        android:id="@+id/channel_epg_program_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        tools:text="Planet Action: Episode 3 Season 1"
+        android:textColor="#A1A1AA"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/channel_epg_number"
+        app:layout_constraintTop_toBottomOf="@id/channel_epg_name"
+        app:layout_constraintEnd_toEndOf="@id/channel_epg_name"
+        android:layout_marginTop="2dp"
+        android:ellipsize="end"
+        android:maxLines="1"/>
+
+    <ProgressBar
+        android:id="@+id/channel_epg_program_progress"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:layout_marginTop="4dp"
+        android:progress="60"
+        android:max="100"
+        android:progressTint="@color/purple_200"
+        android:backgroundTint="#4B5563"
+        app:layout_constraintStart_toStartOf="@id/channel_epg_program_name"
+        app:layout_constraintEnd_toEndOf="@id/channel_epg_program_name"
+        app:layout_constraintTop_toBottomOf="@id/channel_epg_program_name"
+        android:visibility="visible"/>
+        <!-- Visibilidade será controlada, visível para placeholder -->
+
+    <!-- Ícones como HD, favorito, etc. podem ser adicionados aqui à direita -->
+    <ImageView
+        android:id="@+id/channel_epg_favorite_icon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_star_border"
+        app:tint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="12dp"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

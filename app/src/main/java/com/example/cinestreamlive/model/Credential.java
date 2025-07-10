@@ -2,8 +2,9 @@ package com.example.cinestreamlive.model;
 
 import org.json.JSONObject;
 import org.json.JSONException;
+import java.io.Serializable;
 
-public class Credential {
+public class Credential implements Serializable {
     private String id;
     private String server;
     private String username;
