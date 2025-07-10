@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
+// import android.util.Log; // Removido
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -30,7 +30,7 @@ import java.util.concurrent.Executors;
 
 public class PlayerActivity extends AppCompatActivity implements CategoryAdapter.OnCategoryClickListener, EpgChannelAdapter.OnEpgChannelClickListener {
 
-    private static final String TAG = "PlayerActivity";
+    // private static final String TAG = "PlayerActivity"; // Removido
 
     private VideoView videoView;
     private ProgressBar playerProgressBar;
@@ -75,7 +75,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
         credential = (Credential) getIntent().getSerializableExtra("credential");
 
         if (credential == null) {
-            Log.e(TAG, "Credential não recebida. Fechando PlayerActivity.");
+            // Log.e(TAG, "Credential não recebida. Fechando PlayerActivity."); // Removido
             Toast.makeText(this, "Erro: Credenciais não encontradas.", Toast.LENGTH_LONG).show();
             finish();
             return;
@@ -86,7 +86,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
         if (currentChannelUrl != null && !currentChannelUrl.isEmpty()) {
             playVideo(currentChannelUrl);
         } else {
-            Log.e(TAG, "URL do canal inicial não recebida. Fechando PlayerActivity.");
+            // Log.e(TAG, "URL do canal inicial não recebida. Fechando PlayerActivity."); // Removido
             Toast.makeText(this, "Erro: URL do canal não encontrada.", Toast.LENGTH_LONG).show();
             finish();
         }
@@ -95,7 +95,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
 
     public void playVideo(String url) {
         if (url == null || url.isEmpty()) {
-            Log.e(TAG, "playVideo chamado com URL nula ou vazia.");
+            // Log.e(TAG, "playVideo chamado com URL nula ou vazia."); // Removido
             Toast.makeText(this, "URL do canal inválida.", Toast.LENGTH_SHORT).show();
             if (playerProgressBar != null) playerProgressBar.setVisibility(View.GONE);
             return;
@@ -105,11 +105,11 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
         // Então, resetar as tentativas de recarregamento.
         if (!url.equals(this.currentChannelUrl)) {
             this.reloadAttempts = 0;
-            Log.d(TAG, "Novo canal selecionado, tentativas de recarregamento resetadas.");
+            // Log.d(TAG, "Novo canal selecionado, tentativas de recarregamento resetadas."); // Removido
         }
 
         this.currentChannelUrl = url;
-        Log.d(TAG, "playVideo: " + url + " (Tentativa: " + (reloadAttempts + 1) + ")"); // Loga a tentativa atual
+        // Log.d(TAG, "playVideo: " + url + " (Tentativa: " + (reloadAttempts + 1) + ")"); // Removido
         playerProgressBar.setVisibility(View.VISIBLE);
         Uri videoUri = Uri.parse(url);
         videoView.setVideoURI(videoUri);
@@ -128,27 +128,25 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
         });
 
         videoView.setOnErrorListener((mp, what, extra) -> {
-            Log.e(TAG, "Erro no VideoView: o que=" + what + ", extra=" + extra + " para URL: " + currentChannelUrl + ". Tentativas: " + reloadAttempts);
-            playerProgressBar.setVisibility(View.GONE); // Esconde a barra de progresso principal
-            videoView.stopPlayback(); // Para o playback atual
+            // Log.e(TAG, "Erro no VideoView: o que=" + what + ", extra=" + extra + " para URL: " + currentChannelUrl + ". Tentativas: " + reloadAttempts); // Removido
+            playerProgressBar.setVisibility(View.GONE);
+            videoView.stopPlayback();
 
             reloadAttempts++;
             if (reloadAttempts <= MAX_RELOAD_ATTEMPTS) {
                 String reloadMsg = "Canal travou. Tentando recarregar... (" + reloadAttempts + "/" + MAX_RELOAD_ATTEMPTS + ")";
                 Toast.makeText(PlayerActivity.this, reloadMsg, Toast.LENGTH_SHORT).show();
-                Log.d(TAG, reloadMsg + " URL: " + currentChannelUrl);
-                // Postar com atraso para não sobrecarregar e dar tempo para a rede/stream se recuperar
+                // Log.d(TAG, reloadMsg + " URL: " + currentChannelUrl); // Removido
                 mainThreadHandler.postDelayed(() -> {
-                    if (currentChannelUrl != null && !isFinishing()) { // Verifica se a activity ainda é válida
+                    if (currentChannelUrl != null && !isFinishing()) {
                         playVideo(currentChannelUrl);
                     }
-                }, 2000); // Atraso de 2 segundos
+                }, 2000);
             } else {
-                Log.e(TAG, "Máximo de tentativas de recarregamento atingido para: " + currentChannelUrl);
+                // Log.e(TAG, "Máximo de tentativas de recarregamento atingido para: " + currentChannelUrl); // Removido
                 Toast.makeText(PlayerActivity.this, "Falha ao carregar o canal após " + MAX_RELOAD_ATTEMPTS + " tentativas.", Toast.LENGTH_LONG).show();
-                // Não resetar reloadAttempts aqui, será resetado quando um *novo* canal for selecionado.
             }
-            return true; // Indica que o erro foi tratado.
+            return true;
         });
     }
 
@@ -186,12 +184,12 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
     }
 
     private void loadCategories() {
-        Log.d(TAG, "Carregando categorias...");
+        // Log.d(TAG, "Carregando categorias..."); // Removido
         executorService.execute(() -> {
             try {
                 List<Category> fetchedCategories = xtreamService.getLiveCategories(credential);
                 mainThreadHandler.post(() -> {
-                    Log.d(TAG, "Categorias recebidas: " + fetchedCategories.size());
+                    // Log.d(TAG, "Categorias recebidas: " + fetchedCategories.size()); // Removido
                     categoryList.clear();
                     categoryList.addAll(fetchedCategories);
                     categoryAdapter.updateCategories(fetchedCategories);
@@ -203,14 +201,14 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
                     }
                 });
             } catch (Exception e) {
-                Log.e(TAG, "Erro ao carregar categorias: ", e);
+                // Log.e(TAG, "Erro ao carregar categorias: ", e); // Removido
                 mainThreadHandler.post(() -> Toast.makeText(PlayerActivity.this, "Erro ao carregar categorias: " + e.getMessage(), Toast.LENGTH_LONG).show());
             }
         });
     }
 
     private void loadChannelsForCategory(String categoryId, String categoryName) {
-        Log.d(TAG, "Carregando canais para categoria: " + categoryName + " (ID: " + categoryId + ")");
+        // Log.d(TAG, "Carregando canais para categoria: " + categoryName + " (ID: " + categoryId + ")"); // Removido
         Toast.makeText(this, "Carregando: " + categoryName, Toast.LENGTH_SHORT).show();
         currentEpgChannelList.clear();
         epgChannelAdapter.notifyDataSetChanged();
@@ -225,7 +223,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
                     try {
                         epgDataMap = xtreamService.fetchEpgDataForCategory(credential, categoryId);
                     } catch (Exception epgEx) {
-                        Log.e(TAG, "Erro ao buscar dados de EPG para categoria " + categoryName + ": ", epgEx);
+                        // Log.e(TAG, "Erro ao buscar dados de EPG para categoria " + categoryName + ": ", epgEx); // Removido
                     }
                 }
 
@@ -246,7 +244,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
                 }
 
                 mainThreadHandler.post(() -> {
-                    Log.d(TAG, "Canais recebidos para " + categoryName + ": " + fetchedChannels.size());
+                    // Log.d(TAG, "Canais recebidos para " + categoryName + ": " + fetchedChannels.size()); // Removido
                     currentEpgChannelList.addAll(fetchedChannels);
                     epgChannelAdapter.updateChannels(fetchedChannels);
                     if (!fetchedChannels.isEmpty()) {
@@ -257,7 +255,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
                     }
                 });
             } catch (Exception e) {
-                Log.e(TAG, "Erro ao carregar canais para " + categoryName + ": ", e);
+                // Log.e(TAG, "Erro ao carregar canais para " + categoryName + ": ", e); // Removido
                 mainThreadHandler.post(() -> Toast.makeText(PlayerActivity.this, "Erro ao carregar canais: " + e.getMessage(), Toast.LENGTH_LONG).show());
             }
         });
@@ -265,7 +263,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
 
     @Override
     public void onCategoryClick(Category category, int position) {
-        Log.d(TAG, "Categoria clicada: " + category.getCategoryName());
+        // Log.d(TAG, "Categoria clicada: " + category.getCategoryName()); // Removido
         currentSelectedCategoryPosition = position;
         categoryAdapter.setSelectedPosition(position);
         loadChannelsForCategory(category.getCategoryId(), category.getCategoryName());
@@ -273,7 +271,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
 
     @Override
     public void onEpgChannelClick(Channel channel) {
-        Log.d(TAG, "Canal do EPG clicado: " + channel.getName());
+        // Log.d(TAG, "Canal do EPG clicado: " + channel.getName()); // Removido
         String streamUrl = xtreamService.getChannelStreamUrl(credential, channel);
         if (streamUrl != null) {
             playVideo(streamUrl);

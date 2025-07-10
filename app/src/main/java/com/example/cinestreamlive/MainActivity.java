@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
+// import android.util.Log; // Removido
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
+    // private static final String TAG = "MainActivity"; // Removido
 
     private ProgressBar progressBar;
     private TextView loadingText;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                     throw new Exception("Nenhuma credencial pôde ser selecionada.");
                 }
 
-                Log.d(TAG, "Credencial selecionada: " + credential.getServer() + " User: " + credential.getUsername());
+                // Log.d(TAG, "Credencial selecionada: " + credential.getServer() + " User: " + credential.getUsername()); // Removido
                 mainThreadHandler.post(() -> showLoading(true, "Carregando lista inicial de canais..."));
 
                 List<Channel> channels = xtreamService.fetchLiveStreams(credential); // Pega todos os canais por enquanto
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
                     throw new Exception("Não foi possível obter a URL de stream para o primeiro canal.");
                 }
 
-                Log.d(TAG, "Iniciando PlayerActivity com o canal: " + firstChannel.getName() + " URL: " + streamUrl);
+                // Log.d(TAG, "Iniciando PlayerActivity com o canal: " + firstChannel.getName() + " URL: " + streamUrl); // Removido
                 Intent intent = new Intent(MainActivity.this, PlayerActivity.class);
                 intent.putExtra("initial_channel_url", streamUrl);
                 intent.putExtra("credential", credential); // Credential é Serializable
@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
                 finish(); // Finaliza a MainActivity para que não fique na pilha
 
             } catch (Exception e) {
-                Log.e(TAG, "Erro ao carregar dados iniciais: ", e);
+                // Log.e(TAG, "Erro ao carregar dados iniciais: ", e); // Removido
                 mainThreadHandler.post(() -> {
                     showLoading(false, null);
                     Toast.makeText(MainActivity.this, "Erro ao iniciar: " + e.getMessage(), Toast.LENGTH_LONG).show();
