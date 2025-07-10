@@ -110,6 +110,10 @@ public class EpgChannelAdapter extends RecyclerView.Adapter<EpgChannelAdapter.Ep
         }
     }
 
+    public int getSelectedPosition() {
+        return selectedPosition;
+    }
+
     public Channel getChannelAt(int position) {
         if (position >= 0 && position < channelList.size()) {
             return channelList.get(position);
