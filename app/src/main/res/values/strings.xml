@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">CineStream Live</string>
+    <string name="loading_channels">Carregando canais...</string>
+</resources>
