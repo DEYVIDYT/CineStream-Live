@@ -56,6 +56,10 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
 
+    // Variáveis para controle de recarregamento
+    private int reloadAttempts = 0;
+    private static final int MAX_RELOAD_ATTEMPTS = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,8 +94,22 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
     }
 
     public void playVideo(String url) {
+        if (url == null || url.isEmpty()) {
+            Log.e(TAG, "playVideo chamado com URL nula ou vazia.");
+            Toast.makeText(this, "URL do canal inválida.", Toast.LENGTH_SHORT).show();
+            if (playerProgressBar != null) playerProgressBar.setVisibility(View.GONE);
+            return;
+        }
+
+        // Se a URL for diferente da atual, é um novo canal (ou o primeiro canal).
+        // Então, resetar as tentativas de recarregamento.
+        if (!url.equals(this.currentChannelUrl)) {
+            this.reloadAttempts = 0;
+            Log.d(TAG, "Novo canal selecionado, tentativas de recarregamento resetadas.");
+        }
+
         this.currentChannelUrl = url;
-        Log.d(TAG, "playVideo: " + url);
+        Log.d(TAG, "playVideo: " + url + " (Tentativa: " + (reloadAttempts + 1) + ")"); // Loga a tentativa atual
         playerProgressBar.setVisibility(View.VISIBLE);
         Uri videoUri = Uri.parse(url);
         videoView.setVideoURI(videoUri);
@@ -110,10 +128,27 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
         });
 
         videoView.setOnErrorListener((mp, what, extra) -> {
-            playerProgressBar.setVisibility(View.GONE);
-            Log.e(TAG, "Erro no VideoView: o que=" + what + ", extra=" + extra + " para URL: " + currentChannelUrl);
-            Toast.makeText(PlayerActivity.this, "Erro ao reproduzir o canal (" + what + ", " + extra + ")", Toast.LENGTH_LONG).show();
-            return true;
+            Log.e(TAG, "Erro no VideoView: o que=" + what + ", extra=" + extra + " para URL: " + currentChannelUrl + ". Tentativas: " + reloadAttempts);
+            playerProgressBar.setVisibility(View.GONE); // Esconde a barra de progresso principal
+            videoView.stopPlayback(); // Para o playback atual
+
+            reloadAttempts++;
+            if (reloadAttempts <= MAX_RELOAD_ATTEMPTS) {
+                String reloadMsg = "Canal travou. Tentando recarregar... (" + reloadAttempts + "/" + MAX_RELOAD_ATTEMPTS + ")";
+                Toast.makeText(PlayerActivity.this, reloadMsg, Toast.LENGTH_SHORT).show();
+                Log.d(TAG, reloadMsg + " URL: " + currentChannelUrl);
+                // Postar com atraso para não sobrecarregar e dar tempo para a rede/stream se recuperar
+                mainThreadHandler.postDelayed(() -> {
+                    if (currentChannelUrl != null && !isFinishing()) { // Verifica se a activity ainda é válida
+                        playVideo(currentChannelUrl);
+                    }
+                }, 2000); // Atraso de 2 segundos
+            } else {
+                Log.e(TAG, "Máximo de tentativas de recarregamento atingido para: " + currentChannelUrl);
+                Toast.makeText(PlayerActivity.this, "Falha ao carregar o canal após " + MAX_RELOAD_ATTEMPTS + " tentativas.", Toast.LENGTH_LONG).show();
+                // Não resetar reloadAttempts aqui, será resetado quando um *novo* canal for selecionado.
+            }
+            return true; // Indica que o erro foi tratado.
         });
     }
 
