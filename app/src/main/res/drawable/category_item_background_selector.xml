@@ -1,33 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Estado selecionado e focado -->
-    <item android:state_selected="true" android:state_focused="true">
-        <shape android:shape="rectangle">
-            <solid android:color="#AA00ACC1" /> <!-- Teal mais escuro para selecionado e focado -->
-        </shape>
-    </item>
-    <!-- Estado selecionado -->
-    <item android:state_selected="true">
-        <shape android:shape="rectangle">
-            <solid android:color="#8800ACC1" /> <!-- Teal um pouco mais claro para selecionado -->
-        </shape>
-    </item>
     <!-- Estado focado -->
     <item android:state_focused="true">
         <shape android:shape="rectangle">
-            <solid android:color="#5500ACC1" /> <!-- Teal translúcido para focado -->
+            <solid android:color="@color/dark_gold" />
+            <corners android:radius="4dp" /> <!-- Cantos levemente arredondados para o foco -->
         </shape>
     </item>
-    <!-- Estado padrão (pressionado) -->
-    <item android:state_pressed="true">
+    <!-- Estado selecionado (quando o foco está em outra coluna, mas este item é o "ativo") -->
+    <item android:state_selected="true">
         <shape android:shape="rectangle">
-            <solid android:color="#3300ACC1" /> <!-- Teal bem translúcido para pressionado -->
+            <solid android:color="@color/dark_gold" />
+            <corners android:radius="4dp" />
         </shape>
     </item>
-    <!-- Estado padrão -->
+    <!-- Estado padrão (não focado, não selecionado) -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@android:color/transparent" />
+            <solid android:color="@color/dark_grey_epg_item_default" />
+            <corners android:radius="4dp" />
         </shape>
     </item>
 </selector>

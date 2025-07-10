@@ -9,8 +9,6 @@
     android:focusable="true"
     android:clickable="true">
 
-    <!-- Usarei o mesmo seletor de categoria por enquanto, podemos refinar depois -->
-
     <ImageView
         android:id="@+id/channel_epg_logo"
         android:layout_width="60dp"
@@ -67,19 +65,18 @@
         android:id="@+id/channel_epg_program_progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
-        android:layout_height="3dp"
+        android:layout_height="4dp"
         android:layout_marginTop="4dp"
         android:progress="60"
         android:max="100"
-        android:progressTint="@color/purple_200"
-        android:backgroundTint="#4B5563"
+        android:progressTint="@color/dark_gold"
+        android:progressBackgroundTint="@color/epg_progress_background"
         app:layout_constraintStart_toStartOf="@id/channel_epg_program_name"
         app:layout_constraintEnd_toEndOf="@id/channel_epg_program_name"
         app:layout_constraintTop_toBottomOf="@id/channel_epg_program_name"
-        android:visibility="visible"/>
-        <!-- Visibilidade será controlada, visível para placeholder -->
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
-    <!-- Ícones como HD, favorito, etc. podem ser adicionados aqui à direita -->
     <ImageView
         android:id="@+id/channel_epg_favorite_icon"
         android:layout_width="24dp"

@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.MediaController;
+// import android.widget.MediaController; // Removido
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -20,11 +20,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.cinestreamlive.model.Category;
 import com.example.cinestreamlive.model.Channel;
 import com.example.cinestreamlive.model.Credential;
-import com.example.cinestreamlive.model.EpgEvent; // Import EpgEvent
+import com.example.cinestreamlive.model.EpgEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map; // For EPG data
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -37,7 +37,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
     private FrameLayout epgOverlayContainer;
     private RecyclerView categoriesRecyclerView;
     private RecyclerView channelsEpgRecyclerView;
-    private MediaController mediaController;
+    // private MediaController mediaController; // Removido
 
     private CategoryAdapter categoryAdapter;
     private EpgChannelAdapter epgChannelAdapter;
@@ -96,12 +96,13 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
         Uri videoUri = Uri.parse(url);
         videoView.setVideoURI(videoUri);
 
-        if (mediaController == null) {
-            mediaController = new MediaController(this);
-            mediaController.setAnchorView(videoView);
-        }
-        videoView.setMediaController(mediaController);
-        videoView.requestFocus();
+        // MediaController removido
+        // if (mediaController == null) {
+        //     mediaController = new MediaController(this);
+        //     mediaController.setAnchorView(videoView);
+        // }
+        // videoView.setMediaController(mediaController);
+        // videoView.requestFocus(); // Não mais necessário para MediaController
 
         videoView.setOnPreparedListener(mp -> {
             playerProgressBar.setVisibility(View.GONE);
@@ -130,10 +131,10 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
         isEpgVisible = !isEpgVisible;
         if (isEpgVisible) {
             epgOverlayContainer.setVisibility(View.VISIBLE);
-            if (mediaController != null && mediaController.isShowing()) {
-                mediaController.hide();
-            }
-            videoView.setMediaController(null);
+            // if (mediaController != null && mediaController.isShowing()) { // Removido
+            //     mediaController.hide();
+            // }
+            // videoView.setMediaController(null); // Removido
             videoView.pause();
             if (!categoriesLoaded) {
                 loadCategories();
@@ -142,7 +143,7 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
             }
         } else {
             epgOverlayContainer.setVisibility(View.GONE);
-            videoView.setMediaController(mediaController);
+            // videoView.setMediaController(mediaController); // Removido
             if (currentChannelUrl != null && !videoView.isPlaying()) {
                 videoView.start();
             }
@@ -176,29 +177,23 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
     private void loadChannelsForCategory(String categoryId, String categoryName) {
         Log.d(TAG, "Carregando canais para categoria: " + categoryName + " (ID: " + categoryId + ")");
         Toast.makeText(this, "Carregando: " + categoryName, Toast.LENGTH_SHORT).show();
-        currentEpgChannelList.clear(); // Limpa a lista de canais antes de carregar novos
-        epgChannelAdapter.notifyDataSetChanged(); // Notifica o adapter para mostrar a lista vazia (ou um loader)
+        currentEpgChannelList.clear();
+        epgChannelAdapter.notifyDataSetChanged();
 
 
         executorService.execute(() -> {
             try {
-                // 1. Buscar canais
                 List<Channel> fetchedChannels = xtreamService.fetchLiveStreamsForCategory(credential, categoryId);
 
-                // 2. Buscar dados de EPG para esses canais/categoria
                 Map<String, List<EpgEvent>> epgDataMap = null;
                 if (!fetchedChannels.isEmpty()) {
                     try {
-                        // Usar o categoryId da categoria selecionada, não dos canais individuais,
-                        // para fetchEpgDataForCategory, pois é mais eficiente.
                         epgDataMap = xtreamService.fetchEpgDataForCategory(credential, categoryId);
                     } catch (Exception epgEx) {
                         Log.e(TAG, "Erro ao buscar dados de EPG para categoria " + categoryName + ": ", epgEx);
-                        // Continuar mesmo sem dados de EPG
                     }
                 }
 
-                // 3. Processar e combinar dados
                 final Map<String, List<EpgEvent>> finalEpgDataMap = epgDataMap;
                 for (Channel channel : fetchedChannels) {
                     if (finalEpgDataMap != null && channel.getEpgChannelId() != null) {
@@ -217,9 +212,8 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
 
                 mainThreadHandler.post(() -> {
                     Log.d(TAG, "Canais recebidos para " + categoryName + ": " + fetchedChannels.size());
-                    // currentEpgChannelList já foi limpa
                     currentEpgChannelList.addAll(fetchedChannels);
-                    epgChannelAdapter.updateChannels(fetchedChannels); // Notifica o adapter com os canais (e seus EPGs)
+                    epgChannelAdapter.updateChannels(fetchedChannels);
                     if (!fetchedChannels.isEmpty()) {
                         channelsEpgRecyclerView.setVisibility(View.VISIBLE);
                     } else {

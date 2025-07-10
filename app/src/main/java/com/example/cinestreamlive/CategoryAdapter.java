@@ -40,11 +40,16 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                int previousSelectedPosition = selectedPosition;
-                selectedPosition = holder.getAdapterPosition();
-                notifyItemChanged(previousSelectedPosition); // Atualiza o item anteriormente selecionado
-                notifyItemChanged(selectedPosition);       // Atualiza o novo item selecionado
-                listener.onCategoryClick(category, selectedPosition);
+                int clickedPosition = holder.getAdapterPosition();
+                if (clickedPosition != RecyclerView.NO_POSITION) {
+                    int previousSelectedPosition = selectedPosition;
+                    selectedPosition = clickedPosition;
+                    if (previousSelectedPosition != RecyclerView.NO_POSITION) {
+                         notifyItemChanged(previousSelectedPosition);
+                    }
+                    notifyItemChanged(selectedPosition);
+                    listener.onCategoryClick(category, selectedPosition);
+                }
             }
         });
     }
