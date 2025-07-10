@@ -69,9 +69,9 @@ public class EpgChannelAdapter extends RecyclerView.Adapter<EpgChannelAdapter.Ep
 
         // Carregar logo do canal (ex: com Glide)
         // if (channel.getStreamIcon() != null && !channel.getStreamIcon().isEmpty()) {
-        //     Glide.with(context).load(channel.getStreamIcon()).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(holder.channelLogo);
+        //     // Glide.with(context).load(channel.getStreamIcon()).placeholder(android.R.drawable.ic_menu_gallery).error(android.R.drawable.ic_menu_gallery).into(holder.channelLogo);
         // } else {
-             holder.channelLogo.setImageResource(R.mipmap.ic_launcher); // Placeholder padrão
+             holder.channelLogo.setImageResource(android.R.drawable.ic_menu_gallery); // Placeholder padrão do Android
         // }
 
         holder.channelFavoriteIcon.setVisibility(View.GONE);

@@ -80,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 Channel firstChannel = channels.get(0);
-                String streamUrl = xtreamService.getChannelStreamUrl(firstChannel);
+                // Corrigido para passar a credencial
+                String streamUrl = xtreamService.getChannelStreamUrl(credential, firstChannel);
 
                 if (streamUrl == null) {
                     throw new Exception("Não foi possível obter a URL de stream para o primeiro canal.");
