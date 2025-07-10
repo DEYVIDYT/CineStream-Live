@@ -258,15 +258,28 @@ public class PlayerActivity extends AppCompatActivity implements CategoryAdapter
             View focusedView = getCurrentFocus();
             if (focusedView != null) {
                 if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                    if (focusedView.getParent() == categoriesRecyclerView) {
+                    // Se o foco está atualmente em algum lugar dentro do categoriesRecyclerView ou no próprio RecyclerView
+                    if (focusedView == categoriesRecyclerView || (focusedView.getParent() instanceof RecyclerView && focusedView.getParent() == categoriesRecyclerView)) {
                         if (!currentEpgChannelList.isEmpty()) {
                             channelsEpgRecyclerView.requestFocus();
+                            // Tentar definir o primeiro item como selecionado se nenhum estiver
+                            if (epgChannelAdapter.getItemCount() > 0 &&
+                                channelsEpgRecyclerView.findViewHolderForAdapterPosition(epgChannelAdapter.getSelectedPosition()) == null) {
+                                // Se a posição selecionada não está visível ou é inválida, selecionar o primeiro.
+                                // Ou, idealmente, o RecyclerView deveria tentar focar seu item selecionado.
+                                // Por simplicidade, vamos garantir que o adapter tenha uma seleção válida.
+                                if (epgChannelAdapter.getSelectedPosition() == RecyclerView.NO_POSITION) {
+                                     epgChannelAdapter.setSelectedPosition(0);
+                                }
+                            }
                             return true;
                         }
                     }
                 } else if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-                     if (focusedView.getParent() == channelsEpgRecyclerView) {
+                     if (focusedView == channelsEpgRecyclerView || (focusedView.getParent() instanceof RecyclerView && focusedView.getParent() == channelsEpgRecyclerView)) {
                         categoriesRecyclerView.requestFocus();
+                        // A categoria já deve estar selecionada visualmente via currentSelectedCategoryPosition
+                        // categoryAdapter.setSelectedPosition(currentSelectedCategoryPosition); // Já é feito em onCategoryClick
                         return true;
                     }
                 }

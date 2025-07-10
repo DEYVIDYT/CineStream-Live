@@ -13,33 +13,48 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:padding="16dp">
+        android:paddingTop="24dp"
+        android:paddingBottom="24dp"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp">
 
         <!-- Coluna da Esquerda para Categorias -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categories_recyclerview"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
+            android:layout_weight="1.2"
+            android:layout_marginEnd="16dp"
             android:clipToPadding="false"
-            android:paddingBottom="16dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            <!-- android:background="#33FFFFFF" --> <!-- Para debug visual -->
 
 
-        <!-- Coluna da Direita para Canais da Categoria -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/channels_epg_recyclerview"
+        <!-- Coluna da Direita para Título e Canais da Categoria -->
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:layout_marginStart="8dp"
-            android:clipToPadding="false"
-            android:paddingBottom="16dp"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            <!-- android:background="#33FF0000" --> <!-- Para debug visual -->
+            android:orientation="vertical"
+            android:layout_marginStart="16dp">
 
+            <TextView
+                android:id="@+id/epg_channels_list_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="LISTA DE CANAIS"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:gravity="center_horizontal"
+                android:paddingBottom="16dp"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/channels_epg_recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </LinearLayout>
     </LinearLayout>
-
 </FrameLayout>
