@@ -73,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="Planet Action: Episode 3 Season 1 com nome longo"
-            android:textColor="#B0B0B0"
+        android:textColor="@android:color/darker_gray"
             android:textSize="13sp"
             android:layout_marginTop="3dp"
             android:ellipsize="end"

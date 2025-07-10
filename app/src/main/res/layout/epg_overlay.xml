@@ -24,18 +24,23 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1.2"
-            android:layout_marginEnd="16dp"
             android:clipToPadding="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
+        <!-- Divisor Vertical -->
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="#44FFFFFF"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"/>
 
         <!-- Coluna da Direita para Título e Canais da Categoria -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/epg_channels_list_title"
