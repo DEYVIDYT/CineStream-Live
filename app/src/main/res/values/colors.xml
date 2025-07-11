@@ -11,9 +11,18 @@
 
     <!-- Cores UI/UX escuro EPG -->
     <color name="dark_gold">#FFC107</color>
-    <color name="dark_grey_epg_item_default">#2C2C2E</color>
-    <color name="epg_overlay_background">#E6000000</color>
-    <color name="epg_progress_background">#4D4D4D</color>
+    <color name="dark_grey_epg_item_default">#2C2C2E</color> <!-- Mantido para possível uso futuro, mas o novo EPG terá fundo transparente no item -->
+    <color name="epg_overlay_background">#E6000000</color> <!-- Mantido, mas o novo painel usará epg_panel_background_red_theme -->
+    <color name="epg_progress_background">#4D4D4D</color> <!-- Mantido, pode ser usado no novo EPG -->
+
+    <!-- Cores EPG Tema Vermelho -->
+    <color name="epg_panel_background_red_theme">#D91A1A1A</color> <!-- Cinza bem escuro, ~85% opaco -->
+    <color name="epg_accent_red">#D32F2F</color> <!-- Vermelho Principal (Material Red 700) -->
+    <color name="epg_accent_red_light">#EF5350</color> <!-- Vermelho Mais Claro (Material Red 400) -->
+    <color name="epg_divider_color_red_theme">#66FFFFFF</color> <!-- Branco com 40% opacidade para divisores -->
+    <!-- epg_text_primary será @android:color/white ou @color/white -->
+    <!-- epg_text_secondary será @color/light_grey_text -->
+
 
     <!-- Novas cores para Tela de Inicialização "Electric Blue Stream" -->
     <color name="electric_blue_start_gradient">#0d2c40</color>

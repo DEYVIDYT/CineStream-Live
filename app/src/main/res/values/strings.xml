@@ -2,4 +2,9 @@
     <string name="app_name">CineStream Live</string>
     <string name="loading_channels">Carregando canais...</string>
     <string name="epg_data_unavailable">EPG indisponível</string>
+    <string name="no_categories_found">Nenhuma categoria encontrada</string>
+    <string name="error_loading_categories">Erro ao carregar categorias</string>
+    <string name="loading_category_channels">Carregando: %1$s</string> <!-- Para "Carregando: NOME_DA_CATEGORIA" -->
+    <string name="categories_not_loaded_yet">Categorias ainda não carregadas.</string>
+    <string name="select_category_title">Selecionar Categoria</string>
 </resources>

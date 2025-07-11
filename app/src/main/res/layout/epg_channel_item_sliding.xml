@@ -4,101 +4,101 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="8dp"
-    android:paddingEnd="8dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="0dp"
-    android:background="@drawable/category_item_background_selector"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:background="@drawable/epg_item_background_selector_red"
     android:focusable="true"
     android:clickable="true">
 
-    <!-- Bloco de Informações do Canal (Número, Nome, Programa, Progresso) -->
+    <!-- Logo do Canal (Esquerda) -->
+    <ImageView
+        android:id="@+id/channel_logo_sliding"
+        android:layout_width="52dp"
+        android:layout_height="36dp"
+        android:src="@android:drawable/ic_menu_gallery"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginEnd="10dp"/>
+
+    <!-- Bloco de Informações Textuais (Direita do Logo) -->
     <LinearLayout
-        android:id="@+id/channel_info_block"
+        android:id="@+id/channel_text_info_sliding"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/channel_epg_logo"
+        app:layout_constraintStart_toEndOf="@id/channel_logo_sliding"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginEnd="12dp">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0">
 
         <!-- Linha para Número e Nome do Canal -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="bottom">
+            android:gravity="center_vertical">
 
             <TextView
-                android:id="@+id/channel_epg_number"
+                android:id="@+id/channel_number_sliding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="101"
                 android:textColor="@color/light_grey_text"
-                android:textSize="13sp" />
+                android:textSize="12sp" />
 
             <TextView
-                android:id="@+id/channel_epg_name"
+                android:id="@+id/channel_name_sliding"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Nome do Canal HD Max Plus"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"
+                tools:text="Nome do Canal Bem Longo HD"
+                android:textColor="@color/white"
+                android:textSize="15sp"
                 android:textStyle="bold"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="6dp"
                 android:ellipsize="end"
                 android:maxLines="1"/>
         </LinearLayout>
 
         <!-- Nome do Programa Atual -->
         <TextView
-            android:id="@+id/channel_epg_program_name"
+            android:id="@+id/program_name_sliding"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Programa Atual: Um Episódio Muito Interessante e Com Nome Longo Para Testes"
+            tools:text="Programa Atual com um Título Extenso"
             android:textColor="@color/light_grey_text"
             android:textSize="13sp"
-            android:layout_marginTop="3dp"
+            android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:maxLines="1"/>
 
         <!-- Barra de Progresso do Programa -->
         <ProgressBar
-            android:id="@+id/channel_epg_program_progress"
+            android:id="@+id/program_progress_sliding"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="3dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="2dp"
-            android:progress="60"
+            android:layout_marginTop="4dp"
+            android:progress="50"
             android:max="100"
-            android:progressTint="@color/dark_gold"
+            android:progressTint="@color/epg_accent_red_light"
             android:progressBackgroundTint="@color/epg_progress_background"
             android:visibility="gone"
             tools:visibility="visible"/>
     </LinearLayout>
 
-    <!-- Logo do Canal (à direita) -->
-    <ImageView
-        android:id="@+id/channel_epg_logo"
-        android:layout_width="64dp"
-        android:layout_height="40dp"
-        android:src="@android:drawable/ic_menu_gallery"
-        android:scaleType="fitCenter"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/channel_info_block"
-        app:layout_constraintBottom_toBottomOf="@id/channel_info_block"/>
-
-    <!-- Divisor Inferior -->
-    <View
-        android:id="@+id/item_divider"
+    <!-- Divisor Inferior (opcional, se a marginBottom não for suficiente) -->
+    <!-- <View
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="#2A2A2A"
+        android:background="@color/epg_divider_color_red_theme"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/channel_info_block"
-        android:layout_marginTop="10dp"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"/> -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -21,7 +21,8 @@
         android:visibility="gone"
         tools:visibility="visible"/>
 
-    <include
-        layout="@layout/epg_overlay" />
+    <!-- O EPG antigo de tela cheia (epg_overlay) foi removido. -->
+    <!-- Adicionar o novo painel EPG da esquerda -->
+    <include layout="@layout/epg_panel_left"/>
 
 </FrameLayout>
