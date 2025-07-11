@@ -4,26 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp"
-    android:paddingStart="12dp"
-    android:paddingEnd="12dp"
-    android:layout_marginBottom="4dp"
+    android:paddingBottom="0dp"
     android:background="@drawable/category_item_background_selector"
     android:focusable="true"
-    android:clickable="true"
-    android:stateListAnimator="@animator/item_focus_scale_animator">
-
-    <!-- Logo do Canal -->
-    <ImageView
-        android:id="@+id/channel_epg_logo"
-        android:layout_width="56dp"
-        android:layout_height="36dp"
-        android:src="@android:drawable/ic_menu_gallery"
-        android:scaleType="fitCenter"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"/>
+    android:clickable="true">
 
     <!-- Bloco de Informações do Canal (Número, Nome, Programa, Progresso) -->
     <LinearLayout
@@ -31,36 +18,33 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="8dp"
-        app:layout_constraintStart_toEndOf="@id/channel_epg_logo"
-        app:layout_constraintEnd_toStartOf="@+id/channel_epg_favorite_icon"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/channel_epg_logo"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_marginEnd="12dp">
 
         <!-- Linha para Número e Nome do Canal -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="bottom">
 
             <TextView
                 android:id="@+id/channel_epg_number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="167"
-                android:textColor="@android:color/white"
-                android:textSize="15sp"
-                android:textStyle="bold"/>
+                tools:text="101"
+                android:textColor="@color/light_grey_text"
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/channel_epg_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="AMC HD Super Extenso Nome"
+                tools:text="Nome do Canal HD Max Plus"
                 android:textColor="@android:color/white"
-                android:textSize="15sp"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginStart="8dp"
                 android:ellipsize="end"
@@ -72,8 +56,8 @@
             android:id="@+id/channel_epg_program_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:text="Planet Action: Episode 3 Season 1 com nome longo"
-        android:textColor="@android:color/darker_gray"
+            tools:text="Programa Atual: Um Episódio Muito Interessante e Com Nome Longo Para Testes"
+            android:textColor="@color/light_grey_text"
             android:textSize="13sp"
             android:layout_marginTop="3dp"
             android:ellipsize="end"
@@ -86,6 +70,7 @@
             android:layout_width="match_parent"
             android:layout_height="3dp"
             android:layout_marginTop="5dp"
+            android:layout_marginBottom="2dp"
             android:progress="60"
             android:max="100"
             android:progressTint="@color/dark_gold"
@@ -94,17 +79,26 @@
             tools:visibility="visible"/>
     </LinearLayout>
 
-    <!-- Ícone de Favorito (à direita) -->
+    <!-- Logo do Canal (à direita) -->
     <ImageView
-        android:id="@+id/channel_epg_favorite_icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:src="@drawable/ic_star_border"
-        app:tint="@android:color/darker_gray"
+        android:id="@+id/channel_epg_logo"
+        android:layout_width="64dp"
+        android:layout_height="40dp"
+        android:src="@android:drawable/ic_menu_gallery"
+        android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone"
-        tools:visibility="visible"/>
+        app:layout_constraintTop_toTopOf="@id/channel_info_block"
+        app:layout_constraintBottom_toBottomOf="@id/channel_info_block"/>
+
+    <!-- Divisor Inferior -->
+    <View
+        android:id="@+id/item_divider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="#2A2A2A"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/channel_info_block"
+        android:layout_marginTop="10dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

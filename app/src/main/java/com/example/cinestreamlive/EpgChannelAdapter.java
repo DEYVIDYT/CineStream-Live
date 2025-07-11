@@ -74,7 +74,7 @@ public class EpgChannelAdapter extends RecyclerView.Adapter<EpgChannelAdapter.Ep
              holder.channelLogo.setImageResource(android.R.drawable.ic_menu_gallery); // Placeholder padrão do Android
         // }
 
-        holder.channelFavoriteIcon.setVisibility(View.GONE);
+        // holder.channelFavoriteIcon.setVisibility(View.GONE); // Removido do layout, então remover referência
 
         holder.itemView.setSelected(selectedPosition == position);
 
@@ -127,7 +127,7 @@ public class EpgChannelAdapter extends RecyclerView.Adapter<EpgChannelAdapter.Ep
         TextView channelName;
         TextView channelProgramName;
         ProgressBar channelProgramProgress;
-        ImageView channelFavoriteIcon;
+        // ImageView channelFavoriteIcon; // Removido
 
         EpgChannelViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -136,7 +136,7 @@ public class EpgChannelAdapter extends RecyclerView.Adapter<EpgChannelAdapter.Ep
             channelName = itemView.findViewById(R.id.channel_epg_name);
             channelProgramName = itemView.findViewById(R.id.channel_epg_program_name);
             channelProgramProgress = itemView.findViewById(R.id.channel_epg_program_progress);
-            channelFavoriteIcon = itemView.findViewById(R.id.channel_epg_favorite_icon);
+            // channelFavoriteIcon = itemView.findViewById(R.id.channel_epg_favorite_icon); // Removido
         }
     }
 }

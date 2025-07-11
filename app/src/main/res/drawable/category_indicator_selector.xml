@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Estado focado ou selecionado do item pai -->
+    <item android:state_focused="true" >
+        <shape android:shape="rectangle">
+            <solid android:color="@color/dark_gold"/>
+        </shape>
+    </item>
+    <item android:state_selected="true" >
+        <shape android:shape="rectangle">
+            <solid android:color="@color/dark_gold"/>
+        </shape>
+    </item>
+    <!-- Estado padrão (indicador invisível) -->
+    <item >
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/>
+        </shape>
+    </item>
+</selector>

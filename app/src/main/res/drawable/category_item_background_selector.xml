@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Estado focado -->
+    <!-- Estado focado ou selecionado -->
     <item android:state_focused="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/dark_gold" />
-            <stroke android:width="1dp" android:color="#99FFFFFF" /> <!-- Borda branca sutil -->
             <corners android:radius="4dp" />
         </shape>
     </item>
-    <!-- Estado selecionado (quando o foco está em outra coluna, mas este item é o "ativo") -->
     <item android:state_selected="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/dark_gold" />
-            <stroke android:width="1dp" android:color="#99FFFFFF" /> <!-- Borda branca sutil -->
             <corners android:radius="4dp" />
         </shape>
     </item>
