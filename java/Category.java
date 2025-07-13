@@ -1,6 +1,9 @@
 package com.cinestream.live;
 
-public class Category {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Category implements Parcelable {
     private String category_id;
     private String category_name;
     private String parent_id;
@@ -36,4 +39,34 @@ public class Category {
     public void setParent_id(String parent_id) {
         this.parent_id = parent_id;
     }
+
+    protected Category(Parcel in) {
+        category_id = in.readString();
+        category_name = in.readString();
+        parent_id = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(category_id);
+        dest.writeString(category_name);
+        dest.writeString(parent_id);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<Category> CREATOR = new Creator<Category>() {
+        @Override
+        public Category createFromParcel(Parcel in) {
+            return new Category(in);
+        }
+
+        @Override
+        public Category[] newArray(int size) {
+            return new Category[size];
+        }
+    };
 }

@@ -31,7 +31,9 @@ public class HostActivity extends AppCompatActivity {
 
         // Load default fragment
         if (savedInstanceState == null) {
-            loadFragment(new ChannelsFragment());
+            ChannelsFragment channelsFragment = new ChannelsFragment();
+            channelsFragment.setArguments(getIntent().getExtras());
+            loadFragment(channelsFragment);
         }
     }
 

@@ -67,16 +67,37 @@ public class ChannelsFragment extends Fragment implements
         historyManager = new HistoryManager(requireContext());
         xtreamClient = new XtreamClient();
         handler = new Handler(Looper.getMainLooper());
-        
+
         initViews(view);
         setupRecyclerViews();
         setupSearch();
         setupVideoView();
-        
-        loadCredentialsAndData();
-        
-        // Check if we need to show a specific category
+
         if (getArguments() != null) {
+            allChannels = getArguments().getParcelableArrayList("channels");
+            allCategories = getArguments().getParcelableArrayList("categories");
+
+            if (allChannels != null && allCategories != null) {
+                // Add custom categories
+                Category allCategory = new Category("", "TODOS", "");
+                Category favoritesCategory = new Category("", "FAVORITOS", "");
+                Category historyCategory = new Category("", "HISTÓRICO", "");
+
+                List<Category> displayCategories = new java.util.ArrayList<>();
+                displayCategories.add(allCategory);
+                displayCategories.add(favoritesCategory);
+                displayCategories.add(historyCategory);
+                displayCategories.addAll(allCategories);
+
+                categoryAdapter.setCategories(displayCategories);
+                channelAdapter.setCategoriesForFilter(displayCategories);
+                channelAdapter.setChannels(allChannels);
+
+                // Select 'TODOS' by default
+                categoryAdapter.setSelectedPosition(0);
+                currentCategory = allCategory.getCategory_name();
+            }
+
             String showCategory = getArguments().getString("show_category");
             if (showCategory != null) {
                 // Delay to ensure data is loaded first
@@ -272,81 +293,6 @@ public class ChannelsFragment extends Fragment implements
             channelAdapter.setChannels(allChannels);
             channelAdapter.filterBySearch(query);
         }
-    }
-    
-    private void loadCredentialsAndData() {
-        xtreamClient.fetchCredentials(new XtreamClient.CredentialsCallback() {
-            @Override
-            public void onSuccess(Credential credential) {
-                handler.post(() -> {
-                    fetchCategories();
-                    fetchChannels();
-                });
-            }
-            
-            @Override
-            public void onError(String error) {
-                handler.post(() -> {
-                    Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
-                });
-            }
-        });
-    }
-
-    private void fetchCategories() {
-        xtreamClient.fetchLiveCategories(new XtreamClient.CategoriesCallback() {
-            @Override
-            public void onSuccess(List<Category> categories) {
-                handler.post(() -> {
-                    allCategories = categories;
-                    // Add custom categories at the beginning
-                    Category allCategory = new Category("", "TODOS", "");
-                    Category favoritesCategory = new Category("", "FAVORITOS", "");
-                    Category historyCategory = new Category("", "HISTÓRICO", "");
-
-                    List<Category> displayCategories = new java.util.ArrayList<>();
-                    displayCategories.add(allCategory);
-                    displayCategories.add(favoritesCategory);
-                    displayCategories.add(historyCategory);
-                    displayCategories.addAll(categories);
-
-                    categoryAdapter.setCategories(displayCategories);
-                    channelAdapter.setCategoriesForFilter(displayCategories);
-                    // Select 'TODOS' by default
-                    categoryAdapter.setSelectedPosition(0);
-                    currentCategory = allCategory.getCategory_name();
-                });
-            }
-            
-            @Override
-            public void onError(String error) {
-                handler.post(() -> {
-                    Toast.makeText(requireContext(), "Erro ao carregar categorias: " + error, Toast.LENGTH_LONG).show();
-                });
-            }
-        });
-    }
-
-    private void fetchChannels() {
-        xtreamClient.fetchLiveStreams(new XtreamClient.ChannelsCallback() {
-            @Override
-            public void onSuccess(List<Channel> channels) {
-                handler.post(() -> {
-                    allChannels = channels;
-                    channelAdapter.setChannels(channels);
-                    if (channels.isEmpty()) {
-                        Toast.makeText(requireContext(), "Nenhum canal encontrado", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-            
-            @Override
-            public void onError(String error) {
-                handler.post(() -> {
-                    Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show();
-                });
-            }
-        });
     }
     
     @Override
