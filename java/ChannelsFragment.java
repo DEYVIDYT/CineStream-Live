@@ -23,28 +23,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class ChannelsFragment extends Fragment implements 
-        CategoryAdapter.OnCategoryClickListener, 
+public class ChannelsFragment extends Fragment implements
+        CategoryAdapter.OnCategoryClickListener,
         ChannelAdapter.OnChannelClickListener,
         HistoryAdapter.OnHistoryItemClickListener {
-    
+
+    private SharedViewModel sharedViewModel;
     private VideoView videoView;
     private RecyclerView categoriesRecyclerView;
     private RecyclerView channelsRecyclerView;
     private CategoryAdapter categoryAdapter;
     private ChannelAdapter channelAdapter;
     private HistoryAdapter historyAdapter;
-    private XtreamClient xtreamClient;
-    private Handler handler;
     private FavoritesManager favoritesManager;
     private HistoryManager historyManager;
-    
-    // Search functionality
     private SearchView searchView;
     private LinearLayout searchContainer;
     private ImageView searchIcon;
@@ -57,56 +56,29 @@ public class ChannelsFragment extends Fragment implements
     private List<Category> allCategories;
     private boolean isFullscreen = false;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_channels, container, false);
-        
-        // Initialize managers
+
         favoritesManager = new FavoritesManager(requireContext());
         historyManager = new HistoryManager(requireContext());
-        xtreamClient = new XtreamClient();
-        handler = new Handler(Looper.getMainLooper());
 
         initViews(view);
         setupRecyclerViews();
         setupSearch();
         setupVideoView();
+        observeViewModel();
 
-        if (getArguments() != null) {
-            allChannels = getArguments().getParcelableArrayList("channels");
-            allCategories = getArguments().getParcelableArrayList("categories");
-
-            if (allChannels != null && allCategories != null) {
-                // Add custom categories
-                Category allCategory = new Category("", "TODOS", "");
-                Category favoritesCategory = new Category("", "FAVORITOS", "");
-                Category historyCategory = new Category("", "HISTÓRICO", "");
-
-                List<Category> displayCategories = new java.util.ArrayList<>();
-                displayCategories.add(allCategory);
-                displayCategories.add(favoritesCategory);
-                displayCategories.add(historyCategory);
-                displayCategories.addAll(allCategories);
-
-                categoryAdapter.setCategories(displayCategories);
-                channelAdapter.setCategoriesForFilter(displayCategories);
-                channelAdapter.setChannels(allChannels);
-
-                // Select 'TODOS' by default
-                categoryAdapter.setSelectedPosition(0);
-                currentCategory = allCategory.getCategory_name();
-            }
-
-            String showCategory = getArguments().getString("show_category");
-            if (showCategory != null) {
-                // Delay to ensure data is loaded first
-                handler.postDelayed(() -> showSpecificCategory(showCategory), 1000);
-            }
-        }
         return view;
     }
-    
+
     private void initViews(View view) {
         videoView = view.findViewById(R.id.videoView);
         categoriesRecyclerView = view.findViewById(R.id.categoriesRecyclerView);
@@ -294,6 +266,42 @@ public class ChannelsFragment extends Fragment implements
             channelAdapter.filterBySearch(query);
         }
     }
+
+    private void observeViewModel() {
+        sharedViewModel.getCategories().observe(getViewLifecycleOwner(), categories -> {
+            if (categories != null) {
+                allCategories = categories;
+                Category allCategory = new Category("", "TODOS", "");
+                Category favoritesCategory = new Category("", "FAVORITOS", "");
+                Category historyCategory = new Category("", "HISTÓRICO", "");
+
+                List<Category> displayCategories = new ArrayList<>();
+                displayCategories.add(allCategory);
+                displayCategories.add(favoritesCategory);
+                displayCategories.add(historyCategory);
+                displayCategories.addAll(categories);
+
+                categoryAdapter.setCategories(displayCategories);
+                channelAdapter.setCategoriesForFilter(displayCategories);
+                categoryAdapter.setSelectedPosition(0);
+                currentCategory = allCategory.getCategory_name();
+            }
+        });
+
+        sharedViewModel.getChannels().observe(getViewLifecycleOwner(), channels -> {
+            if (channels != null) {
+                allChannels = channels;
+                channelAdapter.setChannels(channels);
+                if (channels.isEmpty()) {
+                    Toast.makeText(requireContext(), "Nenhum canal encontrado", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        sharedViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            // Handle loading indicator if you have one
+        });
+    }
     
     @Override
     public void onCategoryClick(Category category) {
@@ -332,6 +340,7 @@ public class ChannelsFragment extends Fragment implements
     
     @Override
     public void onChannelClick(Channel channel) {
+        XtreamClient xtreamClient = sharedViewModel.getXtreamClient();
         if (xtreamClient.getCurrentCredential() == null) {
             Toast.makeText(requireContext(), "Credenciais não carregadas", Toast.LENGTH_SHORT).show();
             return;

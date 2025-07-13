@@ -22,33 +22,45 @@ import okhttp3.Response;
 public class XtreamClient {
     private static final String TAG = "XtreamClient";
     private static final String CREDENTIALS_URL = "https://raw.githubusercontent.com/DEYVIDYT/CineStream-Pro/refs/heads/main/credentials_base64.txt";
-    
-    private OkHttpClient httpClient;
-    private Gson gson;
+
+    private static volatile XtreamClient instance;
+    private final OkHttpClient httpClient;
+    private final Gson gson;
     private Credential currentCredential;
-    
+
     public interface CredentialsCallback {
         void onSuccess(Credential credential);
         void onError(String error);
     }
-    
+
     public interface ChannelsCallback {
         void onSuccess(List<Channel> channels);
         void onError(String error);
     }
-    
+
     public interface CategoriesCallback {
         void onSuccess(List<Category> categories);
         void onError(String error);
     }
-    
-    public XtreamClient() {
+
+    private XtreamClient() {
         httpClient = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .build();
         gson = new Gson();
+    }
+
+    public static XtreamClient getInstance() {
+        if (instance == null) {
+            synchronized (XtreamClient.class) {
+                if (instance == null) {
+                    instance = new XtreamClient();
+                }
+            }
+        }
+        return instance;
     }
     
     public void fetchCredentials(CredentialsCallback callback) {
