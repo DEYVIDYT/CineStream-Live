@@ -78,27 +78,13 @@ public class ProfileFragment extends Fragment {
         });
         
         historyAction.setOnClickListener(v -> {
-            // Voltar para ChannelsActivity e mostrar histórico
-            if (getActivity() instanceof HostActivity) {
-                HostActivity hostActivity = (HostActivity) getActivity();
-                ChannelsFragment channelsFragment = new ChannelsFragment();
-                Bundle args = new Bundle();
-                args.putString("show_category", "HISTÓRICO");
-                channelsFragment.setArguments(args);
-                hostActivity.loadFragment(channelsFragment);
-            }
+            // TODO: Implement navigation to history category via ViewModel
+            Toast.makeText(requireContext(), "Funcionalidade em desenvolvimento", Toast.LENGTH_SHORT).show();
         });
         
         favoritesAction.setOnClickListener(v -> {
-            // Voltar para ChannelsActivity e mostrar favoritos
-            if (getActivity() instanceof HostActivity) {
-                HostActivity hostActivity = (HostActivity) getActivity();
-                ChannelsFragment channelsFragment = new ChannelsFragment();
-                Bundle args = new Bundle();
-                args.putString("show_category", "FAVORITOS");
-                channelsFragment.setArguments(args);
-                hostActivity.loadFragment(channelsFragment);
-            }
+            // TODO: Implement navigation to favorites category via ViewModel
+            Toast.makeText(requireContext(), "Funcionalidade em desenvolvimento", Toast.LENGTH_SHORT).show();
         });
         
         reminderAction.setOnClickListener(v -> {
