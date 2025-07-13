@@ -1,0 +1,70 @@
+<resources>
+    <string name="app_name">CineStream Live Mobile</string>
+    <string name="loading_data">Carregando dados</string>
+    <string name="version">Versão 4.5.0</string>
+    <string name="tv_live">TV AO VIVO</string>
+    <string name="live_tab">Ao vivo</string>
+    <string name="guide_tab">Guia</string>
+    <string name="profile_tab">Perfil</string>
+    <string name="search">Pesquisar</string>
+    
+    <!-- Categories -->
+    <string name="category_musica">MÚSICA</string>
+    <string name="category_uhd">UHD</string>
+    <string name="category_noticias">NOTÍCIAS</string>
+    <string name="category_regionais">REGIONAIS</string>
+    <string name="category_infantil">INFANTIL</string>
+    <string name="category_cultura">CULTURA</string>
+    <string name="category_variedades">VARIEDADES</string>
+    <string name="category_youtube">YOUTUBE</string>
+    <string name="category_tve_hot">TVE HOT</string>
+    
+    <!-- Profile -->
+    <string name="profile">PERFIL</string>
+    <string name="recharge_text">Clique em Recarregar para fazer o pagamento no site oficial</string>
+    <string name="email">E-MAIL</string>
+    <string name="expiration_date">Data de expiração 29/11/2026</string>
+    <string name="recharge">Recarregar</string>
+    <string name="invite_friends">Convide amigos: uk5wn64</string>
+    <string name="history">Histórico</string>
+    <string name="favorites">Favoritos</string>
+    <string name="reminder">Lembrete</string>
+    <string name="adult_content">Conteúdo adulto</string>
+    <string name="information">Informação</string>
+    <string name="exit">Sair</string>
+    
+    <!-- Messages -->
+    <string name="loading_channels">Carregando canais...</string>
+    <string name="error_loading">Erro ao carregar dados</string>
+    <string name="no_internet">Sem conexão com a internet</string>
+    <string name="retry">Tentar novamente</string>
+    
+    <!-- Search -->
+    <string name="search_hint">Buscar canais...</string>
+    <string name="no_results">Nenhum canal encontrado</string>
+    <string name="clear_search">Limpar busca</string>
+    
+    <!-- Favorites -->
+    <string name="add_to_favorites">Adicionar aos favoritos</string>
+    <string name="remove_from_favorites">Remover dos favoritos</string>
+    <string name="no_favorites">Nenhum canal favorito</string>
+    <string name="favorites_empty_message">Você ainda não adicionou canais aos favoritos.\nToque no ❤️ em qualquer canal para adicioná-lo.</string>
+    
+    <!-- History -->
+    <string name="no_history">Nenhum histórico</string>
+    <string name="history_empty_message">Você ainda não assistiu nenhum canal.\nO histórico aparecerá aqui conforme você assiste.</string>
+    <string name="clear_history">Limpar histórico</string>
+    <string name="clear_favorites">Limpar favoritos</string>
+    
+    <!-- Categories -->
+    <string name="category_favorites">FAVORITOS</string>
+    <string name="category_history">HISTÓRICO</string>
+    
+    <!-- Confirmations -->
+    <string name="confirm_clear_history">Deseja limpar todo o histórico?</string>
+    <string name="confirm_clear_favorites">Deseja limpar todos os favoritos?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="cancel">Cancelar</string>
+    <string name="fullscreen">Tela cheia</string>
+</resources>
