@@ -20,8 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.SurfaceView;
-import android.view.ViewStub;
+import org.videolan.libvlc.util.VLCVideoLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,8 +39,8 @@ public class ChannelsFragment extends Fragment implements
         HistoryAdapter.OnHistoryItemClickListener {
 
     private SharedViewModel sharedViewModel;
-    private SurfaceView surfaceView;
-    private CustomVideoPlayer customVideoPlayer;
+    private VLCVideoLayout vlcVideoLayout;
+    private VlcVideoPlayer vlcVideoPlayer;
     private RecyclerView categoriesRecyclerView;
     private RecyclerView channelsRecyclerView;
     private CategoryAdapter categoryAdapter;
@@ -57,10 +56,6 @@ public class ChannelsFragment extends Fragment implements
     private ImageView fullscreenButton;
     private TextView networkSpeedTextView;
     private NetworkSpeedMonitor networkSpeedMonitor;
-    private ViewStub viewStub;
-    private View controls;
-    private ImageButton playPauseButton;
-    private SeekBar seekBar;
     private boolean isSearchVisible = false;
     private String currentCategory = "TODOS";
     private List<Channel> allChannels;
@@ -98,7 +93,7 @@ public class ChannelsFragment extends Fragment implements
     }
 
     private void initViews(View view) {
-        surfaceView = view.findViewById(R.id.surfaceView);
+        vlcVideoLayout = view.findViewById(R.id.vlcVideoLayout);
         categoriesRecyclerView = view.findViewById(R.id.categoriesRecyclerView);
         channelsRecyclerView = view.findViewById(R.id.channelsRecyclerView);
         searchView = view.findViewById(R.id.searchView);
@@ -112,27 +107,6 @@ public class ChannelsFragment extends Fragment implements
         searchIcon.setOnClickListener(v -> toggleSearch());
         clearSearchIcon.setOnClickListener(v -> clearSearch());
         fullscreenButton.setOnClickListener(v -> toggleFullscreen());
-        viewStub = view.findViewById(R.id.viewStub);
-
-        surfaceView.setOnTouchListener((v, event) -> {
-            if (controls == null) {
-                controls = viewStub.inflate();
-                playPauseButton = controls.findViewById(R.id.playPauseButton);
-                seekBar = controls.findViewById(R.id.seekBar);
-                playPauseButton.setOnClickListener(v1 -> {
-                    if (customVideoPlayer.isPlaying()) {
-                        customVideoPlayer.pause();
-                        playPauseButton.setImageResource(R.drawable.ic_play_arrow);
-                    } else {
-                        customVideoPlayer.play();
-                        playPauseButton.setImageResource(R.drawable.ic_pause);
-                    }
-                });
-            } else {
-                controls.setVisibility(controls.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
-            }
-            return false;
-        });
     }
 
     private void toggleFullscreen() {
@@ -169,7 +143,7 @@ public class ChannelsFragment extends Fragment implements
                 getView().findViewById(R.id.searchContainer).setVisibility(View.GONE);
             }
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-            surfaceView.setLayoutParams(params);
+            vlcVideoLayout.setLayoutParams(params);
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Exit fullscreen
             if (getActivity() != null && getActivity().findViewById(R.id.navigation_tabs) != null) {
@@ -186,7 +160,7 @@ public class ChannelsFragment extends Fragment implements
                 getView().findViewById(R.id.searchContainer).setVisibility(View.VISIBLE);
             }
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, (int) (250 * getResources().getDisplayMetrics().density));
-            surfaceView.setLayoutParams(params);
+            vlcVideoLayout.setLayoutParams(params);
         }
     }
     
@@ -228,26 +202,15 @@ public class ChannelsFragment extends Fragment implements
     private void playStream(String streamUrl) {
         if (streamUrl != null && !streamUrl.isEmpty()) {
             videoLoadingProgressBar.setVisibility(View.VISIBLE);
-            if (customVideoPlayer != null) {
-                customVideoPlayer.release();
+            if (vlcVideoPlayer != null) {
+                vlcVideoPlayer.stop();
+            } else {
+                vlcVideoPlayer = new VlcVideoPlayer(requireContext(), vlcVideoLayout);
             }
-            customVideoPlayer = new CustomVideoPlayer(requireContext(), surfaceView.getHolder(), streamUrl);
-            customVideoPlayer.setVideoPlayerListener(new CustomVideoPlayer.VideoPlayerListener() {
-                @Override
-                public void onPrepared() {
-                    videoLoadingProgressBar.setVisibility(View.GONE);
-                    networkSpeedTextView.setVisibility(View.VISIBLE);
-                    networkSpeedMonitor.start();
-                }
-
-                @Override
-                public void onError() {
-                    videoLoadingProgressBar.setVisibility(View.GONE);
-                    networkSpeedTextView.setVisibility(View.GONE);
-                    networkSpeedMonitor.stop();
-                    Toast.makeText(requireContext(), "Erro ao reproduzir vídeo", Toast.LENGTH_SHORT).show();
-                }
-            });
+            vlcVideoPlayer.play(streamUrl);
+            videoLoadingProgressBar.setVisibility(View.GONE);
+            networkSpeedTextView.setVisibility(View.VISIBLE);
+            networkSpeedMonitor.start();
         } else {
             Toast.makeText(requireContext(), "URL do canal não disponível", Toast.LENGTH_SHORT).show();
         }
@@ -439,16 +402,16 @@ public class ChannelsFragment extends Fragment implements
     @Override
     public void onPause() {
         super.onPause();
-        if (customVideoPlayer != null) {
-            customVideoPlayer.pause();
+        if (vlcVideoPlayer != null) {
+            vlcVideoPlayer.pause();
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (customVideoPlayer != null) {
-            customVideoPlayer.release();
+        if (vlcVideoPlayer != null) {
+            vlcVideoPlayer.release();
         }
         if (networkSpeedMonitor != null) {
             networkSpeedMonitor.stop();
