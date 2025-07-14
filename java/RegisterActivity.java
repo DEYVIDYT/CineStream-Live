@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
-
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText email;
@@ -28,20 +27,15 @@ public class RegisterActivity extends AppCompatActivity {
             apiClient.register(emailStr, passwordStr, new ApiClient.ApiCallback() {
                 @Override
                 public void onSuccess(String response) {
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        if (json.getBoolean("success")) {
-                            runOnUiThread(() -> {
-                                // Show success message and navigate to login
-                                finish(); // Go back to LoginActivity
-                            });
-                        } else {
-                            runOnUiThread(() -> {
-                                // Show error message
-                            });
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (response != null && response.contains("\"success\":true")) {
+                        runOnUiThread(() -> {
+                            // Show success message and navigate to login
+                            finish(); // Go back to LoginActivity
+                        });
+                    } else {
+                        runOnUiThread(() -> {
+                            // Show error message
+                        });
                     }
                 }
 

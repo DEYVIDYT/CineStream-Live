@@ -6,7 +6,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
-
 public class LoginActivity extends AppCompatActivity {
 
     private EditText email;
@@ -32,22 +31,17 @@ public class LoginActivity extends AppCompatActivity {
             apiClient.login(emailStr, passwordStr, new ApiClient.ApiCallback() {
                 @Override
                 public void onSuccess(String response) {
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        if (json.getBoolean("success")) {
-                            String token = json.getString("token");
-                            saveSessionToken(token);
+                    if (response != null && response.contains("\"success\":true")) {
+                        String token = response.split("\"token\":\"")[1].split("\"")[0];
+                        saveSessionToken(token);
 
-                            Intent intent = new Intent(LoginActivity.this, HostActivity.class);
-                            startActivity(intent);
-                            finish();
-                        } else {
-                            runOnUiThread(() -> {
-                                // Show error message
-                            });
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        Intent intent = new Intent(LoginActivity.this, HostActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        runOnUiThread(() -> {
+                            // Show error message
+                        });
                     }
                 }
 
@@ -60,8 +54,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void saveSessionToken(String token) {
-        SharedPreferences preferences = getSharedPreferences("user_session", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        android.content.SharedPreferences preferences = getSharedPreferences("user_session", MODE_PRIVATE);
+        android.content.SharedPreferences.Editor editor = preferences.edit();
         editor.putString("session_token", token);
         editor.apply();
 

@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat;
 import android.os.Handler;
 import android.content.SharedPreferences;
 import android.content.Intent;
-
 public class HostActivity extends AppCompatActivity {
 
     private SharedViewModel sharedViewModel;
@@ -119,7 +118,7 @@ public class HostActivity extends AppCompatActivity {
     }
 
     private void checkUserSession() {
-        SharedPreferences sessionPrefs = getSharedPreferences("user_session", MODE_PRIVATE);
+        android.content.SharedPreferences sessionPrefs = getSharedPreferences("user_session", MODE_PRIVATE);
         String sessionToken = sessionPrefs.getString("session_token", null);
 
         if (sessionToken != null) {
@@ -127,13 +126,8 @@ public class HostActivity extends AppCompatActivity {
             apiClient.checkSession(sessionToken, new ApiClient.ApiCallback() {
                 @Override
                 public void onSuccess(String response) {
-                    try {
-                        JSONObject json = new JSONObject(response);
-                        if (!json.getBoolean("success")) {
-                            logout();
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    if (response != null && !response.contains("\"success\":true")) {
+                        logout();
                     }
                 }
 
@@ -148,8 +142,8 @@ public class HostActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        SharedPreferences preferences = getSharedPreferences("user_session", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
+        android.content.SharedPreferences preferences = getSharedPreferences("user_session", MODE_PRIVATE);
+        android.content.SharedPreferences.Editor editor = preferences.edit();
         editor.remove("session_token");
         editor.apply();
 
