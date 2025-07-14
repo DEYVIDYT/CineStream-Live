@@ -110,66 +110,49 @@ public class ChannelsFragment extends Fragment implements
     }
 
     private void toggleFullscreen() {
-        isFullscreen = !isFullscreen;
         if (isFullscreen) {
-            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            requireActivity().getWindow().getDecorView().setSystemUiVisibility(
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            exitFullScreen();
         } else {
-            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-            requireActivity().getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            enterFullScreen();
         }
     }
-    
 
+    private void enterFullScreen() {
+        isFullscreen = true;
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
+        HostActivity hostActivity = (HostActivity) requireActivity();
+        FrameLayout fullscreenContainer = hostActivity.getFullscreenContainer();
 
+        ViewGroup parent = (ViewGroup) vlcVideoLayout.getParent();
+        parent.removeView(vlcVideoLayout);
 
+        fullscreenContainer.addView(vlcVideoLayout);
+        fullscreenContainer.setVisibility(View.VISIBLE);
 
+        hostActivity.findViewById(R.id.navigation_tabs).setVisibility(View.GONE);
+    }
+
+    private void exitFullScreen() {
+        isFullscreen = false;
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        HostActivity hostActivity = (HostActivity) requireActivity();
+        FrameLayout fullscreenContainer = hostActivity.getFullscreenContainer();
+
+        fullscreenContainer.removeView(vlcVideoLayout);
+        fullscreenContainer.setVisibility(View.GONE);
+
+        FrameLayout videoContainer = getView().findViewById(R.id.videoContainer);
+        videoContainer.addView(vlcVideoLayout);
+
+        hostActivity.findViewById(R.id.navigation_tabs).setVisibility(View.VISIBLE);
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            // Enter fullscreen
-            if (getActivity() != null && getActivity().findViewById(R.id.navigation_tabs) != null) {
-                getActivity().findViewById(R.id.navigation_tabs).setVisibility(View.GONE);
-            }
-            if (getActivity() instanceof HostActivity) {
-                if (((HostActivity) getActivity()).getSupportActionBar() != null) {
-                    ((HostActivity) getActivity()).getSupportActionBar().hide();
-                }
-            }
-            if (getView() != null) {
-                getView().findViewById(R.id.categoriesRecyclerView).setVisibility(View.GONE);
-                getView().findViewById(R.id.channelsRecyclerView).setVisibility(View.GONE);
-                getView().findViewById(R.id.searchContainer).setVisibility(View.GONE);
-            }
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-            vlcVideoLayout.setLayoutParams(params);
-        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            // Exit fullscreen
-            if (getActivity() != null && getActivity().findViewById(R.id.navigation_tabs) != null) {
-                getActivity().findViewById(R.id.navigation_tabs).setVisibility(View.VISIBLE);
-            }
-            if (getActivity() instanceof HostActivity) {
-                if (((HostActivity) getActivity()).getSupportActionBar() != null) {
-                    ((HostActivity) getActivity()).getSupportActionBar().show();
-                }
-            }
-            if (getView() != null) {
-                getView().findViewById(R.id.categoriesRecyclerView).setVisibility(View.VISIBLE);
-                getView().findViewById(R.id.channelsRecyclerView).setVisibility(View.VISIBLE);
-                getView().findViewById(R.id.searchContainer).setVisibility(View.VISIBLE);
-            }
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, (int) (250 * getResources().getDisplayMetrics().density));
-            vlcVideoLayout.setLayoutParams(params);
-        }
+        // Logic is now handled by enterFullScreen and exitFullScreen
     }
     
     private void setupRecyclerViews() {
