@@ -182,5 +182,60 @@ public class HostActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         startSessionCheck();
+        checkBanStatus();
+    }
+
+    private void checkBanStatus() {
+        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        if (userId == -1) {
+            return; // Não há usuário logado
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody formBody = new FormBody.Builder()
+                .add("user_id", String.valueOf(userId))
+                .add("device_id", deviceId)
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://mybrasiltv.x10.mx/check_ban_status.php")
+                .post(formBody)
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                // Não fazer nada em caso de falha de rede
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                String responseBody = response.body().string();
+                try {
+                    org.json.JSONObject jsonObject = new org.json.JSONObject(responseBody);
+                    String status = jsonObject.getString("status");
+
+                    if (status.equals("banned")) {
+                        // Usuário ou dispositivo banido, desconectar e fechar o app
+                        runOnUiThread(() -> {
+                            Toast.makeText(HostActivity.this, "Você foi banido.", Toast.LENGTH_LONG).show();
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.clear();
+                            editor.apply();
+                            // Fechar o app após um pequeno atraso para o usuário ler a mensagem
+                            new android.os.Handler().postDelayed(
+                                () -> finishAffinity(),
+                                3000
+                            );
+                        });
+                    }
+                } catch (org.json.JSONException e) {
+                    // Não fazer nada em caso de resposta inválida
+                }
+            }
+        });
     }
 }

@@ -25,9 +25,23 @@ if ($stmt->num_rows > 0) {
     $stmt->fetch();
     if (password_verify($password, $hashed_password)) {
         if ($is_banned) {
-            echo json_encode(['status' => 'error', 'message' => 'Este usuário está banido.']);
+            echo json_encode(['status' => 'banned', 'message' => 'Este usuário está banido.']);
             exit;
         }
+
+        // Verificar se o dispositivo está banido
+        $sql = "SELECT id FROM users WHERE device_id = ? AND is_banned = 1";
+        $stmt_device = $conn->prepare($sql);
+        $stmt_device->bind_param("s", $device_id);
+        $stmt_device->execute();
+        $stmt_device->store_result();
+
+        if ($stmt_device->num_rows > 0) {
+            echo json_encode(['status' => 'banned', 'message' => 'Este dispositivo está banido.']);
+            $stmt_device->close();
+            exit;
+        }
+        $stmt_device->close();
 
         // Verificar se já existe uma sessão para este dispositivo
         $sql = "SELECT id FROM sessions WHERE user_id = ? AND device_id = ?";

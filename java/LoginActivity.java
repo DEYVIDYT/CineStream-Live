@@ -107,6 +107,14 @@ public class LoginActivity extends AppCompatActivity {
                             } catch (JSONException e) {
                                 Toast.makeText(LoginActivity.this, "Erro ao processar os dados do servidor.", Toast.LENGTH_SHORT).show();
                             }
+                        } else if (status.equals("banned")) {
+                            String message = jsonObject.optString("message", "Este usuário ou dispositivo foi banido.");
+                            Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+                            // Fechar o app após um pequeno atraso para o usuário ler a mensagem
+                            new android.os.Handler().postDelayed(
+                                () -> finishAffinity(),
+                                3000
+                            );
                         } else {
                             String message = jsonObject.optString("message", "Erro desconhecido.");
                             Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
