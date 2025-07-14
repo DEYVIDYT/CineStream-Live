@@ -3,6 +3,7 @@ package com.cinestream.live;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,18 +68,8 @@ public class ProfileFragment extends Fragment {
     
     private void setupClickListeners() {
         rechargeButton.setOnClickListener(v -> {
-            Toast.makeText(requireContext(), "Redirecionando para pagamento...", Toast.LENGTH_SHORT).show();
-            // Aqui você pode implementar a lógica para abrir o site de pagamento
-        });
-        
-        inviteButton.setOnClickListener(v -> {
-            String inviteCode = "uk5wn64";
-            String shareText = "Use meu código de convite: " + inviteCode + " para acessar o CineStream Live!";
-            
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-            startActivity(Intent.createChooser(shareIntent, "Compartilhar código de convite"));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/VPlay0"));
+            startActivity(intent);
         });
         
         historyAction.setOnClickListener(v -> {

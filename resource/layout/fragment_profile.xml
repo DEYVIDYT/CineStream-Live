@@ -103,24 +103,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:text="Recarregar"
-                        android:textColor="#7B68EE"
+                        android:textColor="#FFFFFF"
                         android:textSize="12sp"
                         android:background="@drawable/search_background"
-                        android:backgroundTint="#FFFFFF"
+                        android:backgroundTint="@color/recharge_button_color"
                         android:paddingHorizontal="16dp" />
 
                 </LinearLayout>
-
-                <!-- Invite Friends -->
-                <Button
-                    android:id="@+id/inviteButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="40dp"
-                    android:text="Convide amigos: uk5wn64"
-                    android:textColor="#7B68EE"
-                    android:textSize="14sp"
-                    android:background="@drawable/search_background"
-                    android:backgroundTint="#FFFFFF" />
 
             </LinearLayout>
 
