@@ -237,12 +237,14 @@ public class ChannelsFragment extends Fragment implements
                 public void onPrepared() {
                     videoLoadingProgressBar.setVisibility(View.GONE);
                     networkSpeedTextView.setVisibility(View.VISIBLE);
+                    networkSpeedMonitor.start();
                 }
 
                 @Override
                 public void onError() {
                     videoLoadingProgressBar.setVisibility(View.GONE);
                     networkSpeedTextView.setVisibility(View.GONE);
+                    networkSpeedMonitor.stop();
                     Toast.makeText(requireContext(), "Erro ao reproduzir vídeo", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -425,7 +427,6 @@ public class ChannelsFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        networkSpeedMonitor.start();
         
         // Refresh current view to update favorites and history
         if (currentCategory.equals("FAVORITOS")) {
@@ -438,7 +439,6 @@ public class ChannelsFragment extends Fragment implements
     @Override
     public void onPause() {
         super.onPause();
-        networkSpeedMonitor.stop();
         if (customVideoPlayer != null) {
             customVideoPlayer.pause();
         }
@@ -449,6 +449,9 @@ public class ChannelsFragment extends Fragment implements
         super.onDestroyView();
         if (customVideoPlayer != null) {
             customVideoPlayer.release();
+        }
+        if (networkSpeedMonitor != null) {
+            networkSpeedMonitor.stop();
         }
     }
 

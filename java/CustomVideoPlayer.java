@@ -26,12 +26,13 @@ public class CustomVideoPlayer implements SurfaceHolder.Callback, MediaPlayer.On
     }
 
     private void initializePlayer() {
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setOnPreparedListener(this);
-        mediaPlayer.setOnErrorListener(this);
-        mediaPlayer.setScreenOnWhilePlaying(true);
         try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDisplay(surfaceHolder);
             mediaPlayer.setDataSource(context, Uri.parse(videoUrl));
+            mediaPlayer.setOnPreparedListener(this);
+            mediaPlayer.setOnErrorListener(this);
+            mediaPlayer.setScreenOnWhilePlaying(true);
             mediaPlayer.prepareAsync();
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,7 +67,6 @@ public class CustomVideoPlayer implements SurfaceHolder.Callback, MediaPlayer.On
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mediaPlayer.setDisplay(holder);
         initializePlayer();
     }
 
