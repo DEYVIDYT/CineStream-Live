@@ -63,6 +63,11 @@
             android:theme="@style/Theme.CineStreamLiveMobile.Fullscreen" />
             
         <activity
+            android:name=".MovieDetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CineStreamLiveMobile.NoActionBar" />
+            
+        <activity
             android:name=".SeriesDetailsActivity"
             android:exported="false"
             android:theme="@style/Theme.CineStreamLiveMobile.NoActionBar" />

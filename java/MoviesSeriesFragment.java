@@ -360,10 +360,9 @@ public class MoviesSeriesFragment extends Fragment implements
         );
 
         if (streamUrl != null) {
-            // Iniciar MoviePlayerActivity para reproduzir o filme
-            Intent intent = new Intent(requireContext(), MoviePlayerActivity.class);
+            // Abrir tela de detalhes do filme
+            Intent intent = new Intent(requireContext(), MovieDetailsActivity.class);
             intent.putExtra("movie", movie);
-            intent.putExtra("stream_url", streamUrl);
             startActivity(intent);
         } else {
             Toast.makeText(requireContext(), "URL do filme não disponível", Toast.LENGTH_SHORT).show();

@@ -5,7 +5,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,11 +19,9 @@ public class MoviePlayerActivity extends AppCompatActivity {
     private Movie movie;
     private String streamUrl;
     private TextView titleTextView;
-    private TextView yearTextView;
-    private TextView durationTextView;
-    private TextView genreTextView;
     private ImageButton backButton;
     private ImageButton fullscreenButton;
+    private ProgressBar videoLoadingProgressBar;
     private boolean isFullscreen = false;
 
     @Override
@@ -42,53 +40,38 @@ public class MoviePlayerActivity extends AppCompatActivity {
         }
 
         initViews();
-        setupMovieInfo();
+        setupListeners();
         startPlayer();
     }
 
     private void initViews() {
         vlcVideoLayout = findViewById(R.id.vlcVideoLayout);
         titleTextView = findViewById(R.id.titleTextView);
-        yearTextView = findViewById(R.id.yearTextView);
-        durationTextView = findViewById(R.id.durationTextView);
-        genreTextView = findViewById(R.id.genreTextView);
         backButton = findViewById(R.id.backButton);
         fullscreenButton = findViewById(R.id.fullscreenButton);
+        videoLoadingProgressBar = findViewById(R.id.videoLoadingProgressBar);
 
+        if (movie.getName() != null) {
+            titleTextView.setText(movie.getName());
+        }
+    }
+
+    private void setupListeners() {
         backButton.setOnClickListener(v -> finish());
         fullscreenButton.setOnClickListener(v -> toggleFullscreen());
     }
 
-    private void setupMovieInfo() {
-        if (movie.getName() != null) {
-            titleTextView.setText(movie.getName());
-        }
-
-        if (movie.getYear() != null && !movie.getYear().isEmpty()) {
-            yearTextView.setText(movie.getYear());
-            yearTextView.setVisibility(View.VISIBLE);
-        } else {
-            yearTextView.setVisibility(View.GONE);
-        }
-
-        if (movie.getDuration() != null && !movie.getDuration().isEmpty()) {
-            durationTextView.setText(movie.getDuration() + " min");
-            durationTextView.setVisibility(View.VISIBLE);
-        } else {
-            durationTextView.setVisibility(View.GONE);
-        }
-
-        if (movie.getGenre() != null && !movie.getGenre().isEmpty()) {
-            genreTextView.setText(movie.getGenre());
-            genreTextView.setVisibility(View.VISIBLE);
-        } else {
-            genreTextView.setVisibility(View.GONE);
-        }
-    }
-
     private void startPlayer() {
+        videoLoadingProgressBar.setVisibility(View.VISIBLE);
+        
+        if (vlcVideoPlayer != null) {
+            vlcVideoPlayer.stop();
+        }
+        
         vlcVideoPlayer = new VlcVideoPlayer(this, vlcVideoLayout);
         vlcVideoPlayer.play(streamUrl);
+        
+        videoLoadingProgressBar.setVisibility(View.GONE);
     }
 
     private void toggleFullscreen() {
@@ -104,7 +87,7 @@ public class MoviePlayerActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         
         // Hide UI elements
-        findViewById(R.id.movieInfoContainer).setVisibility(View.GONE);
+        findViewById(R.id.playerControlsContainer).setVisibility(View.GONE);
         
         // Hide system UI
         View decorView = getWindow().getDecorView();
@@ -120,7 +103,7 @@ public class MoviePlayerActivity extends AppCompatActivity {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         
         // Show UI elements
-        findViewById(R.id.movieInfoContainer).setVisibility(View.VISIBLE);
+        findViewById(R.id.playerControlsContainer).setVisibility(View.VISIBLE);
         
         // Show system UI
         View decorView = getWindow().getDecorView();
