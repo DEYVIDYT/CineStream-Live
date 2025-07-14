@@ -43,6 +43,12 @@ if ($stmt->num_rows > 0) {
         }
         $stmt_device->close();
 
+        // Verificar a data de expiração do plano
+        if (strtotime($plan_expiration) < time()) {
+            echo json_encode(['status' => 'error', 'message' => 'Seu plano expirou.']);
+            exit;
+        }
+
         // Verificar se já existe uma sessão para este dispositivo
         $sql = "SELECT id FROM sessions WHERE user_id = ? AND device_id = ?";
         $session_stmt = $conn->prepare($sql);
