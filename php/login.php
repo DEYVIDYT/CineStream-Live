@@ -59,12 +59,20 @@ if ($stmt->num_rows > 0) {
         $activity_stmt->execute();
         $activity_stmt->close();
 
+        // Credenciais do Xtream - PREENCHA COM SEUS DADOS
+        $xtream_server = 'http://xtream.example.com';
+        $xtream_username = 'your_username';
+        $xtream_password = 'your_password';
+
         echo json_encode([
             'status' => 'success',
             'message' => 'Login bem-sucedido.',
             'user_id' => $user_id,
             'session_token' => $session_token,
-            'plan_expiration' => $plan_expiration
+            'plan_expiration' => $plan_expiration,
+            'xtream_server' => $xtream_server,
+            'xtream_username' => $xtream_username,
+            'xtream_password' => $xtream_password
         ]);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Senha incorreta.']);

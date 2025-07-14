@@ -49,9 +49,19 @@ public class HostActivity extends AppCompatActivity {
 
         // Start loading data
         SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
-        int userId = prefs.getInt("user_id", -1);
-        String sessionToken = prefs.getString("session_token", null);
-        sharedViewModel.loadData(userId, sessionToken);
+        String xtreamServer = prefs.getString("xtream_server", null);
+        String xtreamUsername = prefs.getString("xtream_username", null);
+        String xtreamPassword = prefs.getString("xtream_password", null);
+
+        if (xtreamServer != null && xtreamUsername != null && xtreamPassword != null) {
+            Credential credential = new Credential();
+            credential.setServer(xtreamServer);
+            credential.setUsername(xtreamUsername);
+            credential.setPassword(xtreamPassword);
+            sharedViewModel.getXtreamClient().setCredential(credential);
+        }
+
+        sharedViewModel.loadData();
 
         liveTab = findViewById(R.id.liveTab);
         profileTab = findViewById(R.id.profileTab);

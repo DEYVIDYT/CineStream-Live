@@ -87,25 +87,21 @@ public class LoginActivity extends AppCompatActivity {
                             try {
                                 String sessionToken = jsonObject.getString("session_token");
                                 int userId = jsonObject.getInt("user_id");
+                                String xtreamServer = jsonObject.getString("xtream_server");
+                                String xtreamUsername = jsonObject.getString("xtream_username");
+                                String xtreamPassword = jsonObject.getString("xtream_password");
 
                                 // Salvar dados da sessão
                                 SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
                                 SharedPreferences.Editor editor = prefs.edit();
                                 editor.putInt("user_id", userId);
                                 editor.putString("session_token", sessionToken);
+                                editor.putString("xtream_server", xtreamServer);
+                                editor.putString("xtream_username", xtreamUsername);
+                                editor.putString("xtream_password", xtreamPassword);
                                 editor.apply();
 
                                 Toast.makeText(LoginActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
-
-                                // Definir a credencial no XtreamClient
-                                // Supondo que o login retorna as credenciais do Xtream
-                                // Como a API de login não retorna o servidor, username e password do Xtream,
-                                // não é possível definir a credencial aqui.
-                                // A lógica do XtreamClient precisará ser ajustada para obter os canais
-                                // diretamente com o token de sessão, ou a API de login precisará
-                                // retornar as credenciais do Xtream.
-
-                                // Por enquanto, vamos para a HostActivity
                                 startActivity(new Intent(LoginActivity.this, HostActivity.class));
                                 finish();
                             } catch (JSONException e) {

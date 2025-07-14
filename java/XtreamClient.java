@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -46,16 +45,19 @@ public class XtreamClient {
         gson = new Gson();
     }
     
-    public void fetchLiveStreams(int userId, String sessionToken, ChannelsCallback callback) {
-        OkHttpClient client = new OkHttpClient();
-        RequestBody formBody = new FormBody.Builder()
-                .add("user_id", String.valueOf(userId))
-                .add("session_token", sessionToken)
-                .build();
+    public void fetchLiveStreams(ChannelsCallback callback) {
+        if (currentCredential == null) {
+            callback.onError("Credenciais não carregadas");
+            return;
+        }
+
+        String url = currentCredential.getServer() + "/player_api.php" +
+                "?username=" + currentCredential.getUsername() +
+                "&password=" + currentCredential.getPassword() +
+                "&action=get_live_streams";
 
         Request request = new Request.Builder()
-                .url("http://mybrasiltv.x10.mx/get_live_streams.php")
-                .post(formBody)
+                .url(url)
                 .build();
         
         httpClient.newCall(request).enqueue(new Callback() {
@@ -95,16 +97,19 @@ public class XtreamClient {
         });
     }
     
-    public void fetchLiveCategories(int userId, String sessionToken, CategoriesCallback callback) {
-        OkHttpClient client = new OkHttpClient();
-        RequestBody formBody = new FormBody.Builder()
-                .add("user_id", String.valueOf(userId))
-                .add("session_token", sessionToken)
-                .build();
+    public void fetchLiveCategories(CategoriesCallback callback) {
+        if (currentCredential == null) {
+            callback.onError("Credenciais não carregadas");
+            return;
+        }
+
+        String url = currentCredential.getServer() + "/player_api.php" +
+                "?username=" + currentCredential.getUsername() +
+                "&password=" + currentCredential.getPassword() +
+                "&action=get_live_categories";
 
         Request request = new Request.Builder()
-                .url("http://mybrasiltv.x10.mx/get_live_categories.php")
-                .post(formBody)
+                .url(url)
                 .build();
         
         httpClient.newCall(request).enqueue(new Callback() {
