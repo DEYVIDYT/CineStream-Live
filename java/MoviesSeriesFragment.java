@@ -360,7 +360,8 @@ public class MoviesSeriesFragment extends Fragment implements
         );
 
         if (streamUrl != null) {
-            Intent intent = new Intent(getContext(), MoviePlayerActivity.class);
+            // Iniciar MoviePlayerActivity para reproduzir o filme
+            Intent intent = new Intent(requireContext(), MoviePlayerActivity.class);
             intent.putExtra("movie", movie);
             intent.putExtra("stream_url", streamUrl);
             startActivity(intent);
@@ -371,7 +372,8 @@ public class MoviesSeriesFragment extends Fragment implements
 
     @Override
     public void onSeriesClick(Series series) {
-        Intent intent = new Intent(getContext(), SeriesDetailsActivity.class);
+        // Iniciar SeriesDetailsActivity para mostrar detalhes da série
+        Intent intent = new Intent(requireContext(), SeriesDetailsActivity.class);
         intent.putExtra("series", series);
         startActivity(intent);
     }
@@ -382,4 +384,5 @@ public class MoviesSeriesFragment extends Fragment implements
         String message = isFavorite ? "Removido dos favoritos" : "Adicionado aos favoritos";
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
     }
+
 }
