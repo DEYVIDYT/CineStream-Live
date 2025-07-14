@@ -64,7 +64,7 @@ public class ProfileActivity extends AppCompatActivity {
             finish();
         });
 
-        findViewById(R.id.guideTab).setOnClickListener(v -> {
+        findViewById(R.id.moviesSeriesTab).setOnClickListener(v -> {
             Toast.makeText(this, "Funcionalidade em desenvolvimento", Toast.LENGTH_SHORT).show();
         });
 

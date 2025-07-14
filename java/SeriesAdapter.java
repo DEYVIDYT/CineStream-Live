@@ -86,6 +86,11 @@ public class SeriesAdapter extends RecyclerView.Adapter<SeriesAdapter.SeriesView
                 if (position != RecyclerView.NO_POSITION && listener != null) {
                     Series seriesItem = series.get(position);
                     boolean isFavorite = favoritesManager.isFavorite(seriesItem.getSeries_id());
+                    if (isFavorite) {
+                        favoritesManager.removeFavorite(seriesItem.getSeries_id());
+                    } else {
+                        favoritesManager.addFavorite(seriesItem);
+                    }
                     listener.onFavoriteClick(seriesItem, isFavorite);
                     updateFavoriteIcon(seriesItem);
                 }

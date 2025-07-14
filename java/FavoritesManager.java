@@ -36,9 +36,47 @@ public class FavoritesManager {
         saveFavorites(favorites);
     }
     
+    // Overloaded method for movies
+    public void addFavorite(Movie movie) {
+        if (movie == null || movie.getStream_id() == null) return;
+        
+        // Create a temporary Channel from Movie for storage
+        Channel tempChannel = new Channel();
+        tempChannel.setStream_id(movie.getStream_id());
+        tempChannel.setName(movie.getName());
+        tempChannel.setStream_icon(movie.getStream_icon());
+        tempChannel.setCategory_name(movie.getCategory_name());
+        tempChannel.setStream_type("movie");
+        
+        addFavorite(tempChannel);
+    }
+    
+    // Overloaded method for series
+    public void addFavorite(Series series) {
+        if (series == null || series.getSeries_id() == null) return;
+        
+        // Create a temporary Channel from Series for storage
+        Channel tempChannel = new Channel();
+        tempChannel.setStream_id(series.getSeries_id());
+        tempChannel.setName(series.getName());
+        tempChannel.setStream_icon(series.getCover());
+        tempChannel.setCategory_name(series.getCategory_name());
+        tempChannel.setStream_type("series");
+        
+        addFavorite(tempChannel);
+    }
+    
     public void removeFavorite(Channel channel) {
         List<Channel> favorites = getFavorites();
         favorites.removeIf(fav -> fav.getStream_id() != null && fav.getStream_id().equals(channel.getStream_id()));
+        saveFavorites(favorites);
+    }
+    
+    // Overloaded method for string IDs (movies and series)
+    public void removeFavorite(String streamId) {
+        if (streamId == null) return;
+        List<Channel> favorites = getFavorites();
+        favorites.removeIf(fav -> fav.getStream_id() != null && fav.getStream_id().equals(streamId));
         saveFavorites(favorites);
     }
     
@@ -46,6 +84,18 @@ public class FavoritesManager {
         List<Channel> favorites = getFavorites();
         for (Channel fav : favorites) {
             if (fav.getStream_id() != null && fav.getStream_id().equals(channel.getStream_id())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    // Overloaded method for string IDs (movies and series)
+    public boolean isFavorite(String streamId) {
+        if (streamId == null) return false;
+        List<Channel> favorites = getFavorites();
+        for (Channel fav : favorites) {
+            if (fav.getStream_id() != null && fav.getStream_id().equals(streamId)) {
                 return true;
             }
         }

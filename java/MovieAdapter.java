@@ -86,6 +86,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
                 if (position != RecyclerView.NO_POSITION && listener != null) {
                     Movie movie = movies.get(position);
                     boolean isFavorite = favoritesManager.isFavorite(movie.getStream_id());
+                    if (isFavorite) {
+                        favoritesManager.removeFavorite(movie.getStream_id());
+                    } else {
+                        favoritesManager.addFavorite(movie);
+                    }
                     listener.onFavoriteClick(movie, isFavorite);
                     updateFavoriteIcon(movie);
                 }
