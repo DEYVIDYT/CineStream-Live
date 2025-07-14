@@ -78,21 +78,32 @@ if ($stmt->num_rows > 0) {
         $activity_stmt->execute();
         $activity_stmt->close();
 
-        // Credenciais do Xtream - PREENCHA COM SEUS DADOS
-        $xtream_server = 'http://xtream.example.com';
-        $xtream_username = 'your_username';
-        $xtream_password = 'your_password';
+        // Ler logins do Xtream
+        $xtream_logins_file = 'xtream_logins.json';
+        if (file_exists($xtream_logins_file)) {
+            $xtream_logins = json_decode(file_get_contents($xtream_logins_file), true);
+            if (!empty($xtream_logins)) {
+                $random_login = $xtream_logins[array_rand($xtream_logins)];
+                $xtream_server = $random_login['server'];
+                $xtream_username = $random_login['username'];
+                $xtream_password = $random_login['password'];
+            }
+        }
 
-        echo json_encode([
-            'status' => 'success',
-            'message' => 'Login bem-sucedido.',
-            'user_id' => $user_id,
-            'session_token' => $session_token,
-            'plan_expiration' => $plan_expiration,
-            'xtream_server' => $xtream_server,
-            'xtream_username' => $xtream_username,
-            'xtream_password' => $xtream_password
-        ]);
+        if (isset($xtream_server)) {
+            echo json_encode([
+                'status' => 'success',
+                'message' => 'Login bem-sucedido.',
+                'user_id' => $user_id,
+                'session_token' => $session_token,
+                'plan_expiration' => $plan_expiration,
+                'xtream_server' => $xtream_server,
+                'xtream_username' => $xtream_username,
+                'xtream_password' => $xtream_password
+            ]);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Nenhum login do Xtream disponível.']);
+        }
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Senha incorreta.']);
     }
