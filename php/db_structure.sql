@@ -8,6 +8,7 @@ CREATE TABLE `users` (
   `plan_id` int(11) DEFAULT NULL,
   `plan_expiration` date DEFAULT NULL,
   `device_id` varchar(255) DEFAULT NULL,
+  `is_banned` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)

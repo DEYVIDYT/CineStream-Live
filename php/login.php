@@ -14,16 +14,21 @@ if (empty($email) || empty($password) || empty($device_id)) {
 }
 
 // Buscar usuário
-$sql = "SELECT id, password, plan_expiration FROM users WHERE email = ?";
+$sql = "SELECT id, password, plan_expiration, is_banned FROM users WHERE email = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $stmt->store_result();
-$stmt->bind_result($user_id, $hashed_password, $plan_expiration);
+$stmt->bind_result($user_id, $hashed_password, $plan_expiration, $is_banned);
 
 if ($stmt->num_rows > 0) {
     $stmt->fetch();
     if (password_verify($password, $hashed_password)) {
+        if ($is_banned) {
+            echo json_encode(['status' => 'error', 'message' => 'Este usuário está banido.']);
+            exit;
+        }
+
         // Verificar se já existe uma sessão para este dispositivo
         $sql = "SELECT id FROM sessions WHERE user_id = ? AND device_id = ?";
         $session_stmt = $conn->prepare($sql);
