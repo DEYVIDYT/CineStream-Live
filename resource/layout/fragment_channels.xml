@@ -118,11 +118,6 @@
             android:padding="4dp"
             android:visibility="gone" />
 
-        <ViewStub
-            android:id="@+id/viewStub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout="@layout/custom_video_controls" />
 
 
 
