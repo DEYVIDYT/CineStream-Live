@@ -24,6 +24,9 @@ public class HostActivity extends AppCompatActivity {
         sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
         fragmentManager = getSupportFragmentManager();
 
+        // Start loading data
+        sharedViewModel.loadData();
+
         LinearLayout liveTab = findViewById(R.id.liveTab);
         LinearLayout guideTab = findViewById(R.id.guideTab); // Assuming you might have a guide tab
         LinearLayout profileTab = findViewById(R.id.profileTab);

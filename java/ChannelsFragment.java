@@ -299,7 +299,11 @@ public class ChannelsFragment extends Fragment implements
         });
 
         sharedViewModel.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
-            // Handle loading indicator if you have one
+            if (isLoading) {
+                videoLoadingProgressBar.setVisibility(View.VISIBLE);
+            } else {
+                videoLoadingProgressBar.setVisibility(View.GONE);
+            }
         });
     }
     
