@@ -108,8 +108,8 @@ public class ChannelsFragment extends Fragment implements
         if (getActivity() != null && getActivity().findViewById(R.id.navigation_tabs) != null) {
             getActivity().findViewById(R.id.navigation_tabs).setVisibility(View.GONE);
         }
-        if (getActivity() instanceof AppCompatActivity) {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        if (getActivity() instanceof HostActivity) {
+            ((HostActivity) getActivity()).getSupportActionBar().hide();
         }
 
         // Hide other views within the fragment
@@ -143,8 +143,8 @@ public class ChannelsFragment extends Fragment implements
         if (getActivity() != null && getActivity().findViewById(R.id.navigation_tabs) != null) {
             getActivity().findViewById(R.id.navigation_tabs).setVisibility(View.VISIBLE);
         }
-        if (getActivity() instanceof AppCompatActivity) {
-            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        if (getActivity() instanceof HostActivity) {
+            ((HostActivity) getActivity()).getSupportActionBar().show();
         }
 
         // Show other views within the fragment
