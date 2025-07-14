@@ -105,7 +105,14 @@ public class ChannelsFragment extends Fragment implements
     }
 
     private void enterFullscreen() {
-        // Hide other views
+        if (getActivity() != null && getActivity().findViewById(R.id.navigation_tabs) != null) {
+            getActivity().findViewById(R.id.navigation_tabs).setVisibility(View.GONE);
+        }
+        if (getActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+        }
+
+        // Hide other views within the fragment
         if (getView() != null) {
             getView().findViewById(R.id.categoriesRecyclerView).setVisibility(View.GONE);
             getView().findViewById(R.id.channelsRecyclerView).setVisibility(View.GONE);
@@ -133,7 +140,14 @@ public class ChannelsFragment extends Fragment implements
     }
 
     private void exitFullscreen() {
-        // Show other views
+        if (getActivity() != null && getActivity().findViewById(R.id.navigation_tabs) != null) {
+            getActivity().findViewById(R.id.navigation_tabs).setVisibility(View.VISIBLE);
+        }
+        if (getActivity() instanceof AppCompatActivity) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        }
+
+        // Show other views within the fragment
         if (getView() != null) {
             getView().findViewById(R.id.categoriesRecyclerView).setVisibility(View.VISIBLE);
             getView().findViewById(R.id.channelsRecyclerView).setVisibility(View.VISIBLE);
