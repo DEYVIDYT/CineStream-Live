@@ -16,8 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.widget.VideoView;
-import android.widget.MediaController;
+import android.view.SurfaceView;
 import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
@@ -37,7 +36,8 @@ public class ChannelsFragment extends Fragment implements
         HistoryAdapter.OnHistoryItemClickListener {
 
     private SharedViewModel sharedViewModel;
-    private VideoView videoView;
+    private SurfaceView surfaceView;
+    private CustomVideoPlayer customVideoPlayer;
     private RecyclerView categoriesRecyclerView;
     private RecyclerView channelsRecyclerView;
     private CategoryAdapter categoryAdapter;
@@ -50,7 +50,13 @@ public class ChannelsFragment extends Fragment implements
     private ImageView searchIcon;
     private ImageView clearSearchIcon;
     private ProgressBar videoLoadingProgressBar;
-    private MediaController mediaController;
+    private ImageView fullscreenButton;
+    private TextView networkSpeedTextView;
+    private NetworkSpeedMonitor networkSpeedMonitor;
+    private ViewStub viewStub;
+    private View controls;
+    private ImageButton playPauseButton;
+    private SeekBar seekBar;
     private boolean isSearchVisible = false;
     private String currentCategory = "TODOS";
     private List<Channel> allChannels;
@@ -61,6 +67,14 @@ public class ChannelsFragment extends Fragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+        networkSpeedMonitor = new NetworkSpeedMonitor(new NetworkSpeedMonitor.SpeedListener() {
+            @Override
+            public void onSpeedChanged(double downloadSpeed, double uploadSpeed) {
+                if (networkSpeedTextView != null) {
+                    networkSpeedTextView.setText(String.format("%.2f KB/s", downloadSpeed / 1024));
+                }
+            }
+        });
     }
 
     @Nullable
@@ -74,14 +88,13 @@ public class ChannelsFragment extends Fragment implements
         initViews(view);
         setupRecyclerViews();
         setupSearch();
-        setupVideoView();
         observeViewModel();
 
         return view;
     }
 
     private void initViews(View view) {
-        videoView = view.findViewById(R.id.videoView);
+        surfaceView = view.findViewById(R.id.surfaceView);
         categoriesRecyclerView = view.findViewById(R.id.categoriesRecyclerView);
         channelsRecyclerView = view.findViewById(R.id.channelsRecyclerView);
         searchView = view.findViewById(R.id.searchView);
@@ -89,9 +102,42 @@ public class ChannelsFragment extends Fragment implements
         searchIcon = view.findViewById(R.id.searchIcon);
         clearSearchIcon = view.findViewById(R.id.clearSearchIcon);
         videoLoadingProgressBar = view.findViewById(R.id.videoLoadingProgressBar);
+        fullscreenButton = view.findViewById(R.id.fullscreenButton);
+        networkSpeedTextView = view.findViewById(R.id.networkSpeedTextView);
         
         searchIcon.setOnClickListener(v -> toggleSearch());
         clearSearchIcon.setOnClickListener(v -> clearSearch());
+        fullscreenButton.setOnClickListener(v -> toggleFullscreen());
+        viewStub = view.findViewById(R.id.viewStub);
+
+        surfaceView.setOnTouchListener((v, event) -> {
+            if (controls == null) {
+                controls = viewStub.inflate();
+                playPauseButton = controls.findViewById(R.id.playPauseButton);
+                seekBar = controls.findViewById(R.id.seekBar);
+                playPauseButton.setOnClickListener(v1 -> {
+                    if (customVideoPlayer.isPlaying()) {
+                        customVideoPlayer.pause();
+                        playPauseButton.setImageResource(R.drawable.ic_play_arrow);
+                    } else {
+                        customVideoPlayer.play();
+                        playPauseButton.setImageResource(R.drawable.ic_pause);
+                    }
+                });
+            } else {
+                controls.setVisibility(controls.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
+            }
+            return false;
+        });
+    }
+
+    private void toggleFullscreen() {
+        if (isFullscreen) {
+            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        } else {
+            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
+        isFullscreen = !isFullscreen;
     }
     
 
@@ -119,7 +165,7 @@ public class ChannelsFragment extends Fragment implements
                 getView().findViewById(R.id.searchContainer).setVisibility(View.GONE);
             }
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-            videoView.setLayoutParams(params);
+            surfaceView.setLayoutParams(params);
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             // Exit fullscreen
             if (getActivity() != null && getActivity().findViewById(R.id.navigation_tabs) != null) {
@@ -136,7 +182,7 @@ public class ChannelsFragment extends Fragment implements
                 getView().findViewById(R.id.searchContainer).setVisibility(View.VISIBLE);
             }
             FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, (int) (250 * getResources().getDisplayMetrics().density));
-            videoView.setLayoutParams(params);
+            surfaceView.setLayoutParams(params);
         }
     }
     
@@ -175,28 +221,27 @@ public class ChannelsFragment extends Fragment implements
         });
     }
     
-    private void setupVideoView() {
-        mediaController = new MediaController(requireContext());
-        mediaController.setAnchorView(videoView);
-        videoView.setMediaController(mediaController);
-
-        videoView.setOnPreparedListener(mediaPlayer -> {
-            videoLoadingProgressBar.setVisibility(View.GONE);
-            // Player is ready
-        });
-        
-        videoView.setOnErrorListener((mediaPlayer, what, extra) -> {
-            videoLoadingProgressBar.setVisibility(View.GONE);
-            Toast.makeText(requireContext(), "Erro ao reproduzir vídeo", Toast.LENGTH_SHORT).show();
-            return true;
-        });
-    }
-
     private void playStream(String streamUrl) {
         if (streamUrl != null && !streamUrl.isEmpty()) {
             videoLoadingProgressBar.setVisibility(View.VISIBLE);
-            videoView.setVideoURI(Uri.parse(streamUrl));
-            videoView.start();
+            if (customVideoPlayer != null) {
+                customVideoPlayer.release();
+            }
+            customVideoPlayer = new CustomVideoPlayer(requireContext(), surfaceView.getHolder(), streamUrl);
+            customVideoPlayer.setVideoPlayerListener(new CustomVideoPlayer.VideoPlayerListener() {
+                @Override
+                public void onPrepared() {
+                    videoLoadingProgressBar.setVisibility(View.GONE);
+                    networkSpeedTextView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onError() {
+                    videoLoadingProgressBar.setVisibility(View.GONE);
+                    networkSpeedTextView.setVisibility(View.GONE);
+                    Toast.makeText(requireContext(), "Erro ao reproduzir vídeo", Toast.LENGTH_SHORT).show();
+                }
+            });
         } else {
             Toast.makeText(requireContext(), "URL do canal não disponível", Toast.LENGTH_SHORT).show();
         }
@@ -376,6 +421,7 @@ public class ChannelsFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
+        networkSpeedMonitor.start();
         
         // Refresh current view to update favorites and history
         if (currentCategory.equals("FAVORITOS")) {
@@ -388,16 +434,17 @@ public class ChannelsFragment extends Fragment implements
     @Override
     public void onPause() {
         super.onPause();
-        if (videoView != null && videoView.isPlaying()) {
-            videoView.pause();
+        networkSpeedMonitor.stop();
+        if (customVideoPlayer != null) {
+            customVideoPlayer.pause();
         }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (videoView != null) {
-            videoView.stopPlayback();
+        if (customVideoPlayer != null) {
+            customVideoPlayer.release();
         }
     }
 

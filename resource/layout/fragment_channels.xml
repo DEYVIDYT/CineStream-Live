@@ -84,8 +84,8 @@
         android:layout_width="match_parent"
         android:layout_height="250dp">
 
-        <VideoView
-            android:id="@+id/videoView"
+        <SurfaceView
+            android:id="@+id/surfaceView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center" />
@@ -96,6 +96,33 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/fullscreenButton"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="8dp"
+            android:src="@drawable/ic_fullscreen"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/fullscreen" />
+
+        <TextView
+            android:id="@+id/networkSpeedTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|end"
+            android:layout_margin="8dp"
+            android:textColor="@android:color/white"
+            android:background="#80000000"
+            android:padding="4dp"
+            android:visibility="gone" />
+
+        <ViewStub
+            android:id="@+id/viewStub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout="@layout/custom_video_controls" />
 
 
 
