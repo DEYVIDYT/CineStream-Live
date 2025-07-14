@@ -8,7 +8,9 @@ $sql = "CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     expiration_date DATE,
     session_token VARCHAR(255),
-    last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    ip_address VARCHAR(45),
+    user_agent VARCHAR(255)
 )";
 
 if ($conn->query($sql) === TRUE) {

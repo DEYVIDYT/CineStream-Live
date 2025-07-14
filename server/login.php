@@ -24,9 +24,12 @@ if ($result->num_rows > 0) {
             $session_token = bin2hex(random_bytes(32));
             $user_id = $user['id'];
 
-            $update_sql = "UPDATE users SET session_token = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?";
+            $ip_address = $_SERVER['REMOTE_ADDR'];
+            $user_agent = $_SERVER['HTTP_USER_AGENT'];
+
+            $update_sql = "UPDATE users SET session_token = ?, last_login = CURRENT_TIMESTAMP, ip_address = ?, user_agent = ? WHERE id = ?";
             $update_stmt = $conn->prepare($update_sql);
-            $update_stmt->bind_param("si", $session_token, $user_id);
+            $update_stmt->bind_param("ssssi", $session_token, $ip_address, $user_agent, $user_id);
             $update_stmt->execute();
 
             echo json_encode(['success' => true, 'token' => $session_token]);

@@ -12,11 +12,14 @@ if (empty($email) || empty($password)) {
 }
 
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-$expiration_date = date('Y-m-d', strtotime('+7 days'));
+$expiration_date = date('Y-m-d', strtotime('+2 days'));
 
-$sql = "INSERT INTO users (email, password, expiration_date) VALUES (?, ?, ?)";
+$ip_address = $_SERVER['REMOTE_ADDR'];
+$user_agent = $_SERVER['HTTP_USER_AGENT'];
+
+$sql = "INSERT INTO users (email, password, expiration_date, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $email, $hashed_password, $expiration_date);
+$stmt->bind_param("sssss", $email, $hashed_password, $expiration_date, $ip_address, $user_agent);
 
 if ($stmt->execute()) {
     echo json_encode(['success' => true, 'message' => 'User registered successfully']);
