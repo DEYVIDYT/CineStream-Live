@@ -19,7 +19,7 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
-    if (password_verify($password, $user['password'])) {
+    if ($password == $user['password']) { // Comparing plain text password for debugging
         if (strtotime($user['expiration_date']) >= time()) {
             $session_token = bin2hex(random_bytes(32));
             $user_id = $user['id'];

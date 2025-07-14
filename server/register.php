@@ -11,7 +11,12 @@ if (empty($email) || empty($password)) {
     exit();
 }
 
-$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+// if (!function_exists('password_hash')) {
+//     echo json_encode(['success' => false, 'message' => 'password_hash function does not exist']);
+//     exit();
+// }
+
+$hashed_password = $password; // Storing password in plain text for debugging
 $expiration_date = date('Y-m-d', strtotime('+2 days'));
 
 $ip_address = $_SERVER['REMOTE_ADDR'];
@@ -19,6 +24,12 @@ $user_agent = $_SERVER['HTTP_USER_AGENT'];
 
 $sql = "INSERT INTO users (email, password, expiration_date, ip_address, user_agent) VALUES (?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
+
+if ($stmt === false) {
+    echo json_encode(['success' => false, 'message' => 'Failed to prepare statement: ' . $conn->error]);
+    exit();
+}
+
 $stmt->bind_param("sssss", $email, $hashed_password, $expiration_date, $ip_address, $user_agent);
 
 try {
