@@ -12,6 +12,9 @@ import androidx.lifecycle.ViewModelProvider;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
+import android.os.Handler;
+import android.content.SharedPreferences;
+import android.content.Intent;
 
 public class HostActivity extends AppCompatActivity {
 
@@ -92,5 +95,67 @@ public class HostActivity extends AppCompatActivity {
         int color = ContextCompat.getColor(this, colorResId);
         icon.setColorFilter(color);
         text.setTextColor(color);
+    }
+
+    private Handler sessionHandler = new Handler();
+    private Runnable sessionRunnable = new Runnable() {
+        @Override
+        public void run() {
+            checkUserSession();
+            sessionHandler.postDelayed(this, 30000); // Check every 30 seconds
+        }
+    };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sessionHandler.post(sessionRunnable);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sessionHandler.removeCallbacks(sessionRunnable);
+    }
+
+    private void checkUserSession() {
+        SharedPreferences sessionPrefs = getSharedPreferences("user_session", MODE_PRIVATE);
+        String sessionToken = sessionPrefs.getString("session_token", null);
+
+        if (sessionToken != null) {
+            ApiClient apiClient = new ApiClient();
+            apiClient.checkSession(sessionToken, new ApiClient.ApiCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    try {
+                        JSONObject json = new JSONObject(response);
+                        if (!json.getBoolean("success")) {
+                            logout();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(String message) {
+                    // Could be a network error, decide if you want to log out
+                }
+            });
+        } else {
+            logout();
+        }
+    }
+
+    private void logout() {
+        SharedPreferences preferences = getSharedPreferences("user_session", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.remove("session_token");
+        editor.apply();
+
+        Intent intent = new Intent(HostActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }

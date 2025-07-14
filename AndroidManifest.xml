@@ -36,7 +36,7 @@
             android:required="false" />
 
         <activity
-            android:name=".HostActivity"
+            android:name=".LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.CineStreamLiveMobile.NoActionBar">
             <intent-filter>
@@ -44,6 +44,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CineStreamLiveMobile.NoActionBar" />
+
+        <activity
+            android:name=".HostActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CineStreamLiveMobile.NoActionBar" />
 
         <activity
             android:name=".MainActivity"
