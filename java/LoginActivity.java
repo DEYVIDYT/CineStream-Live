@@ -96,13 +96,14 @@ public class LoginActivity extends AppCompatActivity {
                                 SharedPreferences.Editor editor = prefs.edit();
                                 editor.putInt("user_id", userId);
                                 editor.putString("session_token", sessionToken);
-                                editor.putString("xtream_server", xtreamServer);
-                                editor.putString("xtream_username", xtreamUsername);
-                                editor.putString("xtream_password", xtreamPassword);
                                 editor.apply();
 
                                 Toast.makeText(LoginActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(LoginActivity.this, HostActivity.class));
+                                Intent intent = new Intent(LoginActivity.this, HostActivity.class);
+                                intent.putExtra("xtream_server", xtreamServer);
+                                intent.putExtra("xtream_username", xtreamUsername);
+                                intent.putExtra("xtream_password", xtreamPassword);
+                                startActivity(intent);
                                 finish();
                             } catch (JSONException e) {
                                 Toast.makeText(LoginActivity.this, "Erro ao processar os dados do servidor.", Toast.LENGTH_SHORT).show();

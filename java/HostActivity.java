@@ -48,10 +48,10 @@ public class HostActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
 
         // Start loading data
-        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
-        String xtreamServer = prefs.getString("xtream_server", null);
-        String xtreamUsername = prefs.getString("xtream_username", null);
-        String xtreamPassword = prefs.getString("xtream_password", null);
+        Intent intent = getIntent();
+        String xtreamServer = intent.getStringExtra("xtream_server");
+        String xtreamUsername = intent.getStringExtra("xtream_username");
+        String xtreamPassword = intent.getStringExtra("xtream_password");
 
         if (xtreamServer != null && xtreamUsername != null && xtreamPassword != null) {
             Credential credential = new Credential();

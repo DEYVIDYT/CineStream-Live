@@ -16,13 +16,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Simple splash screen
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            // Verificar se o usuário já está logado
-            SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
-            if (prefs.contains("user_id") && prefs.contains("session_token")) {
-                startActivity(new Intent(MainActivity.this, HostActivity.class));
-            } else {
-                startActivity(new Intent(MainActivity.this, LoginActivity.class));
-            }
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         }, 2000); // 2 second delay
     }
