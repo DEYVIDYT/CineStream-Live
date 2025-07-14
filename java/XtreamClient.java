@@ -15,21 +15,24 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class XtreamClient {
     private static final String TAG = "XtreamClient";
-    private static final String CREDENTIALS_URL = "https://raw.githubusercontent.com/DEYVIDYT/CineStream-Pro/refs/heads/main/credentials_base64.txt";
+    private static final String AUTH_API_URL = "http://localhost:3001/auth"; // URL do nosso serviço de autenticação
 
     private static volatile XtreamClient instance;
     private final OkHttpClient httpClient;
     private final Gson gson;
     private Credential currentCredential;
+    private String authToken;
 
-    public interface CredentialsCallback {
-        void onSuccess(Credential credential);
+    public interface AuthCallback {
+        void onSuccess(String token);
         void onError(String error);
     }
 
@@ -52,45 +55,73 @@ public class XtreamClient {
         gson = new Gson();
     }
     
-    public void fetchCredentials(CredentialsCallback callback) {
+    public void login(String email, String password, AuthCallback callback) {
+        String url = AUTH_API_URL + "/login";
+        String json = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
+
+        RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
         Request request = new Request.Builder()
-                .url(CREDENTIALS_URL)
+                .url(url)
+                .post(body)
                 .build();
-        
+
         httpClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "Error fetching credentials", e);
-                callback.onError("Erro ao buscar credenciais: " + e.getMessage());
+                callback.onError(e.getMessage());
             }
-            
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 if (!response.isSuccessful()) {
-                    callback.onError("Erro HTTP: " + response.code());
+                    callback.onError("Error: " + response.code());
                     return;
                 }
-                
                 try {
-                    String base64Data = response.body().string();
-                    String decodedData = new String(Base64.decode(base64Data.trim(), Base64.DEFAULT));
-                    
-                    Type listType = new TypeToken<List<Credential>>(){}.getType();
-                    List<Credential> credentials = gson.fromJson(decodedData, listType);
-                    
-                    if (credentials != null && !credentials.isEmpty()) {
-                        Random random = new Random();
-                        currentCredential = credentials.get(random.nextInt(credentials.size()));
-                        callback.onSuccess(currentCredential);
-                    } else {
-                        callback.onError("Nenhuma credencial encontrada");
-                    }
+                    String responseBody = response.body().string();
+                    // Assumindo que a resposta é um JSON com um campo "access_token"
+                    callback.onSuccess(responseBody);
                 } catch (Exception e) {
-                    Log.e(TAG, "Error parsing credentials", e);
-                    callback.onError("Erro ao processar credenciais: " + e.getMessage());
+                    callback.onError(e.getMessage());
                 }
             }
         });
+    }
+
+    public void register(String email, String password, AuthCallback callback) {
+        String url = AUTH_API_URL + "/register";
+        String json = "{\"email\":\"" + email + "\",\"password\":\"" + password + "\"}";
+
+        RequestBody body = RequestBody.create(json, MediaType.get("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onError(e.getMessage());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    callback.onError("Error: " + response.code());
+                    return;
+                }
+                try {
+                    String responseBody = response.body().string();
+                    callback.onSuccess(responseBody);
+                } catch (Exception e) {
+                    callback.onError(e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void setAuthToken(String token) {
+        this.authToken = token;
     }
     
     public void fetchLiveStreams(ChannelsCallback callback) {
