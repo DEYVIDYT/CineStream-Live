@@ -28,10 +28,12 @@ public class HostActivity extends AppCompatActivity {
     private SharedViewModel sharedViewModel;
     private FragmentManager fragmentManager;
     private Fragment channelsFragment;
+    private Fragment moviesSeriesFragment;
     private Fragment profileFragment;
     private Fragment activeFragment;
 
     private LinearLayout liveTab;
+    private LinearLayout moviesSeriesTab;
     private LinearLayout profileTab;
 
     @Override
@@ -59,24 +61,28 @@ public class HostActivity extends AppCompatActivity {
         sharedViewModel.loadData();
 
         liveTab = findViewById(R.id.liveTab);
+        moviesSeriesTab = findViewById(R.id.moviesSeriesTab);
         profileTab = findViewById(R.id.profileTab);
-        // Assuming you might have a guide tab
-        // LinearLayout guideTab = findViewById(R.id.guideTab);
 
         if (savedInstanceState == null) {
             channelsFragment = new ChannelsFragment();
+            moviesSeriesFragment = new MoviesSeriesFragment();
             profileFragment = new ProfileFragment();
             fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, profileFragment, "2").hide(profileFragment)
+                    .add(R.id.fragment_container, profileFragment, "3").hide(profileFragment)
+                    .add(R.id.fragment_container, moviesSeriesFragment, "2").hide(moviesSeriesFragment)
                     .add(R.id.fragment_container, channelsFragment, "1").commit();
             activeFragment = channelsFragment;
         } else {
             channelsFragment = fragmentManager.findFragmentByTag("1");
-            profileFragment = fragmentManager.findFragmentByTag("2");
-            activeFragment = (profileFragment != null && profileFragment.isVisible()) ? profileFragment : channelsFragment;
+            moviesSeriesFragment = fragmentManager.findFragmentByTag("2");
+            profileFragment = fragmentManager.findFragmentByTag("3");
+            activeFragment = (profileFragment != null && profileFragment.isVisible()) ? profileFragment : 
+                            (moviesSeriesFragment != null && moviesSeriesFragment.isVisible()) ? moviesSeriesFragment : channelsFragment;
         }
 
         liveTab.setOnClickListener(v -> switchFragment(channelsFragment));
+        moviesSeriesTab.setOnClickListener(v -> switchFragment(moviesSeriesFragment));
         profileTab.setOnClickListener(v -> switchFragment(profileFragment));
 
         updateTabAppearance();
@@ -93,11 +99,14 @@ public class HostActivity extends AppCompatActivity {
     private void updateTabAppearance() {
         // Reset all tabs to default color
         setTabColor(liveTab, R.color.text_secondary);
+        setTabColor(moviesSeriesTab, R.color.text_secondary);
         setTabColor(profileTab, R.color.text_secondary);
 
         // Set the active tab to the accent color
         if (activeFragment == channelsFragment) {
             setTabColor(liveTab, R.color.accent_color);
+        } else if (activeFragment == moviesSeriesFragment) {
+            setTabColor(moviesSeriesTab, R.color.accent_color);
         } else if (activeFragment == profileFragment) {
             setTabColor(profileTab, R.color.accent_color);
         }

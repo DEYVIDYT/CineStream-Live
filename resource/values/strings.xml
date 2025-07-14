@@ -4,7 +4,7 @@
     <string name="version">Versão 4.5.0</string>
     <string name="tv_live">TV AO VIVO</string>
     <string name="live_tab">Ao vivo</string>
-    <string name="guide_tab">Guia</string>
+    <string name="movies_series_tab">Filmes&Séries</string>
     <string name="profile_tab">Perfil</string>
     <string name="search">Pesquisar</string>
     
@@ -67,4 +67,39 @@
     <string name="no">Não</string>
     <string name="cancel">Cancelar</string>
     <string name="fullscreen">Tela cheia</string>
+    
+    <!-- Movies and Series -->
+    <string name="movies">Filmes</string>
+    <string name="series">Séries</string>
+    <string name="animation">Animação</string>
+    <string name="my_lists">Minhas listas</string>
+    <string name="by_genre">Por gênero</string>
+    <string name="action">Ação</string>
+    <string name="adventure">Aventura</string>
+    <string name="comedy">Comédia</string>
+    <string name="drama">Drama</string>
+    <string name="horror">Terror</string>
+    <string name="popular">Populares</string>
+    <string name="in_theaters">Nos cinemas</string>
+    <string name="on_tv">Na TV</string>
+    <string name="watch_now">REPRODUZIR</string>
+    <string name="play_series">REPRODUZIR S1E1</string>
+    <string name="cast_and_crew">Elenco &amp; Produção</string>
+    <string name="trailer">Trailer</string>
+    <string name="similar">Similares</string>
+    <string name="comments">Comentários</string>
+    <string name="seasons">Temporadas</string>
+    <string name="episodes">Episódios</string>
+    <string name="season">Temporada</string>
+    <string name="episode">Episódio</string>
+    <string name="duration">Duração</string>
+    <string name="year">Ano</string>
+    <string name="rating">Avaliação</string>
+    <string name="genre">Gênero</string>
+    <string name="director">Diretor</string>
+    <string name="loading_movies">Carregando filmes...</string>
+    <string name="loading_series">Carregando séries...</string>
+    <string name="no_movies">Nenhum filme encontrado</string>
+    <string name="no_series">Nenhuma série encontrada</string>
+    <string name="search_movies_series">Buscar filmes e séries...</string>
 </resources>
