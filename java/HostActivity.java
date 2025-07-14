@@ -8,6 +8,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.core.content.ContextCompat;
+
 public class HostActivity extends AppCompatActivity {
 
     private SharedViewModel sharedViewModel;
@@ -15,6 +19,9 @@ public class HostActivity extends AppCompatActivity {
     private Fragment channelsFragment;
     private Fragment profileFragment;
     private Fragment activeFragment;
+
+    private LinearLayout liveTab;
+    private LinearLayout profileTab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,14 +34,14 @@ public class HostActivity extends AppCompatActivity {
         // Start loading data
         sharedViewModel.loadData();
 
-        LinearLayout liveTab = findViewById(R.id.liveTab);
-        LinearLayout guideTab = findViewById(R.id.guideTab); // Assuming you might have a guide tab
-        LinearLayout profileTab = findViewById(R.id.profileTab);
+        liveTab = findViewById(R.id.liveTab);
+        profileTab = findViewById(R.id.profileTab);
+        // Assuming you might have a guide tab
+        // LinearLayout guideTab = findViewById(R.id.guideTab);
 
         if (savedInstanceState == null) {
             channelsFragment = new ChannelsFragment();
             profileFragment = new ProfileFragment();
-            // Add fragments and hide them initially
             fragmentManager.beginTransaction()
                     .add(R.id.fragment_container, profileFragment, "2").hide(profileFragment)
                     .add(R.id.fragment_container, channelsFragment, "1").commit();
@@ -42,23 +49,41 @@ public class HostActivity extends AppCompatActivity {
         } else {
             channelsFragment = fragmentManager.findFragmentByTag("1");
             profileFragment = fragmentManager.findFragmentByTag("2");
-            // Find the active fragment by its visibility state, or default to channelsFragment
-            if (profileFragment != null && profileFragment.isVisible()) {
-                activeFragment = profileFragment;
-            } else {
-                activeFragment = channelsFragment;
-            }
+            activeFragment = (profileFragment != null && profileFragment.isVisible()) ? profileFragment : channelsFragment;
         }
 
         liveTab.setOnClickListener(v -> switchFragment(channelsFragment));
         profileTab.setOnClickListener(v -> switchFragment(profileFragment));
-        // Set guideTab listener if you have a GuideFragment
+
+        updateTabAppearance();
     }
 
     private void switchFragment(Fragment fragment) {
         if (fragment != activeFragment) {
             fragmentManager.beginTransaction().hide(activeFragment).show(fragment).commit();
             activeFragment = fragment;
+            updateTabAppearance();
         }
+    }
+
+    private void updateTabAppearance() {
+        // Reset all tabs to default color
+        setTabColor(liveTab, R.color.text_secondary);
+        setTabColor(profileTab, R.color.text_secondary);
+
+        // Set the active tab to the accent color
+        if (activeFragment == channelsFragment) {
+            setTabColor(liveTab, R.color.accent_color);
+        } else if (activeFragment == profileFragment) {
+            setTabColor(profileTab, R.color.accent_color);
+        }
+    }
+
+    private void setTabColor(LinearLayout tab, int colorResId) {
+        ImageView icon = (ImageView) tab.getChildAt(0);
+        TextView text = (TextView) tab.getChildAt(1);
+        int color = ContextCompat.getColor(this, colorResId);
+        icon.setColorFilter(color);
+        text.setTextColor(color);
     }
 }
