@@ -1,10 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CineStream Live Mobile</string>
     <string name="loading_data">Carregando dados</string>
     <string name="version">Versão 4.5.0</string>
     <string name="tv_live">TV AO VIVO</string>
     <string name="live_tab">Ao vivo</string>
-    <string name="movies_series_tab">Filmes&Séries</string>
+    <string name="movies_series_tab">Filmes&amp;Séries</string>
     <string name="profile_tab">Perfil</string>
     <string name="search">Pesquisar</string>
     
@@ -48,7 +49,7 @@
     <string name="add_to_favorites">Adicionar aos favoritos</string>
     <string name="remove_from_favorites">Remover dos favoritos</string>
     <string name="no_favorites">Nenhum canal favorito</string>
-    <string name="favorites_empty_message">Você ainda não adicionou canais aos favoritos.\nToque no ❤️ em qualquer canal para adicioná-lo.</string>
+    <string name="favorites_empty_message">Você ainda não adicionou canais aos favoritos.\nToque no coração em qualquer canal para adicioná-lo.</string>
     
     <!-- History -->
     <string name="no_history">Nenhum histórico</string>
