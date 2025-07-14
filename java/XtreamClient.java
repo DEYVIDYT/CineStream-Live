@@ -3,6 +3,7 @@ package com.cinestream.live;
 import android.util.Base64;
 import android.util.Log;
 
+import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -150,5 +151,10 @@ public class XtreamClient {
 
     public void setCredential(Credential credential) {
         this.currentCredential = credential;
+        if (credential != null) {
+            Log.d(TAG, "Credential set: " + credential.getServer());
+        } else {
+            Log.d(TAG, "Credential set to null");
+        }
     }
 }
