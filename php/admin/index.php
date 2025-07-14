@@ -102,6 +102,10 @@
 
         function loadUsers() {
             apiFetch('get_users').then(data => {
+                if (data.status === 'error') {
+                    alert('Erro ao carregar usuários: ' + data.message);
+                    return;
+                }
                 const tbody = document.getElementById('users-table-body');
                 tbody.innerHTML = '';
                 data.forEach(user => {
@@ -120,6 +124,9 @@
                     </tr>`;
                     tbody.innerHTML += row;
                 });
+            }).catch(error => {
+                alert('Erro ao carregar usuários. Verifique o console para mais detalhes.');
+                console.error(error);
             });
         }
 
