@@ -10,7 +10,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -19,6 +18,9 @@ import com.bumptech.glide.request.RequestOptions;
 public class MovieDetailsActivity extends AppCompatActivity {
 
     private Movie movie;
+    private String server;
+    private String username;
+    private String password;
     private ImageView backdropImageView;
     private ImageView posterImageView;
     private TextView titleTextView;
@@ -38,7 +40,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private ImageButton downloadButton;
     private boolean isFavorite = false;
     private FavoritesManager favoritesManager;
-    private SharedViewModel sharedViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,9 @@ public class MovieDetailsActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         movie = intent.getParcelableExtra("movie");
+        server = intent.getStringExtra("server");
+        username = intent.getStringExtra("username");
+        password = intent.getStringExtra("password");
 
         if (movie == null) {
             Toast.makeText(this, "Erro: Dados do filme não encontrados", Toast.LENGTH_SHORT).show();
@@ -54,7 +58,12 @@ public class MovieDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        if (server == null || username == null || password == null) {
+            Toast.makeText(this, "Erro: Credenciais não disponíveis", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         favoritesManager = new FavoritesManager(this);
 
         initViews();
@@ -182,17 +191,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     }
 
     private void playMovie() {
-        Credential credential = sharedViewModel.getCredential();
-        if (credential == null) {
-            Toast.makeText(this, "Credenciais não disponíveis", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String streamUrl = movie.getStreamUrl(
-                credential.getServer(),
-                credential.getUsername(),
-                credential.getPassword()
-        );
+        String streamUrl = movie.getStreamUrl(server, username, password);
 
         if (streamUrl != null) {
             Intent intent = new Intent(this, MoviePlayerActivity.class);

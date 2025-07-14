@@ -353,20 +353,13 @@ public class MoviesSeriesFragment extends Fragment implements
             return;
         }
 
-        String streamUrl = movie.getStreamUrl(
-                credential.getServer(),
-                credential.getUsername(),
-                credential.getPassword()
-        );
-
-        if (streamUrl != null) {
-            // Abrir tela de detalhes do filme
-            Intent intent = new Intent(requireContext(), MovieDetailsActivity.class);
-            intent.putExtra("movie", movie);
-            startActivity(intent);
-        } else {
-            Toast.makeText(requireContext(), "URL do filme não disponível", Toast.LENGTH_SHORT).show();
-        }
+        // Abrir tela de detalhes do filme com as credenciais
+        Intent intent = new Intent(requireContext(), MovieDetailsActivity.class);
+        intent.putExtra("movie", movie);
+        intent.putExtra("server", credential.getServer());
+        intent.putExtra("username", credential.getUsername());
+        intent.putExtra("password", credential.getPassword());
+        startActivity(intent);
     }
 
     @Override
