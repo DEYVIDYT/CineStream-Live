@@ -87,10 +87,6 @@ public class LoginActivity extends AppCompatActivity {
                             try {
                                 String sessionToken = jsonObject.getString("session_token");
                                 int userId = jsonObject.getInt("user_id");
-                                String xtreamServer = jsonObject.getString("xtream_server");
-                                String xtreamUsername = jsonObject.getString("xtream_username");
-                                String xtreamPassword = jsonObject.getString("xtream_password");
-
                                 // Salvar dados da sessão
                                 SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
                                 SharedPreferences.Editor editor = prefs.edit();
@@ -100,9 +96,16 @@ public class LoginActivity extends AppCompatActivity {
 
                                 Toast.makeText(LoginActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
                                 Intent intent = new Intent(LoginActivity.this, HostActivity.class);
-                                intent.putExtra("xtream_server", xtreamServer);
-                                intent.putExtra("xtream_username", xtreamUsername);
-                                intent.putExtra("xtream_password", xtreamPassword);
+
+                                if (jsonObject.has("xtream_server")) {
+                                    String xtreamServer = jsonObject.getString("xtream_server");
+                                    String xtreamUsername = jsonObject.getString("xtream_username");
+                                    String xtreamPassword = jsonObject.getString("xtream_password");
+                                    intent.putExtra("xtream_server", xtreamServer);
+                                    intent.putExtra("xtream_username", xtreamUsername);
+                                    intent.putExtra("xtream_password", xtreamPassword);
+                                }
+
                                 startActivity(intent);
                                 finish();
                             } catch (JSONException e) {
