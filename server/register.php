@@ -21,10 +21,14 @@ $sql = "INSERT INTO users (email, password, expiration_date, ip_address, user_ag
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("sssss", $email, $hashed_password, $expiration_date, $ip_address, $user_agent);
 
-if ($stmt->execute()) {
-    echo json_encode(['success' => true, 'message' => 'User registered successfully']);
-} else {
-    echo json_encode(['success' => false, 'message' => 'Error registering user']);
+try {
+    if ($stmt->execute()) {
+        echo json_encode(['success' => true, 'message' => 'User registered successfully']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Error registering user: ' . $stmt->error]);
+    }
+} catch (Exception $e) {
+    echo json_encode(['success' => false, 'message' => 'An exception occurred: ' . $e->getMessage()]);
 }
 
 $stmt->close();
