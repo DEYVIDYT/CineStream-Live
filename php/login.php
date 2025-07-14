@@ -1,0 +1,78 @@
+<?php
+include 'db_config.php';
+session_start();
+
+header('Content-Type: application/json');
+
+$email = $_POST['email'] ?? '';
+$password = $_POST['password'] ?? '';
+$device_id = $_POST['device_id'] ?? '';
+
+if (empty($email) || empty($password) || empty($device_id)) {
+    echo json_encode(['status' => 'error', 'message' => 'Email, senha e ID do dispositivo são obrigatórios.']);
+    exit;
+}
+
+// Buscar usuário
+$sql = "SELECT id, password, plan_expiration FROM users WHERE email = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $email);
+$stmt->execute();
+$stmt->store_result();
+$stmt->bind_result($user_id, $hashed_password, $plan_expiration);
+
+if ($stmt->num_rows > 0) {
+    $stmt->fetch();
+    if (password_verify($password, $hashed_password)) {
+        // Verificar se já existe uma sessão para este dispositivo
+        $sql = "SELECT id FROM sessions WHERE user_id = ? AND device_id = ?";
+        $session_stmt = $conn->prepare($sql);
+        $session_stmt->bind_param("is", $user_id, $device_id);
+        $session_stmt->execute();
+        $session_stmt->store_result();
+
+        if ($session_stmt->num_rows > 0) {
+            // A sessão para este dispositivo já existe, não é necessário criar uma nova
+        } else {
+            // Excluir sessões antigas para outros dispositivos
+            $sql = "DELETE FROM sessions WHERE user_id = ?";
+            $delete_stmt = $conn->prepare($sql);
+            $delete_stmt->bind_param("i", $user_id);
+            $delete_stmt->execute();
+            $delete_stmt->close();
+        }
+
+        // Gerar token de sessão
+        $session_token = bin2hex(random_bytes(32));
+
+        // Inserir nova sessão
+        $sql = "INSERT INTO sessions (user_id, session_token, device_id) VALUES (?, ?, ?)";
+        $insert_stmt = $conn->prepare($sql);
+        $insert_stmt->bind_param("iss", $user_id, $session_token, $device_id);
+        $insert_stmt->execute();
+        $insert_stmt->close();
+
+        // Registrar atividade
+        $sql = "INSERT INTO activity_logs (user_id) VALUES (?)";
+        $activity_stmt = $conn->prepare($sql);
+        $activity_stmt->bind_param("i", $user_id);
+        $activity_stmt->execute();
+        $activity_stmt->close();
+
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Login bem-sucedido.',
+            'user_id' => $user_id,
+            'session_token' => $session_token,
+            'plan_expiration' => $plan_expiration
+        ]);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Senha incorreta.']);
+    }
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Usuário não encontrado.']);
+}
+
+$stmt->close();
+$conn->close();
+?>

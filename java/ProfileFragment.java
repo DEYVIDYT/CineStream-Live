@@ -17,8 +17,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import org.json.JSONObject;
-
 public class ProfileFragment extends Fragment {
     
     private TextView emailText;

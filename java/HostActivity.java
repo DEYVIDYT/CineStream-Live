@@ -13,8 +13,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 import android.content.Intent;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+
 public class HostActivity extends AppCompatActivity {
 
     private SharedViewModel sharedViewModel;
@@ -96,60 +103,70 @@ public class HostActivity extends AppCompatActivity {
         text.setTextColor(color);
     }
 
-    private Handler sessionHandler = new Handler();
-    private Runnable sessionRunnable = new Runnable() {
-        @Override
-        public void run() {
-            checkUserSession();
-            sessionHandler.postDelayed(this, 30000); // Check every 30 seconds
+    private void startSessionCheck() {
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                checkSession();
+                startSessionCheck(); // Agendar a próxima verificação
+            }
+        }, 60000); // Verificar a cada 1 minuto
+    }
+
+    private void checkSession() {
+        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        if (userId == -1) {
+            return; // Não há usuário logado
         }
-    };
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody formBody = new FormBody.Builder()
+                .add("user_id", String.valueOf(userId))
+                .add("device_id", deviceId)
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://mybrasiltv.x10.mx/check_session.php")
+                .post(formBody)
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                // Não fazer nada em caso de falha de rede
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                String responseBody = response.body().string();
+                try {
+                    org.json.JSONObject jsonObject = new org.json.JSONObject(responseBody);
+                    String status = jsonObject.getString("status");
+
+                    if (status.equals("error")) {
+                        // Duplo login detectado, desconectar o usuário
+                        runOnUiThread(() -> {
+                            Toast.makeText(HostActivity.this, "Você foi desconectado porque outra sessão foi iniciada.", Toast.LENGTH_LONG).show();
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.clear();
+                            editor.apply();
+                            startActivity(new Intent(HostActivity.this, LoginActivity.class));
+                            finish();
+                        });
+                    }
+                } catch (org.json.JSONException e) {
+                    // Não fazer nada em caso de resposta inválida
+                }
+            }
+        });
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
-        sessionHandler.post(sessionRunnable);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        sessionHandler.removeCallbacks(sessionRunnable);
-    }
-
-    private void checkUserSession() {
-        android.content.SharedPreferences sessionPrefs = getSharedPreferences("user_session", MODE_PRIVATE);
-        String sessionToken = sessionPrefs.getString("session_token", null);
-
-        if (sessionToken != null) {
-            ApiClient apiClient = new ApiClient();
-            apiClient.checkSession(sessionToken, new ApiClient.ApiCallback() {
-                @Override
-                public void onSuccess(String response) {
-                    if (response != null && !response.contains("\"success\":true")) {
-                        logout();
-                    }
-                }
-
-                @Override
-                public void onFailure(String message) {
-                    // Could be a network error, decide if you want to log out
-                }
-            });
-        } else {
-            logout();
-        }
-    }
-
-    private void logout() {
-        android.content.SharedPreferences preferences = getSharedPreferences("user_session", MODE_PRIVATE);
-        android.content.SharedPreferences.Editor editor = preferences.edit();
-        editor.remove("session_token");
-        editor.apply();
-
-        Intent intent = new Intent(HostActivity.this, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-        finish();
+        startSessionCheck();
     }
 }

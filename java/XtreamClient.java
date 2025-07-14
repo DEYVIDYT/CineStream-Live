@@ -21,17 +21,10 @@ import okhttp3.Response;
 
 public class XtreamClient {
     private static final String TAG = "XtreamClient";
-    private static final String CREDENTIALS_URL = "https://raw.githubusercontent.com/DEYVIDYT/CineStream-Pro/refs/heads/main/credentials_base64.txt";
-
     private static volatile XtreamClient instance;
     private final OkHttpClient httpClient;
     private final Gson gson;
     private Credential currentCredential;
-
-    public interface CredentialsCallback {
-        void onSuccess(Credential credential);
-        void onError(String error);
-    }
 
     public interface ChannelsCallback {
         void onSuccess(List<Channel> channels);
@@ -50,47 +43,6 @@ public class XtreamClient {
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .build();
         gson = new Gson();
-    }
-    
-    public void fetchCredentials(CredentialsCallback callback) {
-        Request request = new Request.Builder()
-                .url(CREDENTIALS_URL)
-                .build();
-        
-        httpClient.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.e(TAG, "Error fetching credentials", e);
-                callback.onError("Erro ao buscar credenciais: " + e.getMessage());
-            }
-            
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    callback.onError("Erro HTTP: " + response.code());
-                    return;
-                }
-                
-                try {
-                    String base64Data = response.body().string();
-                    String decodedData = new String(Base64.decode(base64Data.trim(), Base64.DEFAULT));
-                    
-                    Type listType = new TypeToken<List<Credential>>(){}.getType();
-                    List<Credential> credentials = gson.fromJson(decodedData, listType);
-                    
-                    if (credentials != null && !credentials.isEmpty()) {
-                        Random random = new Random();
-                        currentCredential = credentials.get(random.nextInt(credentials.size()));
-                        callback.onSuccess(currentCredential);
-                    } else {
-                        callback.onError("Nenhuma credencial encontrada");
-                    }
-                } catch (Exception e) {
-                    Log.e(TAG, "Error parsing credentials", e);
-                    callback.onError("Erro ao processar credenciais: " + e.getMessage());
-                }
-            }
-        });
     }
     
     public void fetchLiveStreams(ChannelsCallback callback) {

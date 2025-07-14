@@ -11,6 +11,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class ProfileActivity extends AppCompatActivity {
     
@@ -126,9 +129,65 @@ public class ProfileActivity extends AppCompatActivity {
     }
     
     private void loadUserData() {
-        // Carregar dados do usuário (simulado)
-        emailText.setText("mfd***aro@msn.com");
-        expirationText.setText("Data de expiração 29/11/2026");
+        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
+        String sessionToken = prefs.getString("session_token", null);
+
+        if (userId == -1 || sessionToken == null) {
+            // Redirecionar para o login se não houver dados de sessão
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody formBody = new FormBody.Builder()
+                .add("user_id", String.valueOf(userId))
+                .add("session_token", sessionToken)
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://mybrasiltv.x10.mx/profile.php")
+                .post(formBody)
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Erro de rede.", Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                String responseBody = response.body().string();
+                try {
+                    org.json.JSONObject jsonObject = new org.json.JSONObject(responseBody);
+                    String status = jsonObject.getString("status");
+
+                    if (status.equals("success")) {
+                        String email = jsonObject.getString("email");
+                        String planExpiration = jsonObject.getString("plan_expiration");
+
+                        runOnUiThread(() -> {
+                            emailText.setText(email);
+                            expirationText.setText("Data de expiração " + planExpiration);
+                        });
+                    } else {
+                        runOnUiThread(() -> {
+                            Toast.makeText(ProfileActivity.this, "Sessão inválida. Faça login novamente.", Toast.LENGTH_SHORT).show();
+                            // Limpar prefs e redirecionar para o login
+                            SharedPreferences.Editor editor = prefs.edit();
+                            editor.clear();
+                            editor.apply();
+                            startActivity(new Intent(ProfileActivity.this, LoginActivity.class));
+                            finish();
+                        });
+                    }
+                } catch (org.json.JSONException e) {
+                    runOnUiThread(() -> Toast.makeText(ProfileActivity.this, "Resposta inválida do servidor.", Toast.LENGTH_SHORT).show());
+                }
+            }
+        });
         
         // Carregar preferência de conteúdo adulto
         boolean adultContentEnabled = preferences.getBoolean(ADULT_CONTENT_KEY, true);
@@ -148,12 +207,56 @@ public class ProfileActivity extends AppCompatActivity {
         builder.setTitle("Sair do App")
                 .setMessage("Tem certeza que deseja sair do aplicativo?")
                 .setPositiveButton("Sair", (dialog, which) -> {
-                    // Fechar o app completamente
-                    finishAffinity();
-                    System.exit(0);
+                    logout();
                 })
                 .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
                 .show();
+    }
+
+    private void logout() {
+        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
+        String sessionToken = prefs.getString("session_token", null);
+
+        if (userId != -1 && sessionToken != null) {
+            OkHttpClient client = new OkHttpClient();
+            RequestBody formBody = new FormBody.Builder()
+                    .add("user_id", String.valueOf(userId))
+                    .add("session_token", sessionToken)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url("http://mybrasiltv.x10.mx/logout.php")
+                    .post(formBody)
+                    .build();
+
+            client.newCall(request).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                    // Mesmo que o logout falhe, limpe os dados localmente
+                    clearSessionAndExit();
+                }
+
+                @Override
+                public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                    clearSessionAndExit();
+                }
+            });
+        } else {
+            clearSessionAndExit();
+        }
+    }
+
+    private void clearSessionAndExit() {
+        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.apply();
+
+        runOnUiThread(() -> {
+            finishAffinity();
+            System.exit(0);
+        });
     }
     
     @Override

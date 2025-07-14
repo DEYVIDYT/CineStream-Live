@@ -1,16 +1,15 @@
 <?php
+// Configuração do banco de dados
 $servername = "localhost";
 $username = "hvnivrhy_CineStream";
 $password = "EEcwPCF8tcN9NKWSEn8q";
 $dbname = "hvnivrhy_CineStream";
 
-// Create connection
+// Cria a conexão
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Check connection
+// Verifica a conexão
 if ($conn->connect_error) {
-    header('Content-Type: application/json');
-    echo json_encode(['success' => false, 'message' => 'Database connection failed: ' . $conn->connect_error]);
-    exit();
+    die("Connection failed: " . $conn->connect_error);
 }
 ?>
