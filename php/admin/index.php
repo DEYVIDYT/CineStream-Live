@@ -66,11 +66,19 @@
     </div>
 
     <script>
-        const token = "f3a8e0d8a5f2b7c9f9ad6c2eb37dd28cb3fa6ff2390b0a6129739e2c5a891d43";
+        const correctToken = "f3a8e0d8a5f2b7c9f9ad6c2eb37dd28cb3fa6ff2390b0a6129739e2c5a891d43";
+        let apiToken = '';
 
         document.addEventListener('DOMContentLoaded', function() {
-            loadStats();
-            loadUsers();
+            const enteredToken = prompt("Por favor, insira o token de autenticação:");
+            if (enteredToken === correctToken) {
+                apiToken = enteredToken;
+                loadStats();
+                loadUsers();
+            } else {
+                alert("Token inválido. Acesso negado.");
+                document.body.innerHTML = '<h1>Acesso Negado</h1>';
+            }
 
             document.getElementById('add-plan-form').addEventListener('submit', function(e) {
                 e.preventDefault();
@@ -81,7 +89,7 @@
         });
 
         function apiFetch(action, options = {}) {
-            const url = `api.php?token=${token}&action=${action}`;
+            const url = `api.php?token=${apiToken}&action=${action}`;
             return fetch(url, options).then(response => response.json());
         }
 
