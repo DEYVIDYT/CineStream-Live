@@ -17,7 +17,7 @@ public class ApiClient {
                 .build();
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "login.php")
+                .url(BASE_URL + "server/login.php")
                 .post(formBody)
                 .build();
 
@@ -45,7 +45,7 @@ public class ApiClient {
                 .build();
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "register.php")
+                .url(BASE_URL + "server/register.php")
                 .post(formBody)
                 .build();
 
@@ -72,7 +72,7 @@ public class ApiClient {
                 .build();
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "get_user_data.php")
+                .url(BASE_URL + "server/get_user_data.php")
                 .post(formBody)
                 .build();
 
@@ -99,7 +99,7 @@ public class ApiClient {
                 .build();
 
         Request request = new Request.Builder()
-                .url(BASE_URL + "check_session.php")
+                .url(BASE_URL + "server/check_session.php")
                 .post(formBody)
                 .build();
 
