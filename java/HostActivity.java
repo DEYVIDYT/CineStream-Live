@@ -241,4 +241,18 @@ public class HostActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        // Verificar se o ChannelsFragment está ativo e em fullscreen
+        if (activeFragment == channelsFragment && channelsFragment instanceof ChannelsFragment) {
+            ChannelsFragment cf = (ChannelsFragment) channelsFragment;
+            if (cf.onBackPressed()) {
+                return; // O evento foi consumido pelo fragment
+            }
+        }
+        
+        // Comportamento padrão do botão voltar
+        super.onBackPressed();
+    }
 }

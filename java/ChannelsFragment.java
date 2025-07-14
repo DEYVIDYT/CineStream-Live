@@ -55,6 +55,9 @@ public class ChannelsFragment extends Fragment implements
     private ProgressBar videoLoadingProgressBar;
     private ImageView fullscreenButton;
     private TextView networkSpeedTextView;
+    private FrameLayout videoContainer;
+    private LinearLayout headerContainer;
+    private LinearLayout mainContentContainer;
     private NetworkSpeedMonitor networkSpeedMonitor;
     private boolean isSearchVisible = false;
     private String currentCategory = "TODOS";
@@ -94,6 +97,9 @@ public class ChannelsFragment extends Fragment implements
 
     private void initViews(View view) {
         vlcVideoLayout = view.findViewById(R.id.vlcVideoLayout);
+        videoContainer = view.findViewById(R.id.videoContainer);
+        headerContainer = view.findViewById(R.id.headerContainer);
+        mainContentContainer = view.findViewById(R.id.mainContentContainer);
         categoriesRecyclerView = view.findViewById(R.id.categoriesRecyclerView);
         channelsRecyclerView = view.findViewById(R.id.channelsRecyclerView);
         searchView = view.findViewById(R.id.searchView);
@@ -110,6 +116,11 @@ public class ChannelsFragment extends Fragment implements
     }
 
     private void toggleFullscreen() {
+        if (vlcVideoPlayer == null) {
+            Toast.makeText(requireContext(), "Nenhum canal em reprodução", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
         if (isFullscreen) {
             exitFullScreen();
         } else {
@@ -119,54 +130,99 @@ public class ChannelsFragment extends Fragment implements
 
     private void enterFullScreen() {
         isFullscreen = true;
+        
+        // Mudar orientação para landscape
         requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
-        // Ocultar outros elementos
-        if (getView() != null) {
-            getView().findViewById(R.id.categoriesRecyclerView).setVisibility(View.GONE);
-            getView().findViewById(R.id.channelsRecyclerView).setVisibility(View.GONE);
+        // Esconder elementos da UI
+        if (headerContainer != null) {
+            headerContainer.setVisibility(View.GONE);
         }
+        if (mainContentContainer != null) {
+            mainContentContainer.setVisibility(View.GONE);
+        }
+        
+        // Esconder navegação da activity
         if (getActivity() != null) {
-            ((HostActivity) getActivity()).findViewById(R.id.navigation_tabs).setVisibility(View.GONE);
-            // Ocultar a barra de status e a barra de navegação
+            View navigationTabs = getActivity().findViewById(R.id.navigation_tabs);
+            if (navigationTabs != null) {
+                navigationTabs.setVisibility(View.GONE);
+            }
+            
+            // Esconder barras do sistema
             View decorView = getActivity().getWindow().getDecorView();
-            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
         }
 
-        // Ajustar layout do player
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) vlcVideoLayout.getLayoutParams();
-        params.width = FrameLayout.LayoutParams.MATCH_PARENT;
-        params.height = FrameLayout.LayoutParams.MATCH_PARENT;
-        vlcVideoLayout.setLayoutParams(params);
+        // Expandir o container do vídeo para ocupar toda a tela
+        if (videoContainer != null) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT
+            );
+            videoContainer.setLayoutParams(params);
+        }
+        
+        // Atualizar ícone do botão fullscreen
+        fullscreenButton.setImageResource(R.drawable.ic_fullscreen_exit);
     }
 
     private void exitFullScreen() {
         isFullscreen = false;
+        
+        // Voltar para portrait
         requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        // Exibir outros elementos
-        if (getView() != null) {
-            getView().findViewById(R.id.categoriesRecyclerView).setVisibility(View.VISIBLE);
-            getView().findViewById(R.id.channelsRecyclerView).setVisibility(View.VISIBLE);
+        // Mostrar elementos da UI
+        if (headerContainer != null) {
+            headerContainer.setVisibility(View.VISIBLE);
         }
+        if (mainContentContainer != null) {
+            mainContentContainer.setVisibility(View.VISIBLE);
+        }
+        
+        // Mostrar navegação da activity
         if (getActivity() != null) {
-            ((HostActivity) getActivity()).findViewById(R.id.navigation_tabs).setVisibility(View.VISIBLE);
-            // Exibir a barra de status e a barra de navegação
+            View navigationTabs = getActivity().findViewById(R.id.navigation_tabs);
+            if (navigationTabs != null) {
+                navigationTabs.setVisibility(View.VISIBLE);
+            }
+            
+            // Mostrar barras do sistema
             View decorView = getActivity().getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
         }
 
-        // Restaurar layout do player
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) vlcVideoLayout.getLayoutParams();
-        params.width = FrameLayout.LayoutParams.MATCH_PARENT;
-        params.height = getResources().getDimensionPixelSize(R.dimen.player_height); // Supondo que você tenha uma dimensão definida
-        vlcVideoLayout.setLayoutParams(params);
+        // Restaurar tamanho original do container do vídeo
+        if (videoContainer != null) {
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    getResources().getDimensionPixelSize(R.dimen.player_height)
+            );
+            videoContainer.setLayoutParams(params);
+        }
+        
+        // Atualizar ícone do botão fullscreen
+        fullscreenButton.setImageResource(R.drawable.ic_fullscreen);
+    }
+
+    // Método público para ser chamado pela HostActivity quando o botão voltar for pressionado
+    public boolean onBackPressed() {
+        if (isFullscreen) {
+            exitFullScreen();
+            return true; // Consome o evento de voltar
+        }
+        return false; // Permite que a activity trate o evento normalmente
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Logic is now handled by enterFullScreen and exitFullScreen
+        // A lógica agora é tratada pelos métodos enterFullScreen e exitFullScreen
     }
     
     private void setupRecyclerViews() {
