@@ -19,6 +19,7 @@
         .ban-btn { background-color: #f44336; color: white; }
         .unban-btn { background-color: #4CAF50; color: white; }
         .delete-btn { background-color: #757575; color: white; }
+        .remove-days-btn { background-color: #ff9800; color: white; }
         .form-container { margin-bottom: 20px; padding: 20px; background: #f9f9f9; border-radius: 8px; }
         .form-container input { width: calc(100% - 22px); padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 4px; }
         .form-container button { width: 100%; padding: 10px; border: none; border-radius: 4px; background-color: #4CAF50; color: white; cursor: pointer; }
@@ -100,6 +101,21 @@
             });
         }
 
+        function removeDays(userId) {
+            if (!confirm('Tem certeza que deseja remover os dias deste usuário?')) return;
+            apiFetch('remove_days', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
+            }).then(data => {
+                if (data.status === 'success') {
+                    loadUsers();
+                } else {
+                    alert('Erro: ' + data.message);
+                }
+            });
+        }
+
         function loadUsers() {
             apiFetch('get_users').then(data => {
                 if (data.status === 'error') {
@@ -120,6 +136,7 @@
                         <td class="actions">
                             ${banButton}
                             <button class="delete-btn" onclick="deleteUser(${user.id})">Remover</button>
+                            <button class="remove-days-btn" onclick="removeDays(${user.id})">Remover Dias</button>
                         </td>
                     </tr>`;
                     tbody.innerHTML += row;

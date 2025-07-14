@@ -29,6 +29,9 @@ switch ($action) {
     case 'delete_user':
         deleteUser($conn);
         break;
+    case 'remove_days':
+        removeDays($conn);
+        break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Ação inválida.']);
 }
@@ -77,6 +80,28 @@ function toggleBan($conn) {
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Erro ao alterar o status de banido.']);
+    }
+
+    $stmt->close();
+}
+
+function removeDays($conn) {
+    $data = json_decode(file_get_contents('php://input'), true);
+    $userId = $data['user_id'] ?? 0;
+
+    if ($userId <= 0) {
+        echo json_encode(['status' => 'error', 'message' => 'ID de usuário inválido.']);
+        return;
+    }
+
+    $sql = "UPDATE users SET plan_expiration = '1970-01-01' WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $userId);
+
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Erro ao remover os dias.']);
     }
 
     $stmt->close();
