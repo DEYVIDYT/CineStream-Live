@@ -25,28 +25,17 @@ public class SharedViewModel extends ViewModel {
         return isLoading;
     }
 
-    public void loadData() {
+    public void loadData(int userId, String sessionToken) {
         isLoading.setValue(true);
-        xtreamClient.fetchCredentials(new XtreamClient.CredentialsCallback() {
-            @Override
-            public void onSuccess(Credential credential) {
-                fetchCategoriesAndChannels();
-            }
-
-            @Override
-            public void onError(String error) {
-                // Handle error, maybe expose it via another LiveData
-                isLoading.setValue(false);
-            }
-        });
+        fetchCategoriesAndChannels(userId, sessionToken);
     }
 
-    private void fetchCategoriesAndChannels() {
-        xtreamClient.fetchLiveCategories(new XtreamClient.CategoriesCallback() {
+    private void fetchCategoriesAndChannels(int userId, String sessionToken) {
+        xtreamClient.fetchLiveCategories(userId, sessionToken, new XtreamClient.CategoriesCallback() {
             @Override
             public void onSuccess(List<Category> categoryList) {
                 categories.postValue(categoryList);
-                xtreamClient.fetchLiveStreams(new XtreamClient.ChannelsCallback() {
+                xtreamClient.fetchLiveStreams(userId, sessionToken, new XtreamClient.ChannelsCallback() {
                     @Override
                     public void onSuccess(List<Channel> channelList) {
                         channels.postValue(channelList);

@@ -96,6 +96,16 @@ public class LoginActivity extends AppCompatActivity {
                                 editor.apply();
 
                                 Toast.makeText(LoginActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
+
+                                // Definir a credencial no XtreamClient
+                                // Supondo que o login retorna as credenciais do Xtream
+                                // Como a API de login não retorna o servidor, username e password do Xtream,
+                                // não é possível definir a credencial aqui.
+                                // A lógica do XtreamClient precisará ser ajustada para obter os canais
+                                // diretamente com o token de sessão, ou a API de login precisará
+                                // retornar as credenciais do Xtream.
+
+                                // Por enquanto, vamos para a HostActivity
                                 startActivity(new Intent(LoginActivity.this, HostActivity.class));
                                 finish();
                             } catch (JSONException e) {

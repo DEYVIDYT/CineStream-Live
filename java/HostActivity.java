@@ -21,6 +21,7 @@ import android.content.Intent;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.FormBody;
 
 public class HostActivity extends AppCompatActivity {
 
@@ -47,7 +48,10 @@ public class HostActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
 
         // Start loading data
-        sharedViewModel.loadData();
+        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
+        String sessionToken = prefs.getString("session_token", null);
+        sharedViewModel.loadData(userId, sessionToken);
 
         liveTab = findViewById(R.id.liveTab);
         profileTab = findViewById(R.id.profileTab);
