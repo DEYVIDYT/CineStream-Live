@@ -7,6 +7,7 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `plan_id` int(11) DEFAULT NULL,
   `plan_expiration` date DEFAULT NULL,
+  `device_id` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)

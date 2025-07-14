@@ -7,6 +7,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.os.Build;
+import android.provider.Settings;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.json.JSONException;
@@ -64,9 +66,12 @@ public class RegisterActivity extends AppCompatActivity {
             return;
         }
 
+        String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
         RequestBody formBody = new FormBody.Builder()
                 .add("email", email)
                 .add("password", password)
+                .add("device_id", deviceId)
                 .build();
 
         Request request = new Request.Builder()

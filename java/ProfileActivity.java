@@ -170,7 +170,7 @@ public class ProfileActivity extends AppCompatActivity {
                         String planExpiration = jsonObject.getString("plan_expiration");
 
                         runOnUiThread(() -> {
-                            emailText.setText(email);
+                            emailText.setText(obfuscateEmail(email));
                             expirationText.setText("Data de expiração " + planExpiration);
                         });
                     } else {
@@ -271,6 +271,19 @@ public class ProfileActivity extends AppCompatActivity {
     public static boolean isAdultContentEnabled(android.content.Context context) {
         SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         return prefs.getBoolean(ADULT_CONTENT_KEY, true);
+    }
+
+    private String obfuscateEmail(String email) {
+        if (email == null || !email.contains("@")) {
+            return email;
+        }
+        String[] parts = email.split("@");
+        String name = parts[0];
+        String domain = parts[1];
+        if (name.length() <= 3) {
+            return name + "@" + domain;
+        }
+        return name.substring(0, 3) + "***@" + domain;
     }
 }
 

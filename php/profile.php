@@ -35,9 +35,21 @@ $stmt->execute();
 $stmt->bind_result($email, $plan_expiration);
 $stmt->fetch();
 
+function obfuscate_email($email) {
+    $parts = explode('@', $email);
+    $name = $parts[0];
+    $domain = $parts[1];
+
+    if (strlen($name) > 3) {
+        $name = substr($name, 0, 3) . str_repeat('*', strlen($name) - 3);
+    }
+
+    return $name . '@' . $domain;
+}
+
 echo json_encode([
     'status' => 'success',
-    'email' => $email,
+    'email' => obfuscate_email($email),
     'plan_expiration' => $plan_expiration
 ]);
 
