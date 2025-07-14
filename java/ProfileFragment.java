@@ -16,6 +16,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class ProfileFragment extends Fragment {
     
@@ -111,9 +115,73 @@ public class ProfileFragment extends Fragment {
     }
     
     private void loadUserData() {
-        // Carregar dados do usuário (simulado)
-        emailText.setText("mfd***aro@msn.com");
-        expirationText.setText("Data de expiração 29/11/2026");
+        SharedPreferences prefs = requireContext().getSharedPreferences("CineStreamPrefs", requireContext().MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
+        String sessionToken = prefs.getString("session_token", null);
+
+        if (userId == -1 || sessionToken == null) {
+            // Redirecionar para o login se não houver dados de sessão
+            startActivity(new Intent(requireContext(), LoginActivity.class));
+            requireActivity().finish();
+            return;
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        RequestBody formBody = new FormBody.Builder()
+                .add("user_id", String.valueOf(userId))
+                .add("session_token", sessionToken)
+                .build();
+
+        Request request = new Request.Builder()
+                .url("http://mybrasiltv.x10.mx/profile.php")
+                .post(formBody)
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> Toast.makeText(requireContext(), "Erro de rede.", Toast.LENGTH_SHORT).show());
+                }
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                String responseBody = response.body().string();
+                try {
+                    org.json.JSONObject jsonObject = new org.json.JSONObject(responseBody);
+                    String status = jsonObject.getString("status");
+
+                    if (status.equals("success")) {
+                        String email = jsonObject.getString("email");
+                        String planExpiration = jsonObject.getString("plan_expiration");
+
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                emailText.setText(email);
+                                expirationText.setText("Data de expiração " + planExpiration);
+                            });
+                        }
+                    } else {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                Toast.makeText(requireContext(), "Sessão inválida. Faça login novamente.", Toast.LENGTH_SHORT).show();
+                                // Limpar prefs e redirecionar para o login
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.clear();
+                                editor.apply();
+                                startActivity(new Intent(requireContext(), LoginActivity.class));
+                                requireActivity().finish();
+                            });
+                        }
+                    }
+                } catch (org.json.JSONException e) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> Toast.makeText(requireContext(), "Resposta inválida do servidor.", Toast.LENGTH_SHORT).show());
+                    }
+                }
+            }
+        });
         
         // Carregar preferência de conteúdo adulto
         boolean adultContentEnabled = preferences.getBoolean(ADULT_CONTENT_KEY, true);
@@ -133,14 +201,58 @@ public class ProfileFragment extends Fragment {
         builder.setTitle("Sair do App")
                 .setMessage("Tem certeza que deseja sair do aplicativo?")
                 .setPositiveButton("Sair", (dialog, which) -> {
-                    // Fechar o app completamente
-                    if (getActivity() != null) {
-                        getActivity().finishAffinity();
-                        System.exit(0);
-                    }
+                    logout();
                 })
                 .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss())
                 .show();
+    }
+
+    private void logout() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("CineStreamPrefs", requireContext().MODE_PRIVATE);
+        int userId = prefs.getInt("user_id", -1);
+        String sessionToken = prefs.getString("session_token", null);
+
+        if (userId != -1 && sessionToken != null) {
+            OkHttpClient client = new OkHttpClient();
+            RequestBody formBody = new FormBody.Builder()
+                    .add("user_id", String.valueOf(userId))
+                    .add("session_token", sessionToken)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url("http://mybrasiltv.x10.mx/logout.php")
+                    .post(formBody)
+                    .build();
+
+            client.newCall(request).enqueue(new okhttp3.Callback() {
+                @Override
+                public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                    // Mesmo que o logout falhe, limpe os dados localmente
+                    clearSessionAndExit();
+                }
+
+                @Override
+                public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                    clearSessionAndExit();
+                }
+            });
+        } else {
+            clearSessionAndExit();
+        }
+    }
+
+    private void clearSessionAndExit() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("CineStreamPrefs", requireContext().MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.clear();
+        editor.apply();
+
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(() -> {
+                getActivity().finishAffinity();
+                System.exit(0);
+            });
+        }
     }
     
     // onBackPressed is handled by the Activity, not the Fragment directly
