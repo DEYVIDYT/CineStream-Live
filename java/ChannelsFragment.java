@@ -109,7 +109,9 @@ public class ChannelsFragment extends Fragment implements
             getActivity().findViewById(R.id.navigation_tabs).setVisibility(View.GONE);
         }
         if (getActivity() instanceof HostActivity) {
-            ((HostActivity) getActivity()).getSupportActionBar().hide();
+            if (((HostActivity) getActivity()).getSupportActionBar() != null) {
+                ((HostActivity) getActivity()).getSupportActionBar().hide();
+            }
         }
 
         // Hide other views within the fragment
@@ -144,7 +146,9 @@ public class ChannelsFragment extends Fragment implements
             getActivity().findViewById(R.id.navigation_tabs).setVisibility(View.VISIBLE);
         }
         if (getActivity() instanceof HostActivity) {
-            ((HostActivity) getActivity()).getSupportActionBar().show();
+            if (((HostActivity) getActivity()).getSupportActionBar() != null) {
+                ((HostActivity) getActivity()).getSupportActionBar().show();
+            }
         }
 
         // Show other views within the fragment
