@@ -340,19 +340,18 @@ public class ChannelsFragment extends Fragment implements
     
     @Override
     public void onChannelClick(Channel channel) {
-        XtreamClient xtreamClient = sharedViewModel.getXtreamClient();
-        if (xtreamClient.getCurrentCredential() == null) {
-            Toast.makeText(requireContext(), "Credenciais não carregadas", Toast.LENGTH_SHORT).show();
+        Credential credential = sharedViewModel.getCredential();
+        if (credential == null) {
+            Toast.makeText(requireContext(), "Credenciais não disponíveis, por favor reinicie.", Toast.LENGTH_SHORT).show();
             return;
         }
-        
-        Credential credential = xtreamClient.getCurrentCredential();
+
         String streamUrl = channel.getStreamUrl(
                 credential.getServer(),
                 credential.getUsername(),
                 credential.getPassword()
         );
-        
+
         if (streamUrl != null) {
             // Add to history
             historyManager.addToHistory(channel);

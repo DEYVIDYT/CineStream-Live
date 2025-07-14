@@ -43,24 +43,13 @@ public class XtreamClient {
         void onError(String error);
     }
 
-    private XtreamClient() {
+    public XtreamClient() {
         httpClient = new OkHttpClient.Builder()
                 .connectTimeout(30, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
                 .writeTimeout(30, TimeUnit.SECONDS)
                 .build();
         gson = new Gson();
-    }
-
-    public static XtreamClient getInstance() {
-        if (instance == null) {
-            synchronized (XtreamClient.class) {
-                if (instance == null) {
-                    instance = new XtreamClient();
-                }
-            }
-        }
-        return instance;
     }
     
     public void fetchCredentials(CredentialsCallback callback) {

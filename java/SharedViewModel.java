@@ -11,7 +11,7 @@ public class SharedViewModel extends ViewModel {
     private final MutableLiveData<List<Channel>> channels = new MutableLiveData<>();
     private final MutableLiveData<List<Category>> categories = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
-    private final XtreamClient xtreamClient = XtreamClient.getInstance();
+    private final XtreamClient xtreamClient = new XtreamClient();
 
     public LiveData<List<Channel>> getChannels() {
         return channels;
@@ -71,5 +71,9 @@ public class SharedViewModel extends ViewModel {
 
     public XtreamClient getXtreamClient() {
         return xtreamClient;
+    }
+
+    public Credential getCredential() {
+        return xtreamClient.getCurrentCredential();
     }
 }
