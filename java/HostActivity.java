@@ -33,11 +33,6 @@ public class HostActivity extends AppCompatActivity {
 
     private LinearLayout liveTab;
     private LinearLayout profileTab;
-    private FrameLayout fullscreenContainer;
-
-    public FrameLayout getFullscreenContainer() {
-        return fullscreenContainer;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +60,6 @@ public class HostActivity extends AppCompatActivity {
 
         liveTab = findViewById(R.id.liveTab);
         profileTab = findViewById(R.id.profileTab);
-        fullscreenContainer = findViewById(R.id.fullscreen_container);
         // Assuming you might have a guide tab
         // LinearLayout guideTab = findViewById(R.id.guideTab);
 
