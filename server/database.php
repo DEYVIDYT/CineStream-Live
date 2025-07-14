@@ -1,8 +1,8 @@
 <?php
-$servername = "sql201.x10mx.com";
-$username = "mybrasiltv";
-$password = "Jg@19921992";
-$dbname = "mybrasiltv_dados";
+$servername = "localhost";
+$username = "hvnivrhy_CineStream";
+$password = "EEcwPCF8tcN9NKWSEn8q";
+$dbname = "hvnivrhy_CineStream";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);

@@ -29,6 +29,10 @@ public class LoginActivity extends AppCompatActivity {
         register = findViewById(R.id.register);
         progressBar = findViewById(R.id.progress_bar);
 
+        register.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+        });
+
         login.setOnClickListener(v -> {
             String emailStr = email.getText().toString();
             String passwordStr = password.getText().toString();
@@ -74,9 +78,5 @@ public class LoginActivity extends AppCompatActivity {
         android.content.SharedPreferences.Editor editor = preferences.edit();
         editor.putString("session_token", token);
         editor.apply();
-
-        register.setOnClickListener(v -> {
-            startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
-        });
     }
 }
