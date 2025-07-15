@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,8 +27,9 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText emailEditText;
     private EditText passwordEditText;
     private EditText confirmPasswordEditText;
+    private CheckBox termsCheckBox;
     private Button registerButton;
-    private TextView loginTextView;
+    private MaterialButton goToLoginButton;
     private ServerManager serverManager;
 
     @Override
@@ -36,8 +40,9 @@ public class RegisterActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
         confirmPasswordEditText = findViewById(R.id.confirm_password);
+        termsCheckBox = findViewById(R.id.terms_checkbox);
         registerButton = findViewById(R.id.register_button);
-        loginTextView = findViewById(R.id.login_text);
+        goToLoginButton = findViewById(R.id.login_button);
         
         serverManager = ServerManager.getInstance(this);
         
@@ -45,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
         loadServers();
 
         registerButton.setOnClickListener(v -> register());
-        loginTextView.setOnClickListener(v -> {
+        goToLoginButton.setOnClickListener(v -> {
             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
             finish();
         });
@@ -84,6 +89,11 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (!password.equals(confirmPassword)) {
             Toast.makeText(this, "As senhas não coincidem.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        if (!termsCheckBox.isChecked()) {
+            Toast.makeText(this, "Você deve concordar com os termos de uso.", Toast.LENGTH_SHORT).show();
             return;
         }
         
