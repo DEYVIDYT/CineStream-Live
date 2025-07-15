@@ -26,6 +26,8 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordEditText;
     private Button loginButton;
     private TextView registerTextView;
+    private ImageView passwordToggle;
+    private boolean isPasswordVisible = false;
     private ServerManager serverManager;
 
     @Override
@@ -37,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
         registerTextView = findViewById(R.id.register_text);
+        passwordToggle = findViewById(R.id.password_toggle);
         
         serverManager = ServerManager.getInstance(this);
         
@@ -47,6 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         registerTextView.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
         });
+        passwordToggle.setOnClickListener(v -> togglePasswordVisibility());
     }
     
     private void loadServers() {
@@ -109,6 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (status.equals("success")) {
                             String sessionToken = jsonObject.getString("session_token");
                             int userId = jsonObject.getInt("user_id");
+                            String planExpiration = jsonObject.optString("plan_expiration", "");
                             
                             // Salvar dados da sessão
                             SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
@@ -117,7 +122,17 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putString("session_token", sessionToken);
                             editor.apply();
 
-                            Toast.makeText(LoginActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
+                            // Verificar se o plano expirou
+                            if (!jsonObject.has("xtream_server")) {
+                                // Plano expirado - redirecionar para tela de renovação
+                                Toast.makeText(LoginActivity.this, "Plano expirado! Renove para continuar.", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(LoginActivity.this, PlanExpiredActivity.class);
+                                startActivity(intent);
+                                finish();
+                                return;
+                            }
+
+                            Toast.makeText(LoginActivity.this, "Login bem-sucedido! Lista IPTV selecionada automaticamente.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, HostActivity.class);
 
                             if (jsonObject.has("xtream_server")) {
@@ -161,5 +176,21 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
         }, this); // Added this (Activity context) as the 4th parameter
+    }
+    
+    private void togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            // Ocultar senha
+            passwordEditText.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            passwordToggle.setImageResource(R.drawable.ic_eye);
+            isPasswordVisible = false;
+        } else {
+            // Mostrar senha
+            passwordEditText.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            passwordToggle.setImageResource(R.drawable.ic_eye_off);
+            isPasswordVisible = true;
+        }
+        // Manter cursor no final
+        passwordEditText.setSelection(passwordEditText.getText().length());
     }
 }

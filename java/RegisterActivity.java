@@ -26,6 +26,10 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText confirmPasswordEditText;
     private Button registerButton;
     private TextView loginTextView;
+    private ImageView passwordToggle;
+    private ImageView confirmPasswordToggle;
+    private boolean isPasswordVisible = false;
+    private boolean isConfirmPasswordVisible = false;
     private ServerManager serverManager;
 
     @Override
@@ -38,6 +42,8 @@ public class RegisterActivity extends AppCompatActivity {
         confirmPasswordEditText = findViewById(R.id.confirm_password);
         registerButton = findViewById(R.id.register_button);
         loginTextView = findViewById(R.id.login_text);
+        passwordToggle = findViewById(R.id.password_toggle);
+        confirmPasswordToggle = findViewById(R.id.confirm_password_toggle);
         
         serverManager = ServerManager.getInstance(this);
         
@@ -49,6 +55,8 @@ public class RegisterActivity extends AppCompatActivity {
             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
             finish();
         });
+        passwordToggle.setOnClickListener(v -> togglePasswordVisibility());
+        confirmPasswordToggle.setOnClickListener(v -> toggleConfirmPasswordVisibility());
     }
     
     private void loadServers() {

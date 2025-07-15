@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'json_config.php';
 
 header('Content-Type: application/json');
 
@@ -11,19 +11,21 @@ if (empty($user_id) || empty($device_id)) {
     exit;
 }
 
-// Verificar se existe uma sessão para este usuário em um dispositivo diferente
-$sql = "SELECT id FROM sessions WHERE user_id = ? AND device_id != ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("is", $user_id, $device_id);
-$stmt->execute();
-$stmt->store_result();
+// Carregar dados das sessões
+$sessions = loadJsonData(SESSIONS_FILE);
 
-if ($stmt->num_rows > 0) {
+// Verificar se existe uma sessão para este usuário em um dispositivo diferente
+$differentDeviceSession = null;
+foreach ($sessions as $session) {
+    if ($session['user_id'] == $user_id && $session['device_id'] !== $device_id) {
+        $differentDeviceSession = $session;
+        break;
+    }
+}
+
+if ($differentDeviceSession) {
     echo json_encode(['status' => 'error', 'message' => 'Duplo login detectado.']);
 } else {
     echo json_encode(['status' => 'success', 'message' => 'Sessão válida.']);
 }
-
-$stmt->close();
-$conn->close();
 ?>

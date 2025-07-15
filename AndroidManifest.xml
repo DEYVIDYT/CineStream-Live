@@ -67,6 +67,11 @@
             android:name=".LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.CineStreamLiveMobile.NoActionBar" />
+            
+        <activity
+            android:name=".PlanExpiredActivity"
+            android:exported="false"
+            android:theme="@style/Theme.CineStreamLiveMobile.NoActionBar" />
         
         <activity
             android:name=".PlayerActivity"

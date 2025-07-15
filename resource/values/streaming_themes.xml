@@ -1,0 +1,141 @@
+<resources>
+    
+    <!-- 🎬 TEMAS INSPIRADOS EM PLATAFORMAS DE STREAMING -->
+    
+    <!-- Netflix Style Theme -->
+    <style name="Theme.CineStreamLive.Netflix" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/netflix_primary</item>
+        <item name="colorSecondary">@color/netflix_surface</item>
+        <item name="android:colorBackground">@color/netflix_background</item>
+        <item name="colorSurface">@color/netflix_surface</item>
+        <item name="colorOnBackground">@color/netflix_text</item>
+        <item name="android:statusBarColor">@color/netflix_background</item>
+    </style>
+    
+    <!-- YouTube Style Theme -->
+    <style name="Theme.CineStreamLive.YouTube" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/youtube_primary</item>
+        <item name="colorSecondary">@color/youtube_surface</item>
+        <item name="android:colorBackground">@color/youtube_background</item>
+        <item name="colorSurface">@color/youtube_surface</item>
+        <item name="colorOnBackground">@color/youtube_text</item>
+        <item name="android:statusBarColor">@color/youtube_background</item>
+    </style>
+    
+    <!-- Twitch Style Theme -->
+    <style name="Theme.CineStreamLive.Twitch" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/twitch_primary</item>
+        <item name="colorSecondary">@color/twitch_surface</item>
+        <item name="android:colorBackground">@color/twitch_background</item>
+        <item name="colorSurface">@color/twitch_surface</item>
+        <item name="colorOnBackground">@color/twitch_text</item>
+        <item name="android:statusBarColor">@color/twitch_background</item>
+    </style>
+    
+    <!-- Spotify Style Theme -->
+    <style name="Theme.CineStreamLive.Spotify" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/spotify_primary</item>
+        <item name="colorSecondary">@color/spotify_surface</item>
+        <item name="android:colorBackground">@color/spotify_background</item>
+        <item name="colorSurface">@color/spotify_surface</item>
+        <item name="colorOnBackground">@color/spotify_text</item>
+        <item name="android:statusBarColor">@color/spotify_background</item>
+    </style>
+    
+    <!-- Disney+ Style Theme -->
+    <style name="Theme.CineStreamLive.Disney" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/disney_primary</item>
+        <item name="colorSecondary">@color/disney_gold</item>
+        <item name="android:colorBackground">@color/disney_background</item>
+        <item name="colorSurface">@color/disney_surface</item>
+        <item name="colorOnBackground">@color/disney_text</item>
+        <item name="colorAccent">@color/disney_gold</item>
+        <item name="android:statusBarColor">@color/disney_background</item>
+    </style>
+    
+    <!-- Amazon Prime Style Theme -->
+    <style name="Theme.CineStreamLive.Amazon" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/amazon_primary</item>
+        <item name="colorSecondary">@color/amazon_secondary</item>
+        <item name="android:colorBackground">@color/amazon_background</item>
+        <item name="colorSurface">@color/amazon_surface</item>
+        <item name="colorOnBackground">@color/amazon_text</item>
+        <item name="colorAccent">@color/amazon_secondary</item>
+        <item name="android:statusBarColor">@color/amazon_background</item>
+    </style>
+    
+    <!-- HBO Max Style Theme -->
+    <style name="Theme.CineStreamLive.HBO" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/hbo_primary</item>
+        <item name="colorSecondary">@color/hbo_secondary</item>
+        <item name="android:colorBackground">@color/hbo_background</item>
+        <item name="colorSurface">@color/hbo_surface</item>
+        <item name="colorOnBackground">@color/hbo_text</item>
+        <item name="colorAccent">@color/hbo_secondary</item>
+        <item name="android:statusBarColor">@color/hbo_background</item>
+    </style>
+    
+    <!-- Apple TV Style Theme -->
+    <style name="Theme.CineStreamLive.Apple" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/apple_primary</item>
+        <item name="colorSecondary">@color/apple_secondary</item>
+        <item name="android:colorBackground">@color/apple_background</item>
+        <item name="colorSurface">@color/apple_surface</item>
+        <item name="colorOnBackground">@color/apple_text</item>
+        <item name="colorAccent">@color/apple_secondary</item>
+        <item name="android:statusBarColor">@color/apple_background</item>
+    </style>
+    
+    <!-- Gaming Style Theme -->
+    <style name="Theme.CineStreamLive.Gaming" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/gaming_primary</item>
+        <item name="colorSecondary">@color/gaming_secondary</item>
+        <item name="android:colorBackground">@color/gaming_background</item>
+        <item name="colorSurface">@color/gaming_surface</item>
+        <item name="colorOnBackground">@color/gaming_text</item>
+        <item name="colorAccent">@color/gaming_neon</item>
+        <item name="android:statusBarColor">@color/gaming_background</item>
+    </style>
+    
+    <!-- Midnight Style Theme -->
+    <style name="Theme.CineStreamLive.Midnight" parent="Theme.CineStreamLiveMobile">
+        <item name="colorPrimary">@color/midnight_primary</item>
+        <item name="colorSecondary">@color/midnight_secondary</item>
+        <item name="android:colorBackground">@color/midnight_background</item>
+        <item name="colorSurface">@color/midnight_surface</item>
+        <item name="colorOnBackground">@color/midnight_text</item>
+        <item name="colorAccent">@color/midnight_secondary</item>
+        <item name="android:statusBarColor">@color/midnight_background</item>
+    </style>
+    
+    <!-- 🎨 BOTÕES TEMÁTICOS -->
+    
+    <!-- Netflix Style Buttons -->
+    <style name="ButtonStyle.Netflix">
+        <item name="android:background">@color/netflix_primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <!-- YouTube Style Buttons -->
+    <style name="ButtonStyle.YouTube">
+        <item name="android:background">@color/youtube_primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <!-- Twitch Style Buttons -->
+    <style name="ButtonStyle.Twitch">
+        <item name="android:background">@color/twitch_primary</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+    <!-- Spotify Style Buttons -->
+    <style name="ButtonStyle.Spotify">
+        <item name="android:background">@color/spotify_primary</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    
+</resources>
