@@ -8,6 +8,9 @@ public class Credential {
     private String added_at;
     private String last_validated;
 
+    // Default constructor
+    public Credential() {}
+
     // Add a constructor for simpler credential creation
     public Credential(String server, String username, String password) {
         this.server = server;

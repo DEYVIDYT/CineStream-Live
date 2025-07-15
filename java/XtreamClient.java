@@ -78,11 +78,6 @@ public class XtreamClient {
         Log.d(TAG, "Credentials set for server: " + (credential != null ? credential.getServer() : "null"));
     }
     
-    // Method to get current credentials
-    public Credential getCurrentCredentials() {
-        return currentCredential;
-    }
-    
     // Method for SharedViewModel compatibility
     public Credential getCurrentCredential() {
         return currentCredential;
