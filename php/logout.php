@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'json_config.php';
 
 header('Content-Type: application/json');
 
@@ -11,17 +11,29 @@ if (empty($user_id) || empty($session_token)) {
     exit;
 }
 
-// Excluir sessão
-$sql = "DELETE FROM sessions WHERE user_id = ? AND session_token = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("is", $user_id, $session_token);
+// Carregar dados das sessões
+$sessions = loadJsonData(SESSIONS_FILE);
 
-if ($stmt->execute()) {
-    echo json_encode(['status' => 'success', 'message' => 'Logout bem-sucedido.']);
-} else {
-    echo json_encode(['status' => 'error', 'message' => 'Erro ao fazer logout.']);
+// Procurar e excluir a sessão específica
+$sessionFound = false;
+$updatedSessions = [];
+
+foreach ($sessions as $session) {
+    if ($session['user_id'] == $user_id && $session['session_token'] === $session_token) {
+        $sessionFound = true;
+        // Não adiciona a sessão ao array atualizado (efetivamente excluindo)
+    } else {
+        $updatedSessions[] = $session;
+    }
 }
 
-$stmt->close();
-$conn->close();
+if ($sessionFound) {
+    if (saveJsonData(SESSIONS_FILE, $updatedSessions)) {
+        echo json_encode(['status' => 'success', 'message' => 'Logout bem-sucedido.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Erro ao fazer logout.']);
+    }
+} else {
+    echo json_encode(['status' => 'error', 'message' => 'Sessão não encontrada.']);
+}
 ?>

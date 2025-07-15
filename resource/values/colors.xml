@@ -1,23 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Cores base -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    
+    <!-- Paleta principal - Inspirada no design moderno -->
+    <color name="primary_orange">#FF8A65</color>
+    <color name="primary_coral">#FF7043</color>
+    <color name="primary_deep">#FF5722</color>
+    
+    <!-- Gradientes -->
+    <color name="gradient_orange_start">#FFB74D</color>
+    <color name="gradient_orange_end">#FF8A65</color>
+    <color name="gradient_coral_start">#FF8A65</color>
+    <color name="gradient_coral_end">#FF7043</color>
+    
+    <!-- Background - Tons escuros modernos -->
+    <color name="background_primary">#121212</color>
+    <color name="background_secondary">#1E1E1E</color>
+    <color name="background_surface">#2D2D2D</color>
+    <color name="background_card">#353535</color>
+    
+    <!-- Campos de input -->
+    <color name="input_background">#404040</color>
+    <color name="input_border">#FF8A65</color>
+    <color name="input_border_focused">#FFB74D</color>
+    <color name="input_text">#FFFFFF</color>
+    <color name="input_hint">#9E9E9E</color>
+    
+    <!-- Textos -->
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#B3B3B3</color>
+    <color name="text_tertiary">#808080</color>
+    <color name="text_accent">#FFB74D</color>
+    
+    <!-- Status Bar e Navigation -->
+    <color name="status_bar">#0F0F0F</color>
+    <color name="navigation_bar">#121212</color>
+    
+    <!-- Botões -->
+    <color name="button_primary_start">#FFB74D</color>
+    <color name="button_primary_end">#FF8A65</color>
+    <color name="button_secondary">#404040</color>
+    <color name="button_text_primary">#1A1A1A</color>
+    <color name="button_text_secondary">#FFFFFF</color>
+    
+    <!-- Acentos e destaques -->
+    <color name="accent_primary">#FFB74D</color>
+    <color name="accent_secondary">#FF8A65</color>
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FFC107</color>
+    <color name="error">#F44336</color>
+    
+    <!-- Transparências -->
+    <color name="overlay_dark">#80000000</color>
+    <color name="overlay_light">#40FFFFFF</color>
+    
+    <!-- Cores legadas (manter compatibilidade) -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
     
-    <color name="primary_purple">#8B5CF6</color>
-    <color name="dark_purple">#5B21B6</color>
-    <color name="gradient_start">#0D47A1</color>
-    <color name="gradient_end">#1976D2</color>
-    <color name="background_dark">#1F1F1F</color>
-    <color name="background_darker">#141414</color>
-    <color name="surface_dark">#2A2A2A</color>
-    <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#B3B3B3</color>
-    <color name="accent_color">#8B5CF6</color>
-    <color name="accent">#FF9800</color>
-    <color name="recharge_button_color">#4CAF50</color>
+    <!-- Mapeamento para compatibilidade -->
+    <color name="background_dark">@color/background_primary</color>
+    <color name="background_darker">@color/background_secondary</color>
+    <color name="surface_dark">@color/background_surface</color>
+    <color name="accent_color">@color/accent_primary</color>
+    <color name="accent">@color/accent_secondary</color>
+    <color name="recharge_button_color">@color/success</color>
+    
+    <!-- Cores específicas para componentes -->
+    <color name="divider">#40FFFFFF</color>
+    <color name="ripple">#40FFB74D</color>
+    <color name="selection">#20FFB74D</color>
 </resources>

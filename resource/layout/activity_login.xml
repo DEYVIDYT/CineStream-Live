@@ -1,62 +1,214 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_dark"
-    android:padding="16dp">
+    android:background="@drawable/background_gradient"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:gravity="center_horizontal">
 
-        <ImageView
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:src="@drawable/ic_launcher_foreground"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="32dp"/>
-
-        <EditText
-            android:id="@+id/email"
+        <!-- Header com seta voltar e título -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_secondary"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="40dp">
+
+            <ImageView
+                android:id="@+id/back_arrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_arrow_back"
+                android:tint="@color/text_primary"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:padding="4dp"
+                android:layout_marginEnd="16dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="LOGIN"
+                style="@style/ModernHeaderTitle"/>
+
+            <!-- Placeholder para balancear o layout -->
+            <View
+                android:layout_width="32dp"
+                android:layout_height="24dp"/>
+
+        </LinearLayout>
+
+        <!-- Logo Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="48dp">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_launcher_foreground"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rounded_background"
+                android:elevation="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CineStream Live"
+                style="@style/ModernTitle"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seu entretenimento premium"
+                style="@style/ModernSubtitle"/>
+
+        </LinearLayout>
+
+        <!-- Login Form -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="32dp">
+
+            <!-- Campo Email -->
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                style="@style/ModernInputField"/>
+
+            <!-- Campo Senha -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="16dp">
+
+                <EditText
+                    android:id="@+id/password"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Senha"
+                    android:inputType="textPassword"
+                    android:background="@drawable/input_field_background"
+                    android:textColor="@color/input_text"
+                    android:textColorHint="@color/input_hint"
+                    android:paddingStart="24dp"
+                    android:paddingEnd="60dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="16dp"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif"
+                    android:elevation="2dp"/>
+
+                <ImageView
+                    android:id="@+id/password_toggle"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="20dp"
+                    android:src="@drawable/ic_eye"
+                    android:tint="@color/text_secondary"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"/>
+
+            </RelativeLayout>
+
+            <!-- Links de apoio -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="space_between"
+                android:layout_marginBottom="32dp">
+
+                <TextView
+                    android:id="@+id/register_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Criar conta"
+                    android:textColor="@color/text_accent"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"/>
+
+                <TextView
+                    android:id="@+id/forgot_password"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Esqueceu sua senha?"
+                    android:textColor="@color/text_accent"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:padding="8dp"/>
+
+            </LinearLayout>
+
+            <!-- Botão Login -->
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Login"
+                style="@style/ModernPrimaryButton"/>
+
+        </LinearLayout>
+
+        <!-- Informações sobre o app -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:background="@drawable/rounded_background"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"/>
+            android:padding="24dp"
+            android:elevation="4dp"
+            android:layout_marginBottom="16dp">
 
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Senha"
-            android:inputType="textPassword"
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_secondary"
-            android:background="@drawable/rounded_background"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📺 Sistema IPTV Inteligente"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="12dp"/>
 
-        <Button
-            android:id="@+id/login_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Login"
-            android:backgroundTint="@color/accent_color"
-            android:textColor="@color/text_primary"
-            android:layout_marginBottom="16dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="• Múltiplas listas IPTV premium\n• Seleção automática da melhor qualidade\n• Centenas de canais HD/Full HD\n• Atualizações em tempo real"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:lineSpacingExtra="4dp"/>
 
+        </LinearLayout>
+
+        <!-- Footer info -->
         <TextView
-            android:id="@+id/register_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Não tem uma conta? Registre-se"
-            android:textColor="@color/accent_color"
-            android:layout_gravity="center_horizontal"/>
+            android:text="Em caso de dúvidas entre em contato com o\nseu revendedor ou acesse nosso canal oficial\ndo Telegram https://t.me/VPlay0"
+            android:textSize="12sp"
+            android:textColor="@color/text_tertiary"
+            android:gravity="center"
+            android:lineSpacingExtra="2dp"
+            android:layout_marginTop="16dp"/>
+
     </LinearLayout>
-</RelativeLayout>
+</ScrollView>

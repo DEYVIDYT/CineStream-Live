@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_dark_background"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <!-- Header Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@drawable/premium_background"
+            android:padding="32dp"
+            android:layout_marginBottom="24dp"
+            android:elevation="12dp">
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_crown"
+                android:layout_marginBottom="20dp"
+                android:tint="@color/accent_primary"/>
+
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏰ Plano Expirado"
+                style="@style/TitleStyle.Premium"
+                android:layout_marginBottom="16dp"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/description_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Seu plano expirou! Para continuar aproveitando o melhor do entretenimento, renove agora mesmo."
+                style="@style/SubtitleStyle"
+                android:gravity="center"
+                android:layout_marginBottom="20dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/gradient_premium_gold"
+                android:padding="16dp"
+                android:gravity="center"
+                android:elevation="4dp">
+
+                <TextView
+                    android:id="@+id/price_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="💰 Apenas R$ 4,00"
+                    style="@style/TitleStyle"
+                    android:textSize="24sp"
+                    android:textColor="@color/background_primary"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Features Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_background"
+            android:padding="24dp"
+            android:layout_marginBottom="24dp"
+            android:elevation="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🎯 O que você terá acesso:"
+                style="@style/TitleStyle.Cinema"
+                android:textSize="20sp"
+                android:layout_marginBottom="16dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/gradient_cinema_primary"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📺 Múltiplas listas IPTV"
+                    style="@style/TitleStyle"
+                    android:textSize="16sp"
+                    android:textColor="@color/text_primary"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• O app coleta e disponibiliza diversas listas IPTV de alta qualidade\n• Sistema inteligente que seleciona automaticamente a melhor lista disponível\n• Acesso a centenas de canais nacionais e internacionais"
+                    style="@style/BodyTextStyle"
+                    android:lineSpacingExtra="4dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/rounded_background"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🎬 Conteúdo Premium"
+                    style="@style/TitleStyle.Premium"
+                    android:textSize="16sp"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Canais de filmes, séries, esportes e documentários\n• Qualidade HD/Full HD\n• Atualizações automáticas das listas"
+                    style="@style/BodyTextStyle.Secondary"
+                    android:lineSpacingExtra="4dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/rounded_background"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="⚡ Experiência Otimizada"
+                    style="@style/TitleStyle"
+                    android:textSize="16sp"
+                    android:textColor="@color/primary_orange"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Interface moderna e intuitiva\n• Histórico de reprodução\n• Favoritos personalizados\n• Suporte técnico dedicado"
+                    style="@style/BodyTextStyle.Secondary"
+                    android:lineSpacingExtra="4dp"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/recharge_button"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="💳 RECARREGAR AGORA"
+                style="@style/ButtonStyle.Success"
+                android:textSize="18sp"
+                android:layout_marginBottom="12dp"
+                android:elevation="8dp"/>
+
+            <Button
+                android:id="@+id/back_to_login_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="← Voltar ao Login"
+                style="@style/ButtonStyle.Secondary"/>
+
+        </LinearLayout>
+
+        <!-- Footer Info -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/gradient_cinema_primary"
+            android:padding="16dp"
+            android:gravity="center"
+            android:layout_marginTop="24dp"
+            android:elevation="4dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="🔒 Pagamento seguro • 📱 Suporte 24h • ⚡ Ativação instantânea"
+                style="@style/BodyTextStyle"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
