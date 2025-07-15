@@ -8,7 +8,14 @@ public class Credential {
     private String added_at;
     private String last_validated;
 
-    public Credential() {}
+    // Add a constructor for simpler credential creation
+    public Credential(String server, String username, String password) {
+        this.server = server;
+        this.username = username;
+        this.password = password;
+        this.added_at = "";
+        this.last_validated = "";
+    }
 
     public Credential(String id, String server, String username, String password, String added_at, String last_validated) {
         this.id = id;
