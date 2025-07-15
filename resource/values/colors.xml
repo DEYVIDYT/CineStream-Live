@@ -8,16 +8,51 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
+    <!-- Cores principais modernizadas -->
     <color name="primary_purple">#8B5CF6</color>
     <color name="dark_purple">#5B21B6</color>
-    <color name="gradient_start">#0D47A1</color>
-    <color name="gradient_end">#1976D2</color>
-    <color name="background_dark">#1F1F1F</color>
-    <color name="background_darker">#141414</color>
-    <color name="surface_dark">#2A2A2A</color>
+    
+    <!-- Gradientes modernos para login -->
+    <color name="gradient_start">#667eea</color>
+    <color name="gradient_end">#764ba2</color>
+    <color name="gradient_secondary_start">#f093fb</color>
+    <color name="gradient_secondary_end">#f5576c</color>
+    <color name="gradient_accent_start">#4facfe</color>
+    <color name="gradient_accent_end">#00f2fe</color>
+    
+    <!-- Backgrounds modernos -->
+    <color name="background_dark">#0a0a0a</color>
+    <color name="background_darker">#000000</color>
+    <color name="background_overlay">#1a1a1a</color>
+    <color name="surface_dark">#1f1f1f</color>
+    <color name="surface_glassmorphism">#40ffffff</color>
+    <color name="surface_glassmorphism_dark">#20000000</color>
+    
+    <!-- Textos -->
     <color name="text_primary">#FFFFFF</color>
     <color name="text_secondary">#B3B3B3</color>
-    <color name="accent_color">#8B5CF6</color>
+    <color name="text_tertiary">#666666</color>
+    <color name="text_hint">#888888</color>
+    
+    <!-- Cores de destaque -->
+    <color name="accent_color">#667eea</color>
+    <color name="accent_secondary">#f093fb</color>
     <color name="accent">#FF9800</color>
+    <color name="success_color">#4CAF50</color>
+    <color name="error_color">#f5576c</color>
+    <color name="warning_color">#FFC107</color>
+    
+    <!-- Cores especiais para UI -->
+    <color name="button_gradient_start">#667eea</color>
+    <color name="button_gradient_end">#764ba2</color>
+    <color name="input_background">#25ffffff</color>
+    <color name="input_border">#40ffffff</color>
+    <color name="input_border_focused">#667eea</color>
+    
+    <!-- Transparências -->
+    <color name="overlay_light">#40ffffff</color>
+    <color name="overlay_dark">#60000000</color>
+    <color name="ripple_color">#30ffffff</color>
+    
     <color name="recharge_button_color">#4CAF50</color>
 </resources>
