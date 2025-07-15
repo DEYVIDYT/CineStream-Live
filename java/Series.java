@@ -6,6 +6,8 @@ import android.os.Parcelable;
 public class Series implements Parcelable {
     private String num;
     private String name;
+    private String title;  // Adicionado campo title
+    private String year;   // Adicionado campo year
     private String series_id;
     private String cover;
     private String plot;
@@ -38,6 +40,22 @@ public class Series implements Parcelable {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 
     public String getSeries_id() {
@@ -177,6 +195,8 @@ public class Series implements Parcelable {
     protected Series(Parcel in) {
         num = in.readString();
         name = in.readString();
+        title = in.readString();
+        year = in.readString();
         series_id = in.readString();
         cover = in.readString();
         plot = in.readString();
@@ -198,6 +218,8 @@ public class Series implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(num);
         dest.writeString(name);
+        dest.writeString(title);
+        dest.writeString(year);
         dest.writeString(series_id);
         dest.writeString(cover);
         dest.writeString(plot);
