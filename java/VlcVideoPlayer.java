@@ -22,6 +22,9 @@ public class VlcVideoPlayer {
         options.add("--swscale-mode=0");
         options.add("--network-caching=1500");
         options.add("--sout-mux-caching=1500");
+        options.add("--android-display-chroma=RV32"); // Melhor performance em Android
+        options.add("--audio-time-stretch"); // Suporte a stretching de áudio
+        options.add("--avcodec-skiploopfilter=0"); // Melhor qualidade de vídeo
         libVLC = new LibVLC(context, options);
         mediaPlayer = new MediaPlayer(libVLC);
         mediaPlayer.attachViews(videoLayout, null, false, false);
@@ -51,5 +54,21 @@ public class VlcVideoPlayer {
 
     public boolean isPlaying() {
         return mediaPlayer.isPlaying();
+    }
+    
+    public void setAspectRatio(String aspectRatio) {
+        mediaPlayer.setAspectRatio(aspectRatio);
+    }
+    
+    public void setScale(float scale) {
+        mediaPlayer.setScale(scale);
+    }
+    
+    public MediaPlayer getMediaPlayer() {
+        return mediaPlayer;
+    }
+    
+    public void setVideoTrackEnabled(boolean enabled) {
+        mediaPlayer.setVideoTrackEnabled(enabled);
     }
 }

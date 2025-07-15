@@ -89,8 +89,6 @@ public class MoviesSeriesFragment extends Fragment implements
         List<String> tabs = new ArrayList<>();
         tabs.add("Filmes");
         tabs.add("Séries");
-        tabs.add("Animação");
-        tabs.add("Minhas listas");
         tabsAdapter.setTabs(tabs);
         tabsAdapter.setSelectedTab("Filmes");
 
@@ -181,25 +179,56 @@ public class MoviesSeriesFragment extends Fragment implements
             }
         });
 
-        // Load genres (using VOD categories for movies)
-        sharedViewModel.getXtreamClient().fetchVodCategories(new XtreamClient.CategoriesCallback() {
-            @Override
-            public void onSuccess(List<Category> categories) {
-                if (getActivity() != null) {
-                    getActivity().runOnUiThread(() -> {
-                        allGenres = categories;
-                        setupGenres(categories);
-                    });
-                }
-            }
-
-            @Override
-            public void onError(String error) {
-                // Handle error silently for genres
-            }
-        });
+        // Load genres based on current tab
+        loadGenresForCurrentTab();
     }
 
+    private void loadGenresForCurrentTab() {
+        if (currentTab.equals("Séries")) {
+            // Load series categories
+            sharedViewModel.getXtreamClient().fetchSeriesCategories(new XtreamClient.CategoriesCallback() {
+                @Override
+                public void onSuccess(List<Category> categories) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            allGenres = categories;
+                            setupGenres(categories);
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    // Load default genres on error
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> setupGenres(new ArrayList<>()));
+                    }
+                }
+            });
+        } else {
+            // Load VOD categories for movies
+            sharedViewModel.getXtreamClient().fetchVodCategories(new XtreamClient.CategoriesCallback() {
+                @Override
+                public void onSuccess(List<Category> categories) {
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            allGenres = categories;
+                            setupGenres(categories);
+                        });
+                    }
+                }
+
+                @Override
+                public void onError(String error) {
+                    // Load default genres on error
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> setupGenres(new ArrayList<>()));
+                    }
+                }
+            });
+        }
+    }
+    
     private void setupGenres(List<Category> categories) {
         List<Category> displayGenres = new ArrayList<>();
         
@@ -207,15 +236,25 @@ public class MoviesSeriesFragment extends Fragment implements
         Category allCategory = new Category("", "TODOS", "");
         displayGenres.add(allCategory);
         
-        // Add some popular genres
-        displayGenres.add(new Category("", "Ação", ""));
-        displayGenres.add(new Category("", "Aventura", ""));
-        displayGenres.add(new Category("", "Comédia", ""));
-        displayGenres.add(new Category("", "Drama", ""));
-        displayGenres.add(new Category("", "Terror", ""));
+        // Add some popular genres based on current tab
+        if (currentTab.equals("Séries")) {
+            displayGenres.add(new Category("", "Drama", ""));
+            displayGenres.add(new Category("", "Comédia", ""));
+            displayGenres.add(new Category("", "Thriller", ""));
+            displayGenres.add(new Category("", "Ficção Científica", ""));
+            displayGenres.add(new Category("", "Crime", ""));
+        } else {
+            displayGenres.add(new Category("", "Ação", ""));
+            displayGenres.add(new Category("", "Aventura", ""));
+            displayGenres.add(new Category("", "Comédia", ""));
+            displayGenres.add(new Category("", "Drama", ""));
+            displayGenres.add(new Category("", "Terror", ""));
+        }
         
         // Add API categories
-        displayGenres.addAll(categories);
+        if (categories != null && !categories.isEmpty()) {
+            displayGenres.addAll(categories);
+        }
         
         genreAdapter.setGenres(displayGenres);
     }
@@ -232,6 +271,8 @@ public class MoviesSeriesFragment extends Fragment implements
                     movieAdapter.setMovies(allMovies);
                     filterByGenre(currentGenre);
                 }
+                // Load VOD categories for movies
+                loadGenresForCurrentTab();
                 break;
             case "Séries":
                 moviesSeriesRecyclerView.setAdapter(seriesAdapter);
@@ -239,14 +280,8 @@ public class MoviesSeriesFragment extends Fragment implements
                     seriesAdapter.setSeries(allSeries);
                     filterByGenre(currentGenre);
                 }
-                break;
-            case "Animação":
-                // Filter by animation genre
-                filterByGenre("Animação");
-                break;
-            case "Minhas listas":
-                // Show favorites
-                showFavorites();
+                // Load series categories
+                loadGenresForCurrentTab();
                 break;
         }
     }
@@ -284,11 +319,6 @@ public class MoviesSeriesFragment extends Fragment implements
                 seriesAdapter.setSeries(filteredSeries);
             }
         }
-    }
-
-    private void showFavorites() {
-        // Implementation for showing favorites
-        // This would require extending FavoritesManager to support movies and series
     }
 
     private void toggleSearch() {
@@ -364,9 +394,18 @@ public class MoviesSeriesFragment extends Fragment implements
 
     @Override
     public void onSeriesClick(Series series) {
-        // Iniciar SeriesDetailsActivity para mostrar detalhes da série
+        Credential credential = sharedViewModel.getCredential();
+        if (credential == null) {
+            Toast.makeText(requireContext(), "Credenciais não disponíveis", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Iniciar SeriesDetailsActivity para mostrar detalhes da série com credenciais
         Intent intent = new Intent(requireContext(), SeriesDetailsActivity.class);
         intent.putExtra("series", series);
+        intent.putExtra("server", credential.getServer());
+        intent.putExtra("username", credential.getUsername());
+        intent.putExtra("password", credential.getPassword());
         startActivity(intent);
     }
 

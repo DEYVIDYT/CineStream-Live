@@ -25,6 +25,7 @@ import java.util.List;
 public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeAdapter.OnEpisodeClickListener {
 
     private Series series;
+    private Credential credential;
     private ImageView backdropImageView;
     private ImageView posterImageView;
     private TextView titleTextView;
@@ -47,12 +48,30 @@ public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeA
 
         Intent intent = getIntent();
         series = intent.getParcelableExtra("series");
-
+        
+        // Obter credenciais da Intent
+        String server = intent.getStringExtra("server");
+        String username = intent.getStringExtra("username");
+        String password = intent.getStringExtra("password");
+        
         if (series == null) {
             Toast.makeText(this, "Erro: Dados da série não encontrados", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
+        
+        if (server == null || username == null || password == null) {
+            Toast.makeText(this, "Erro: Credenciais não encontradas", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        
+        // Criar credencial
+        credential = new Credential(server, username, password);
+        
+        // Initialize SharedViewModel and configure XtreamClient
+        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        sharedViewModel.getXtreamClient().setCredentials(credential);
 
         initViews();
         setupSeriesInfo();
@@ -78,9 +97,6 @@ public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeA
         episodeAdapter = new EpisodeAdapter(this, this);
         episodesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         episodesRecyclerView.setAdapter(episodeAdapter);
-
-        // Initialize SharedViewModel
-        sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
     }
 
     private void setupSeriesInfo() {
@@ -188,7 +204,6 @@ public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeA
     }
 
     private void playEpisode(Episode episode) {
-        Credential credential = sharedViewModel.getCredential();
         if (credential == null) {
             Toast.makeText(this, "Credenciais não disponíveis", Toast.LENGTH_SHORT).show();
             return;
@@ -205,6 +220,9 @@ public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeA
             intent.putExtra("episode", episode);
             intent.putExtra("series", series);
             intent.putExtra("stream_url", streamUrl);
+            intent.putExtra("server", credential.getServer());
+            intent.putExtra("username", credential.getUsername());
+            intent.putExtra("password", credential.getPassword());
             startActivity(intent);
         } else {
             Toast.makeText(this, "URL do episódio não disponível", Toast.LENGTH_SHORT).show();

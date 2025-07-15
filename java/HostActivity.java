@@ -55,7 +55,7 @@ public class HostActivity extends AppCompatActivity {
             credential.setServer(xtreamServer);
             credential.setUsername(xtreamUsername);
             credential.setPassword(xtreamPassword);
-            sharedViewModel.getXtreamClient().setCredential(credential);
+            sharedViewModel.getXtreamClient().setCredentials(credential);
         }
 
         sharedViewModel.loadData();
