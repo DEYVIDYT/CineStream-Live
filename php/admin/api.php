@@ -20,6 +20,12 @@ switch ($action) {
     case 'get_users':
         getUsers($conn);
         break;
+    case 'get_enhanced_stats':
+        getEnhancedStats($conn);
+        break;
+    case 'search_users':
+        searchUsers($conn);
+        break;
     case 'add_plan':
         addPlan($conn);
         break;
@@ -40,26 +46,87 @@ function getStats($conn) {
     // Usuários online (sessões ativas nos últimos 5 minutos)
     $sql = "SELECT COUNT(DISTINCT user_id) as online_users FROM sessions WHERE created_at >= NOW() - INTERVAL 5 MINUTE";
     $result = $conn->query($sql);
-    $online_users = $result->fetch_assoc()['online_users'];
+    $online_users = $result->fetch_assoc()['online_users'] ?? 0;
 
     // Usuários hoje
     $sql = "SELECT COUNT(DISTINCT user_id) as today_users FROM activity_logs WHERE login_time >= CURDATE()";
     $result = $conn->query($sql);
-    $today_users = $result->fetch_assoc()['today_users'];
+    $today_users = $result->fetch_assoc()['today_users'] ?? 0;
+    
+    // Total de usuários
+    $sql = "SELECT COUNT(*) as total_users FROM users";
+    $result = $conn->query($sql);
+    $total_users = $result->fetch_assoc()['total_users'] ?? 0;
+    
+    // Usuários com plano ativo
+    $sql = "SELECT COUNT(*) as active_plans FROM users WHERE plan_expiration >= CURDATE() AND plan_expiration != '1970-01-01'";
+    $result = $conn->query($sql);
+    $active_plans = $result->fetch_assoc()['active_plans'] ?? 0;
+    
+    // Usuários banidos
+    $sql = "SELECT COUNT(*) as banned_users FROM users WHERE is_banned = 1";
+    $result = $conn->query($sql);
+    $banned_users = $result->fetch_assoc()['banned_users'] ?? 0;
 
     echo json_encode([
         'online_users' => $online_users,
-        'today_users' => $today_users
+        'today_users' => $today_users,
+        'total_users' => $total_users,
+        'active_plans' => $active_plans,
+        'banned_users' => $banned_users
     ]);
 }
 
 function getUsers($conn) {
-    $sql = "SELECT id, email, plan_expiration, is_banned FROM users";
-    $result = $conn->query($sql);
+    $search = $_GET['search'] ?? '';
+    $status = $_GET['status'] ?? 'all';
+    $plan_status = $_GET['plan_status'] ?? 'all';
+    
+    $sql = "SELECT id, email, plan_expiration, is_banned FROM users WHERE 1=1";
+    $params = [];
+    $types = '';
+    
+    // Filtro por email
+    if (!empty($search)) {
+        $sql .= " AND email LIKE ?";
+        $params[] = "%$search%";
+        $types .= 's';
+    }
+    
+    // Filtro por status de ban
+    if ($status === 'banned') {
+        $sql .= " AND is_banned = 1";
+    } elseif ($status === 'active') {
+        $sql .= " AND is_banned = 0";
+    }
+    
+    // Filtro por status do plano
+    if ($plan_status === 'active') {
+        $sql .= " AND plan_expiration >= CURDATE()";
+    } elseif ($plan_status === 'expired') {
+        $sql .= " AND (plan_expiration < CURDATE() OR plan_expiration IS NULL OR plan_expiration = '1970-01-01')";
+    }
+    
+    $sql .= " ORDER BY id DESC";
+    
+    if (!empty($params)) {
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param($types, ...$params);
+        $stmt->execute();
+        $result = $stmt->get_result();
+    } else {
+        $result = $conn->query($sql);
+    }
+    
     $users = [];
     while ($row = $result->fetch_assoc()) {
+        // Adicionar informação se o plano está ativo
+        $row['plan_active'] = ($row['plan_expiration'] && 
+                              $row['plan_expiration'] !== '1970-01-01' && 
+                              strtotime($row['plan_expiration']) >= time());
         $users[] = $row;
     }
+    
     echo json_encode($users);
 }
 
