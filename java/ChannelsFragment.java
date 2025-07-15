@@ -21,6 +21,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import org.videolan.libvlc.util.VLCVideoLayout;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -64,6 +66,7 @@ public class ChannelsFragment extends Fragment implements
     private List<Channel> allChannels;
     private List<Category> allCategories;
     private boolean isFullscreen = false;
+    private GestureDetector gestureDetector;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,6 +116,9 @@ public class ChannelsFragment extends Fragment implements
         searchIcon.setOnClickListener(v -> toggleSearch());
         clearSearchIcon.setOnClickListener(v -> clearSearch());
         fullscreenButton.setOnClickListener(v -> toggleFullscreen());
+        
+        // Configurar detector de gestos para duplo toque no player
+        setupVideoGestures();
     }
 
     private void toggleFullscreen() {
@@ -131,8 +137,8 @@ public class ChannelsFragment extends Fragment implements
     private void enterFullScreen() {
         isFullscreen = true;
         
-        // Mudar orientação para landscape
-        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        // Mudar orientação para landscape adaptativo (permite rotação)
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
 
         // Esconder elementos da UI
         if (headerContainer != null) {
@@ -149,13 +155,40 @@ public class ChannelsFragment extends Fragment implements
                 navigationTabs.setVisibility(View.GONE);
             }
             
-            // Esconder barras do sistema
+            // Esconder barras do sistema com flags completas para modo imersivo sticky
             View decorView = getActivity().getWindow().getDecorView();
             decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_FULLSCREEN
+                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
             );
+            
+            // Listener para reagir a mudanças na visibilidade da UI do sistema
+            decorView.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
+                @Override
+                public void onSystemUiVisibilityChange(int visibility) {
+                    // Se as barras do sistema ficarem visíveis em fullscreen,
+                    // escondê-las novamente após um delay
+                    if (isFullscreen && (visibility & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0) {
+                        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                            if (isFullscreen && getActivity() != null) {
+                                View dv = getActivity().getWindow().getDecorView();
+                                dv.setSystemUiVisibility(
+                                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                );
+                            }
+                        }, 3000); // 3 segundos de delay
+                    }
+                }
+            });
         }
 
         // Expandir o container do vídeo para ocupar toda a tela
@@ -165,6 +198,16 @@ public class ChannelsFragment extends Fragment implements
                     LinearLayout.LayoutParams.MATCH_PARENT
             );
             videoContainer.setLayoutParams(params);
+            
+            // Manter a tela ligada durante reprodução em fullscreen
+            videoContainer.setKeepScreenOn(true);
+        }
+        
+        // Ajustar configurações do VLC para fullscreen
+        if (vlcVideoPlayer != null) {
+            // Ajustar aspect ratio para preencher a tela em landscape
+            vlcVideoPlayer.setAspectRatio(null); // Usa aspect ratio nativo do vídeo
+            vlcVideoPlayer.setScale(0); // Auto-scale para melhor ajuste
         }
         
         // Atualizar ícone do botão fullscreen
@@ -192,9 +235,12 @@ public class ChannelsFragment extends Fragment implements
                 navigationTabs.setVisibility(View.VISIBLE);
             }
             
-            // Mostrar barras do sistema
+            // Restaurar barras do sistema
             View decorView = getActivity().getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            
+            // Remover listener de mudanças na UI
+            decorView.setOnSystemUiVisibilityChangeListener(null);
         }
 
         // Restaurar tamanho original do container do vídeo
@@ -204,6 +250,16 @@ public class ChannelsFragment extends Fragment implements
                     getResources().getDimensionPixelSize(R.dimen.player_height)
             );
             videoContainer.setLayoutParams(params);
+            
+            // Desativar keep screen on quando não estiver em fullscreen
+            videoContainer.setKeepScreenOn(false);
+        }
+        
+        // Restaurar configurações do VLC para modo normal
+        if (vlcVideoPlayer != null) {
+            // Restaurar aspect ratio e scale para modo janela
+            vlcVideoPlayer.setAspectRatio(null);
+            vlcVideoPlayer.setScale(0);
         }
         
         // Atualizar ícone do botão fullscreen
@@ -222,7 +278,36 @@ public class ChannelsFragment extends Fragment implements
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // A lógica agora é tratada pelos métodos enterFullScreen e exitFullScreen
+        
+        // Ajustar layout baseado na nova orientação
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // Se mudou para landscape e não está em fullscreen, ajustar UI
+            if (!isFullscreen && vlcVideoPlayer != null && vlcVideoPlayer.isPlaying()) {
+                // Opcional: oferecer ao usuário entrar em fullscreen automaticamente
+                // showFullscreenSuggestion();
+            }
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            // Se mudou para portrait e está em fullscreen, sair do fullscreen
+            if (isFullscreen) {
+                exitFullScreen();
+            }
+        }
+        
+        // Ajustar configurações do player baseado na orientação
+        adjustPlayerForOrientation(newConfig.orientation);
+    }
+    
+    private void adjustPlayerForOrientation(int orientation) {
+        if (vlcVideoPlayer != null && vlcVideoPlayer.isPlaying()) {
+            // Ajustar aspect ratio baseado na orientação
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                // Em landscape, usar configurações otimizadas para tela larga
+                vlcVideoPlayer.setScale(0); // Auto-scale
+            } else {
+                // Em portrait, manter proporções adequadas
+                vlcVideoPlayer.setScale(0); // Auto-scale
+            }
+        }
     }
     
     private void setupRecyclerViews() {
@@ -479,6 +564,68 @@ public class ChannelsFragment extends Fragment implements
         }
     }
 
+    private void setupVideoGestures() {
+        gestureDetector = new GestureDetector(requireContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onDoubleTap(MotionEvent e) {
+                // Duplo toque no player para alternar fullscreen
+                if (vlcVideoPlayer != null && vlcVideoPlayer.isPlaying()) {
+                    toggleFullscreen();
+                    return true;
+                }
+                return false;
+            }
+            
+            @Override
+            public boolean onSingleTapConfirmed(MotionEvent e) {
+                // Toque simples para mostrar/esconder controles em fullscreen
+                if (isFullscreen) {
+                    toggleFullscreenControls();
+                    return true;
+                }
+                return false;
+            }
+        });
+        
+        // Aplicar o detector de gestos ao container do vídeo
+        if (videoContainer != null) {
+            videoContainer.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return gestureDetector.onTouchEvent(event);
+                }
+            });
+        }
+    }
+    
+    private void toggleFullscreenControls() {
+        if (fullscreenButton != null) {
+            if (fullscreenButton.getVisibility() == View.VISIBLE) {
+                // Esconder controles
+                fullscreenButton.setVisibility(View.GONE);
+                if (networkSpeedTextView != null) {
+                    networkSpeedTextView.setVisibility(View.GONE);
+                }
+                
+                // Mostrar controles novamente após 3 segundos
+                new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                    if (isFullscreen && fullscreenButton != null) {
+                        fullscreenButton.setVisibility(View.VISIBLE);
+                        if (networkSpeedTextView != null) {
+                            networkSpeedTextView.setVisibility(View.VISIBLE);
+                        }
+                    }
+                }, 3000);
+            } else {
+                // Mostrar controles
+                fullscreenButton.setVisibility(View.VISIBLE);
+                if (networkSpeedTextView != null) {
+                    networkSpeedTextView.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+    }
+    
     // onBackPressed is handled by the Activity, not the Fragment directly
     // private void showSpecificCategory(String categoryName) is now public
     public void showSpecificCategory(String categoryName) {
