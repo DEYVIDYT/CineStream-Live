@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'json_config.php';
 
 header('Content-Type: application/json');
 
@@ -12,53 +12,43 @@ if (empty($email) || empty($password) || empty($device_id)) {
     exit;
 }
 
-// Verificar se o ID do dispositivo já existe
-$sql = "SELECT id FROM users WHERE device_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $device_id);
-$stmt->execute();
-$stmt->store_result();
+// Carregar dados dos usuários
+$users = loadJsonData(USERS_FILE);
 
-if ($stmt->num_rows > 0) {
+// Verificar se o ID do dispositivo já existe
+$existingDeviceUser = findByField($users, 'device_id', $device_id);
+if ($existingDeviceUser) {
     echo json_encode(['status' => 'error', 'message' => 'Este dispositivo já está registrado.']);
-    $stmt->close();
-    $conn->close();
     exit;
 }
-
-$stmt->close();
 
 // Verificar se o e-mail já existe
-$sql = "SELECT id FROM users WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
-
-if ($stmt->num_rows > 0) {
+$existingEmailUser = findByField($users, 'email', $email);
+if ($existingEmailUser) {
     echo json_encode(['status' => 'error', 'message' => 'Este e-mail já está cadastrado.']);
-    $stmt->close();
-    $conn->close();
     exit;
 }
-
-$stmt->close();
 
 // Hash da senha
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 $plan_expiration = date('Y-m-d', strtotime('+2 days'));
 
 // Inserir novo usuário
-$sql = "INSERT INTO users (email, password, device_id, plan_expiration) VALUES (?, ?, ?, ?)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ssss", $email, $hashed_password, $device_id, $plan_expiration);
+$newUser = [
+    'id' => getNextId($users),
+    'email' => $email,
+    'password' => $hashed_password,
+    'device_id' => $device_id,
+    'plan_expiration' => $plan_expiration,
+    'is_banned' => 0,
+    'created_at' => date('Y-m-d H:i:s')
+];
 
-if ($stmt->execute()) {
+$users[] = $newUser;
+
+if (saveJsonData(USERS_FILE, $users)) {
     echo json_encode(['status' => 'success', 'message' => 'Usuário registrado com sucesso.']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Erro ao registrar o usuário.']);
 }
-
-$stmt->close();
-$conn->close();
 ?>

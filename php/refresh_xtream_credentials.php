@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'json_config.php';
 
 header('Content-Type: application/json');
 
@@ -11,37 +11,39 @@ if (empty($user_id) || empty($session_token)) {
     exit;
 }
 
-// Verificar sessão
-$sql = "SELECT id FROM sessions WHERE user_id = ? AND session_token = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("is", $user_id, $session_token);
-$stmt->execute();
-$stmt->store_result();
+// Carregar dados das sessões
+$sessions = loadJsonData(SESSIONS_FILE);
 
-if ($stmt->num_rows == 0) {
+// Verificar sessão
+$validSession = null;
+foreach ($sessions as $session) {
+    if ($session['user_id'] == $user_id && $session['session_token'] === $session_token) {
+        $validSession = $session;
+        break;
+    }
+}
+
+if (!$validSession) {
     echo json_encode(['status' => 'error', 'message' => 'Sessão inválida.']);
-    $stmt->close();
-    $conn->close();
     exit;
 }
 
-$stmt->close();
+// Carregar dados dos usuários
+$users = loadJsonData(USERS_FILE);
 
 // Buscar dados do usuário
-$sql = "SELECT plan_expiration, is_banned FROM users WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$stmt->bind_result($plan_expiration, $is_banned);
-$stmt->fetch();
-$stmt->close();
+$user = findByField($users, 'id', (int)$user_id);
+if (!$user) {
+    echo json_encode(['status' => 'error', 'message' => 'Usuário não encontrado.']);
+    exit;
+}
 
-if ($is_banned) {
+if ($user['is_banned']) {
     echo json_encode(['status' => 'banned', 'message' => 'Este usuário está banido.']);
     exit;
 }
 
-if (strtotime($plan_expiration) < time()) {
+if (strtotime($user['plan_expiration']) < time()) {
     echo json_encode(['status' => 'expired', 'message' => 'Seu plano expirou.']);
     exit;
 }
@@ -68,6 +70,4 @@ if (isset($xtream_server)) {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Nenhum login do Xtream disponível.']);
 }
-
-$conn->close();
 ?>

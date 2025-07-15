@@ -44,6 +44,9 @@ public class HostActivity extends AppCompatActivity {
         sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
         fragmentManager = getSupportFragmentManager();
 
+        // Mostrar mensagem sobre seleção automática de lista IPTV
+        Toast.makeText(this, "📺 Lista IPTV selecionada automaticamente pelo sistema!", Toast.LENGTH_LONG).show();
+        
         // Start loading data
         Intent intent = getIntent();
         String xtreamServer = intent.getStringExtra("xtream_server");

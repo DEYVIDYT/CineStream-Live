@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'json_config.php';
 
 header('Content-Type: application/json');
 
@@ -11,22 +11,22 @@ if (empty($user_id) || empty($session_token)) {
     exit;
 }
 
-// Verificar sessão
-$sql = "SELECT id FROM sessions WHERE user_id = ? AND session_token = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("is", $user_id, $session_token);
-$stmt->execute();
-$stmt->store_result();
+// Carregar dados das sessões
+$sessions = loadJsonData(SESSIONS_FILE);
 
-if ($stmt->num_rows == 0) {
-    echo json_encode(['status' => 'error', 'message' => 'Sessão inválida.']);
-    $stmt->close();
-    $conn->close();
-    exit;
+// Verificar sessão
+$validSession = null;
+foreach ($sessions as $session) {
+    if ($session['user_id'] == $user_id && $session['session_token'] === $session_token) {
+        $validSession = $session;
+        break;
+    }
 }
 
-$stmt->close();
-$conn->close();
+if (!$validSession) {
+    echo json_encode(['status' => 'error', 'message' => 'Sessão inválida.']);
+    exit;
+}
 
 // Credenciais do Xtream - PREENCHA COM SEUS DADOS
 $xtream_server = 'http://xtream.example.com';

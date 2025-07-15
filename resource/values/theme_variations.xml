@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <!-- 🎭 VARIAÇÕES TEMÁTICAS ADICIONAIS -->
+    
+    <!-- Netflix Theme Colors -->
+    <color name="netflix_primary">#E50914</color>
+    <color name="netflix_background">#141414</color>
+    <color name="netflix_surface">#2F2F2F</color>
+    <color name="netflix_text">#FFFFFF</color>
+    
+    <!-- YouTube Theme Colors -->
+    <color name="youtube_primary">#FF0000</color>
+    <color name="youtube_background">#0F0F0F</color>
+    <color name="youtube_surface">#272727</color>
+    <color name="youtube_text">#FFFFFF</color>
+    
+    <!-- Twitch Theme Colors -->
+    <color name="twitch_primary">#9146FF</color>
+    <color name="twitch_background">#0E0E10</color>
+    <color name="twitch_surface">#1F1925</color>
+    <color name="twitch_text">#EFEFF1</color>
+    
+    <!-- Spotify Theme Colors -->
+    <color name="spotify_primary">#1DB954</color>
+    <color name="spotify_background">#121212</color>
+    <color name="spotify_surface">#282828</color>
+    <color name="spotify_text">#FFFFFF</color>
+    
+    <!-- Disney+ Theme Colors -->
+    <color name="disney_primary">#113CCF</color>
+    <color name="disney_background">#040813</color>
+    <color name="disney_surface">#1A1D29</color>
+    <color name="disney_text">#F9F9F9</color>
+    <color name="disney_gold">#FFD700</color>
+    
+    <!-- Amazon Prime Theme Colors -->
+    <color name="amazon_primary">#00A8E1</color>
+    <color name="amazon_secondary">#FF9900</color>
+    <color name="amazon_background">#0F171E</color>
+    <color name="amazon_surface">#1A252F</color>
+    <color name="amazon_text">#FFFFFF</color>
+    
+    <!-- HBO Max Theme Colors -->
+    <color name="hbo_primary">#7B2CBF</color>
+    <color name="hbo_secondary">#C77DFF</color>
+    <color name="hbo_background">#000000</color>
+    <color name="hbo_surface">#1A1A1A</color>
+    <color name="hbo_text">#FFFFFF</color>
+    
+    <!-- Apple TV Theme Colors -->
+    <color name="apple_primary">#007AFF</color>
+    <color name="apple_secondary">#5AC8FA</color>
+    <color name="apple_background">#000000</color>
+    <color name="apple_surface">#1C1C1E</color>
+    <color name="apple_text">#FFFFFF</color>
+    
+    <!-- Gaming Theme Colors -->
+    <color name="gaming_primary">#00FF88</color>
+    <color name="gaming_secondary">#FF0080</color>
+    <color name="gaming_background">#0A0A0A</color>
+    <color name="gaming_surface">#1A1A1A</color>
+    <color name="gaming_text">#FFFFFF</color>
+    <color name="gaming_neon">#00FFFF</color>
+    
+    <!-- Midnight Theme Colors -->
+    <color name="midnight_primary">#6366F1</color>
+    <color name="midnight_secondary">#A855F7</color>
+    <color name="midnight_background">#030712</color>
+    <color name="midnight_surface">#111827</color>
+    <color name="midnight_text">#F9FAFB</color>
+    
+</resources>

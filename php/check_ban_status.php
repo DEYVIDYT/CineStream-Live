@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'json_config.php';
 
 header('Content-Type: application/json');
 
@@ -11,36 +11,34 @@ if (empty($user_id) || empty($device_id)) {
     exit;
 }
 
-// Verificar se o usuário está banido
-$sql = "SELECT is_banned FROM users WHERE id = ?";
-$stmt_user = $conn->prepare($sql);
-$stmt_user->bind_param("i", $user_id);
-$stmt_user->execute();
-$stmt_user->bind_result($is_banned);
-$stmt_user->fetch();
-$stmt_user->close();
+// Carregar dados dos usuários
+$users = loadJsonData(USERS_FILE);
 
-if ($is_banned) {
+// Verificar se o usuário está banido
+$user = findByField($users, 'id', (int)$user_id);
+if (!$user) {
+    echo json_encode(['status' => 'error', 'message' => 'Usuário não encontrado.']);
+    exit;
+}
+
+if ($user['is_banned']) {
     echo json_encode(['status' => 'banned', 'message' => 'Este usuário está banido.']);
     exit;
 }
 
 // Verificar se o dispositivo está banido
-$sql = "SELECT id FROM users WHERE device_id = ? AND is_banned = 1";
-$stmt_device = $conn->prepare($sql);
-$stmt_device->bind_param("s", $device_id);
-$stmt_device->execute();
-$stmt_device->store_result();
+$bannedDevice = null;
+foreach ($users as $u) {
+    if ($u['device_id'] === $device_id && $u['is_banned']) {
+        $bannedDevice = $u;
+        break;
+    }
+}
 
-if ($stmt_device->num_rows > 0) {
+if ($bannedDevice) {
     echo json_encode(['status' => 'banned', 'message' => 'Este dispositivo está banido.']);
-    $stmt_device->close();
     exit;
 }
 
-$stmt_device->close();
-
 echo json_encode(['status' => 'ok']);
-
-$conn->close();
 ?>

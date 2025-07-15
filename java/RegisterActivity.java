@@ -26,6 +26,10 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText confirmPasswordEditText;
     private Button registerButton;
     private TextView loginTextView;
+    private ImageView passwordToggle;
+    private ImageView confirmPasswordToggle;
+    private boolean isPasswordVisible = false;
+    private boolean isConfirmPasswordVisible = false;
     private ServerManager serverManager;
 
     @Override
@@ -38,6 +42,8 @@ public class RegisterActivity extends AppCompatActivity {
         confirmPasswordEditText = findViewById(R.id.confirm_password);
         registerButton = findViewById(R.id.register_button);
         loginTextView = findViewById(R.id.login_text);
+        passwordToggle = findViewById(R.id.password_toggle);
+        confirmPasswordToggle = findViewById(R.id.confirm_password_toggle);
         
         serverManager = ServerManager.getInstance(this);
         
@@ -49,6 +55,8 @@ public class RegisterActivity extends AppCompatActivity {
             startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
             finish();
         });
+        passwordToggle.setOnClickListener(v -> togglePasswordVisibility());
+        confirmPasswordToggle.setOnClickListener(v -> toggleConfirmPasswordVisibility());
     }
     
     private void loadServers() {
@@ -140,5 +148,37 @@ public class RegisterActivity extends AppCompatActivity {
                 });
             }
         }, this); // Added this (Activity context) as the 4th parameter
+    }
+    
+    private void togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            // Ocultar senha
+            passwordEditText.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            passwordToggle.setImageResource(R.drawable.ic_eye);
+            isPasswordVisible = false;
+        } else {
+            // Mostrar senha
+            passwordEditText.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            passwordToggle.setImageResource(R.drawable.ic_eye_off);
+            isPasswordVisible = true;
+        }
+        // Manter cursor no final
+        passwordEditText.setSelection(passwordEditText.getText().length());
+    }
+    
+    private void toggleConfirmPasswordVisibility() {
+        if (isConfirmPasswordVisible) {
+            // Ocultar senha
+            confirmPasswordEditText.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            confirmPasswordToggle.setImageResource(R.drawable.ic_eye);
+            isConfirmPasswordVisible = false;
+        } else {
+            // Mostrar senha
+            confirmPasswordEditText.setInputType(android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+            confirmPasswordToggle.setImageResource(R.drawable.ic_eye_off);
+            isConfirmPasswordVisible = true;
+        }
+        // Manter cursor no final
+        confirmPasswordEditText.setSelection(confirmPasswordEditText.getText().length());
     }
 }
