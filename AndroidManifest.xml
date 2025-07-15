@@ -38,6 +38,7 @@
         <activity
             android:name=".HostActivity"
             android:exported="true"
+            android:configChanges="orientation|screenLayout|screenSize|keyboardHidden"
             android:theme="@style/Theme.CineStreamLiveMobile.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
