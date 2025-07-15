@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'json_config.php';
 session_start();
 
 header('Content-Type: application/json');
@@ -13,81 +13,83 @@ if (empty($email) || empty($password) || empty($device_id)) {
     exit;
 }
 
-// Buscar usuário
-$sql = "SELECT id, password, plan_expiration, is_banned FROM users WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
-$stmt->bind_result($user_id, $hashed_password, $plan_expiration, $is_banned);
+// Carregar dados dos usuários
+$users = loadJsonData(USERS_FILE);
 
-if ($stmt->num_rows > 0) {
-    $stmt->fetch();
-    if (password_verify($password, $hashed_password)) {
-        if ($is_banned) {
+// Buscar usuário
+$user = findByField($users, 'email', $email);
+
+if ($user) {
+    if (password_verify($password, $user['password'])) {
+        if ($user['is_banned']) {
             echo json_encode(['status' => 'banned', 'message' => 'Este usuário está banido.']);
             exit;
         }
 
         // Verificar se o dispositivo está banido
-        $sql = "SELECT id FROM users WHERE device_id = ? AND is_banned = 1";
-        $stmt_device = $conn->prepare($sql);
-        $stmt_device->bind_param("s", $device_id);
-        $stmt_device->execute();
-        $stmt_device->store_result();
+        $bannedDevice = null;
+        foreach ($users as $u) {
+            if ($u['device_id'] === $device_id && $u['is_banned']) {
+                $bannedDevice = $u;
+                break;
+            }
+        }
 
-        if ($stmt_device->num_rows > 0) {
+        if ($bannedDevice) {
             echo json_encode(['status' => 'banned', 'message' => 'Este dispositivo está banido.']);
-            $stmt_device->close();
             exit;
         }
-        $stmt_device->close();
+
+        // Carregar dados das sessões
+        $sessions = loadJsonData(SESSIONS_FILE);
 
         // Verificar se já existe uma sessão para este dispositivo
-        $sql = "SELECT id FROM sessions WHERE user_id = ? AND device_id = ?";
-        $session_stmt = $conn->prepare($sql);
-        $session_stmt->bind_param("is", $user_id, $device_id);
-        $session_stmt->execute();
-        $session_stmt->store_result();
+        $existingSession = null;
+        foreach ($sessions as $session) {
+            if ($session['user_id'] == $user['id'] && $session['device_id'] === $device_id) {
+                $existingSession = $session;
+                break;
+            }
+        }
 
-        if ($session_stmt->num_rows > 0) {
-            // A sessão para este dispositivo já existe, não é necessário criar uma nova
-        } else {
+        if (!$existingSession) {
             // Excluir sessões antigas para outros dispositivos
-            $sql = "DELETE FROM sessions WHERE user_id = ?";
-            $delete_stmt = $conn->prepare($sql);
-            $delete_stmt->bind_param("i", $user_id);
-            $delete_stmt->execute();
-            $delete_stmt->close();
+            $sessions = deleteAllByField($sessions, 'user_id', $user['id']);
         }
 
         // Gerar token de sessão
         $session_token = bin2hex(random_bytes(32));
 
         // Inserir nova sessão
-        $sql = "INSERT INTO sessions (user_id, session_token, device_id) VALUES (?, ?, ?)";
-        $insert_stmt = $conn->prepare($sql);
-        $insert_stmt->bind_param("iss", $user_id, $session_token, $device_id);
-        $insert_stmt->execute();
-        $insert_stmt->close();
+        $sessions[] = [
+            'id' => getNextId($sessions),
+            'user_id' => $user['id'],
+            'session_token' => $session_token,
+            'device_id' => $device_id,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        saveJsonData(SESSIONS_FILE, $sessions);
 
         // Registrar atividade
-        $sql = "INSERT INTO activity_logs (user_id) VALUES (?)";
-        $activity_stmt = $conn->prepare($sql);
-        $activity_stmt->bind_param("i", $user_id);
-        $activity_stmt->execute();
-        $activity_stmt->close();
+        $activity_logs = loadJsonData(ACTIVITY_LOGS_FILE);
+        $activity_logs[] = [
+            'id' => getNextId($activity_logs),
+            'user_id' => $user['id'],
+            'login_time' => date('Y-m-d H:i:s')
+        ];
+        saveJsonData(ACTIVITY_LOGS_FILE, $activity_logs);
 
         $response = [
             'status' => 'success',
             'message' => 'Login bem-sucedido.',
-            'user_id' => $user_id,
+            'user_id' => $user['id'],
             'session_token' => $session_token,
-            'plan_expiration' => $plan_expiration,
+            'plan_expiration' => $user['plan_expiration'],
         ];
 
         // Se o plano não estiver expirado, fornecer credenciais do Xtream
-        if (strtotime($plan_expiration) >= time()) {
+        if (strtotime($user['plan_expiration']) >= time()) {
             $xtream_logins_file = 'xtream_logins.json';
             if (file_exists($xtream_logins_file)) {
                 $xtream_logins = json_decode(file_get_contents($xtream_logins_file), true);
@@ -107,7 +109,4 @@ if ($stmt->num_rows > 0) {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Usuário não encontrado.']);
 }
-
-$stmt->close();
-$conn->close();
 ?>
