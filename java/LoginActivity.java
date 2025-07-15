@@ -8,6 +8,8 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText emailEditText;
     private EditText passwordEditText;
     private Button loginButton;
-    private TextView registerTextView;
+    private MaterialButton goToRegisterButton;
     private ServerManager serverManager;
 
     @Override
@@ -36,7 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
-        registerTextView = findViewById(R.id.register_text);
+        goToRegisterButton = findViewById(R.id.register_button);
         
         serverManager = ServerManager.getInstance(this);
         
@@ -44,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         loadServers();
 
         loginButton.setOnClickListener(v -> login());
-        registerTextView.setOnClickListener(v -> {
+        goToRegisterButton.setOnClickListener(v -> {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
         });
     }
