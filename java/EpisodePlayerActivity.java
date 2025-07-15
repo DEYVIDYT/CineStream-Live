@@ -1,10 +1,14 @@
 package com.cinestream.live;
 
+import android.app.PictureInPictureParams;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Rational;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -27,6 +31,8 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
     private TextView seriesTitleTextView;
     private TextView episodeInfoTextView;
     private TextView plotTextView;
+    private ImageButton aspectRatioButton;
+    private ImageButton pipButton;
     private ImageButton backButton;
     private ImageButton fullscreenButton;
     private ImageButton playPauseButton;
@@ -37,6 +43,9 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
     private TextView currentTimeTextView;
     private TextView totalTimeTextView;
     
+    private int currentAspectRatio = 0; // 0: Original, 1: 16:9, 2: 4:3, 3: Stretch
+    private String[] aspectRatioNames = {"Original", "16:9", "4:3", "Esticado"};
+    private boolean isInPictureInPictureMode = false;
     private boolean isFullscreen = false;
     private boolean controlsVisible = true;
     private boolean userSeeking = false;
@@ -75,6 +84,8 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
         seriesTitleTextView = findViewById(R.id.seriesTitleTextView);
         episodeInfoTextView = findViewById(R.id.episodeInfoTextView);
         plotTextView = findViewById(R.id.plotTextView);
+        aspectRatioButton = findViewById(R.id.aspectRatioButton);
+        pipButton = findViewById(R.id.pipButton);
         backButton = findViewById(R.id.backButton);
         fullscreenButton = findViewById(R.id.fullscreenButton);
         playPauseButton = findViewById(R.id.playPauseButton);
@@ -84,6 +95,12 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
         progressSeekBar = findViewById(R.id.progressSeekBar);
         currentTimeTextView = findViewById(R.id.currentTimeTextView);
         totalTimeTextView = findViewById(R.id.totalTimeTextView);
+        
+        // Verificar se o dispositivo suporta PIP
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !getPackageManager().hasSystemFeature(
+                "android.software.picture_in_picture")) {
+            pipButton.setVisibility(View.GONE);
+        }
     }
     
     private void setupControlsHandling() {
@@ -132,6 +149,8 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
     
     private void setupListeners() {
         backButton.setOnClickListener(v -> finish());
+        aspectRatioButton.setOnClickListener(v -> toggleAspectRatio());
+        pipButton.setOnClickListener(v -> startPictureInPictureMode());
         fullscreenButton.setOnClickListener(v -> toggleFullscreen());
         playPauseButton.setOnClickListener(v -> togglePlayPause());
         rewindButton.setOnClickListener(v -> seekBackward());
@@ -265,6 +284,109 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
     
     private void pauseHideControlsTimer() {
         hideControlsHandler.removeCallbacks(hideControlsRunnable);
+    }
+    
+    // Métodos para aspect ratio
+    private void toggleAspectRatio() {
+        currentAspectRatio = (currentAspectRatio + 1) % aspectRatioNames.length;
+        applyAspectRatio();
+        Toast.makeText(this, "Proporção: " + aspectRatioNames[currentAspectRatio], Toast.LENGTH_SHORT).show();
+        startHideControlsTimer();
+    }
+    
+    private void applyAspectRatio() {
+        if (vlcVideoLayout != null) {
+            try {
+                android.view.ViewGroup.LayoutParams params = vlcVideoLayout.getLayoutParams();
+                
+                if (params != null) {
+                    int screenWidth = getResources().getDisplayMetrics().widthPixels;
+                    
+                    switch (currentAspectRatio) {
+                        case 0: // Original
+                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+                            params.height = 220; // altura original fixada no layout
+                            break;
+                        case 1: // 16:9
+                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+                            params.height = (int) (screenWidth * 9.0 / 16.0);
+                            break;
+                        case 2: // 4:3
+                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+                            params.height = (int) (screenWidth * 3.0 / 4.0);
+                            break;
+                        case 3: // Stretch
+                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+                            params.height = 300; // altura aumentada para stretch
+                            if (vlcVideoPlayer != null) {
+                                vlcVideoPlayer.setAspectRatio(null);
+                            }
+                            break;
+                    }
+                    
+                    vlcVideoLayout.setLayoutParams(params);
+                }
+            } catch (Exception e) {
+                // Log error and show message
+                Toast.makeText(this, "Erro ao alterar proporção", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    
+    // Métodos para Picture-in-Picture
+    private void startPictureInPictureMode() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (getPackageManager().hasSystemFeature("android.software.picture_in_picture")) {
+                try {
+                    // Verificar se já está em modo PIP
+                    if (isInPictureInPictureMode()) {
+                        return;
+                    }
+                    
+                    Rational aspectRatio = new Rational(16, 9);
+                    PictureInPictureParams.Builder paramsBuilder = new PictureInPictureParams.Builder();
+                    
+                    // Adicionar parâmetros com validação
+                    paramsBuilder.setAspectRatio(aspectRatio);
+                    
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        paramsBuilder.setSeamlessResizeEnabled(true);
+                    }
+                    
+                    // Tentar entrar no modo PIP
+                    boolean success = enterPictureInPictureMode(paramsBuilder.build());
+                    
+                    if (!success) {
+                        Toast.makeText(this, "Não foi possível ativar o modo PIP", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(this, "Erro ao ativar modo PIP: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Modo PIP não suportado neste dispositivo", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Modo PIP requer Android 8.0 ou superior", Toast.LENGTH_SHORT).show();
+        }
+    }
+    
+    @Override
+    public void onPictureInPictureModeChanged(boolean isInPictureInPictureMode, Configuration newConfig) {
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig);
+        this.isInPictureInPictureMode = isInPictureInPictureMode;
+        
+        if (isInPictureInPictureMode) {
+            // Esconder controles e informações no modo PIP
+            videoControlsContainer.setVisibility(View.GONE);
+            findViewById(R.id.episodeInfoContainer).setVisibility(View.GONE);
+            pauseHideControlsTimer();
+        } else {
+            // Mostrar controles quando sair do modo PIP
+            if (!isFullscreen) {
+                showControls();
+                findViewById(R.id.episodeInfoContainer).setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     private void toggleFullscreen() {
