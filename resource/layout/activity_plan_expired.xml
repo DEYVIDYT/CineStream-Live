@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient_overlay"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <!-- Header Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:background="@drawable/rounded_background"
+            android:padding="32dp"
+            android:layout_marginBottom="24dp"
+            android:elevation="8dp">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_crown"
+                android:layout_marginBottom="16dp"
+                android:tint="@color/accent_color"/>
+
+            <TextView
+                android:id="@+id/title_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏰ Plano Expirado"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="12dp"
+                android:gravity="center"/>
+
+            <TextView
+                android:id="@+id/description_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Seu plano expirou! Para continuar aproveitando o melhor do entretenimento, renove agora mesmo."
+                android:textSize="16sp"
+                android:textColor="@color/text_secondary"
+                android:gravity="center"
+                android:layout_marginBottom="20dp"
+                android:lineSpacingExtra="4dp"/>
+
+            <TextView
+                android:id="@+id/price_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="💰 Apenas R$ 4,00"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@color/accent_color"
+                android:background="@drawable/button_primary"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp"/>
+
+        </LinearLayout>
+
+        <!-- Features Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/rounded_background"
+            android:padding="24dp"
+            android:layout_marginBottom="24dp"
+            android:elevation="4dp">
+
+            <TextView
+                android:id="@+id/features_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_primary"
+                android:lineSpacingExtra="6dp"
+                android:layout_marginBottom="16dp"/>
+
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/recharge_button"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="💳 RECARREGAR AGORA"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@drawable/button_primary"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp"
+                android:stateListAnimator="@null"/>
+
+            <Button
+                android:id="@+id/back_to_login_button"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="← Voltar ao Login"
+                android:textSize="14sp"
+                android:textColor="@color/text_secondary"
+                android:background="@drawable/button_secondary"
+                android:stateListAnimator="@null"/>
+
+        </LinearLayout>
+
+        <!-- Footer Info -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔒 Pagamento seguro • 📱 Suporte 24h • ⚡ Ativação instantânea"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:gravity="center"
+            android:layout_marginTop="24dp"
+            android:alpha="0.8"/>
+
+    </LinearLayout>
+</ScrollView>

@@ -1,5 +1,5 @@
 <?php
-include '../db_config.php';
+include '../json_config.php';
 
 header('Content-Type: application/json');
 
@@ -15,58 +15,77 @@ $action = $_GET['action'] ?? '';
 
 switch ($action) {
     case 'get_stats':
-        getStats($conn);
+        getStats();
         break;
     case 'get_users':
-        getUsers($conn);
+        getUsers();
         break;
     case 'get_enhanced_stats':
-        getEnhancedStats($conn);
+        getEnhancedStats();
         break;
     case 'search_users':
-        searchUsers($conn);
+        searchUsers();
         break;
     case 'add_plan':
-        addPlan($conn);
+        addPlan();
         break;
     case 'toggle_ban':
-        toggleBan($conn);
+        toggleBan();
         break;
     case 'delete_user':
-        deleteUser($conn);
+        deleteUser();
         break;
     case 'remove_days':
-        removeDays($conn);
+        removeDays();
         break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Ação inválida.']);
 }
 
-function getStats($conn) {
+function getStats() {
+    $users = loadJsonData(USERS_FILE);
+    $sessions = loadJsonData(SESSIONS_FILE);
+    $activity_logs = loadJsonData(ACTIVITY_LOGS_FILE);
+    
     // Usuários online (sessões ativas nos últimos 5 minutos)
-    $sql = "SELECT COUNT(DISTINCT user_id) as online_users FROM sessions WHERE created_at >= NOW() - INTERVAL 5 MINUTE";
-    $result = $conn->query($sql);
-    $online_users = $result->fetch_assoc()['online_users'] ?? 0;
+    $online_users = 0;
+    $five_minutes_ago = date('Y-m-d H:i:s', strtotime('-5 minutes'));
+    foreach ($sessions as $session) {
+        if ($session['created_at'] >= $five_minutes_ago) {
+            $online_users++;
+        }
+    }
 
     // Usuários hoje
-    $sql = "SELECT COUNT(DISTINCT user_id) as today_users FROM activity_logs WHERE login_time >= CURDATE()";
-    $result = $conn->query($sql);
-    $today_users = $result->fetch_assoc()['today_users'] ?? 0;
+    $today_users = 0;
+    $today = date('Y-m-d');
+    foreach ($activity_logs as $log) {
+        if (strpos($log['login_time'], $today) === 0) {
+            $today_users++;
+        }
+    }
     
     // Total de usuários
-    $sql = "SELECT COUNT(*) as total_users FROM users";
-    $result = $conn->query($sql);
-    $total_users = $result->fetch_assoc()['total_users'] ?? 0;
+    $total_users = count($users);
     
     // Usuários com plano ativo
-    $sql = "SELECT COUNT(*) as active_plans FROM users WHERE plan_expiration >= CURDATE() AND plan_expiration != '1970-01-01'";
-    $result = $conn->query($sql);
-    $active_plans = $result->fetch_assoc()['active_plans'] ?? 0;
+    $active_plans = 0;
+    $current_date = date('Y-m-d');
+    foreach ($users as $user) {
+        if (isset($user['plan_expiration']) && 
+            $user['plan_expiration'] >= $current_date && 
+            $user['plan_expiration'] !== '1970-01-01') {
+            $active_plans++;
+        }
+    }
     
     // Usuários banidos
-    $sql = "SELECT COUNT(*) as banned_users FROM users WHERE is_banned = 1";
-    $result = $conn->query($sql);
-    $banned_users = $result->fetch_assoc()['banned_users'] ?? 0;
+    $banned_users = 0;
+    foreach ($users as $user) {
+        if ($user['is_banned']) {
+            $banned_users++;
+        }
+    }
 
     echo json_encode([
         'online_users' => $online_users,
@@ -77,60 +96,54 @@ function getStats($conn) {
     ]);
 }
 
-function getUsers($conn) {
+function getUsers() {
+    $users = loadJsonData(USERS_FILE);
+    
     $search = $_GET['search'] ?? '';
     $status = $_GET['status'] ?? 'all';
     $plan_status = $_GET['plan_status'] ?? 'all';
     
-    $sql = "SELECT id, email, plan_expiration, is_banned FROM users WHERE 1=1";
-    $params = [];
-    $types = '';
+    $filtered_users = [];
     
-    // Filtro por email
-    if (!empty($search)) {
-        $sql .= " AND email LIKE ?";
-        $params[] = "%$search%";
-        $types .= 's';
-    }
-    
-    // Filtro por status de ban
-    if ($status === 'banned') {
-        $sql .= " AND is_banned = 1";
-    } elseif ($status === 'active') {
-        $sql .= " AND is_banned = 0";
-    }
-    
-    // Filtro por status do plano
-    if ($plan_status === 'active') {
-        $sql .= " AND plan_expiration >= CURDATE()";
-    } elseif ($plan_status === 'expired') {
-        $sql .= " AND (plan_expiration < CURDATE() OR plan_expiration IS NULL OR plan_expiration = '1970-01-01')";
-    }
-    
-    $sql .= " ORDER BY id DESC";
-    
-    if (!empty($params)) {
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param($types, ...$params);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    } else {
-        $result = $conn->query($sql);
-    }
-    
-    $users = [];
-    while ($row = $result->fetch_assoc()) {
+    foreach ($users as $user) {
+        // Filtro por email
+        if (!empty($search) && stripos($user['email'], $search) === false) {
+            continue;
+        }
+        
+        // Filtro por status de ban
+        if ($status === 'banned' && !$user['is_banned']) {
+            continue;
+        } elseif ($status === 'active' && $user['is_banned']) {
+            continue;
+        }
+        
+        // Filtro por status do plano
+        $current_date = date('Y-m-d');
+        $plan_active = ($user['plan_expiration'] && 
+                       $user['plan_expiration'] !== '1970-01-01' && 
+                       $user['plan_expiration'] >= $current_date);
+        
+        if ($plan_status === 'active' && !$plan_active) {
+            continue;
+        } elseif ($plan_status === 'expired' && $plan_active) {
+            continue;
+        }
+        
         // Adicionar informação se o plano está ativo
-        $row['plan_active'] = ($row['plan_expiration'] && 
-                              $row['plan_expiration'] !== '1970-01-01' && 
-                              strtotime($row['plan_expiration']) >= time());
-        $users[] = $row;
+        $user['plan_active'] = $plan_active;
+        $filtered_users[] = $user;
     }
     
-    echo json_encode($users);
+    // Ordenar por ID desc
+    usort($filtered_users, function($a, $b) {
+        return $b['id'] - $a['id'];
+    });
+    
+    echo json_encode($filtered_users);
 }
 
-function toggleBan($conn) {
+function toggleBan() {
     $data = json_decode(file_get_contents('php://input'), true);
     $userId = $data['user_id'] ?? 0;
 
@@ -139,20 +152,24 @@ function toggleBan($conn) {
         return;
     }
 
-    $sql = "UPDATE users SET is_banned = 1 - is_banned WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $userId);
-
-    if ($stmt->execute()) {
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Erro ao alterar o status de banido.']);
+    $users = loadJsonData(USERS_FILE);
+    
+    foreach ($users as &$user) {
+        if ($user['id'] == $userId) {
+            $user['is_banned'] = $user['is_banned'] ? 0 : 1;
+            if (saveJsonData(USERS_FILE, $users)) {
+                echo json_encode(['status' => 'success']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao alterar o status de banido.']);
+            }
+            return;
+        }
     }
-
-    $stmt->close();
+    
+    echo json_encode(['status' => 'error', 'message' => 'Usuário não encontrado.']);
 }
 
-function removeDays($conn) {
+function removeDays() {
     $data = json_decode(file_get_contents('php://input'), true);
     $userId = $data['user_id'] ?? 0;
 
@@ -161,20 +178,24 @@ function removeDays($conn) {
         return;
     }
 
-    $sql = "UPDATE users SET plan_expiration = '1970-01-01' WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $userId);
-
-    if ($stmt->execute()) {
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Erro ao remover os dias.']);
+    $users = loadJsonData(USERS_FILE);
+    
+    foreach ($users as &$user) {
+        if ($user['id'] == $userId) {
+            $user['plan_expiration'] = '1970-01-01';
+            if (saveJsonData(USERS_FILE, $users)) {
+                echo json_encode(['status' => 'success']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao remover os dias.']);
+            }
+            return;
+        }
     }
-
-    $stmt->close();
+    
+    echo json_encode(['status' => 'error', 'message' => 'Usuário não encontrado.']);
 }
 
-function deleteUser($conn) {
+function deleteUser() {
     $data = json_decode(file_get_contents('php://input'), true);
     $userId = $data['user_id'] ?? 0;
 
@@ -183,20 +204,41 @@ function deleteUser($conn) {
         return;
     }
 
-    $sql = "DELETE FROM users WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $userId);
-
-    if ($stmt->execute()) {
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Erro ao remover o usuário.']);
+    $users = loadJsonData(USERS_FILE);
+    $updatedUsers = [];
+    $userFound = false;
+    
+    foreach ($users as $user) {
+        if ($user['id'] == $userId) {
+            $userFound = true;
+            // Não adiciona ao array atualizado (efetivamente remove)
+        } else {
+            $updatedUsers[] = $user;
+        }
     }
-
-    $stmt->close();
+    
+    if ($userFound) {
+        if (saveJsonData(USERS_FILE, $updatedUsers)) {
+            // Também remover sessões do usuário
+            $sessions = loadJsonData(SESSIONS_FILE);
+            $updatedSessions = [];
+            foreach ($sessions as $session) {
+                if ($session['user_id'] != $userId) {
+                    $updatedSessions[] = $session;
+                }
+            }
+            saveJsonData(SESSIONS_FILE, $updatedSessions);
+            
+            echo json_encode(['status' => 'success']);
+        } else {
+            echo json_encode(['status' => 'error', 'message' => 'Erro ao remover o usuário.']);
+        }
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Usuário não encontrado.']);
+    }
 }
 
-function addPlan($conn) {
+function addPlan() {
     $data = json_decode(file_get_contents('php://input'), true);
     $email = $data['email'] ?? '';
     $days = $data['days'] ?? 0;
@@ -206,34 +248,37 @@ function addPlan($conn) {
         return;
     }
 
-    // Obter data de expiração atual
-    $sql = "SELECT plan_expiration FROM users WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->bind_result($current_expiration);
-    $stmt->fetch();
-    $stmt->close();
-
-    $new_expiration = date('Y-m-d', strtotime("+$days days"));
-    if ($current_expiration && strtotime($current_expiration) > time()) {
-        // Se o plano atual ainda for válido, adicione dias à data de expiração existente
-        $new_expiration = date('Y-m-d', strtotime("$current_expiration +$days days"));
+    $users = loadJsonData(USERS_FILE);
+    
+    foreach ($users as &$user) {
+        if ($user['email'] === $email) {
+            $current_expiration = $user['plan_expiration'];
+            
+            $new_expiration = date('Y-m-d', strtotime("+$days days"));
+            if ($current_expiration && strtotime($current_expiration) > time()) {
+                // Se o plano atual ainda for válido, adicione dias à data de expiração existente
+                $new_expiration = date('Y-m-d', strtotime("$current_expiration +$days days"));
+            }
+            
+            $user['plan_expiration'] = $new_expiration;
+            
+            if (saveJsonData(USERS_FILE, $users)) {
+                echo json_encode(['status' => 'success']);
+            } else {
+                echo json_encode(['status' => 'error', 'message' => 'Erro ao adicionar o plano.']);
+            }
+            return;
+        }
     }
-
-    // Atualizar plano do usuário
-    $sql = "UPDATE users SET plan_expiration = ? WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $new_expiration, $email);
-
-    if ($stmt->execute()) {
-        echo json_encode(['status' => 'success']);
-    } else {
-        echo json_encode(['status' => 'error', 'message' => 'Erro ao adicionar o plano.']);
-    }
-
-    $stmt->close();
+    
+    echo json_encode(['status' => 'error', 'message' => 'Usuário não encontrado.']);
 }
 
-$conn->close();
+function getEnhancedStats() {
+    getStats(); // Usa a mesma função
+}
+
+function searchUsers() {
+    getUsers(); // Usa a mesma função
+}
 ?>

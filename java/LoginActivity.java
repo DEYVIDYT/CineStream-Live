@@ -109,6 +109,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (status.equals("success")) {
                             String sessionToken = jsonObject.getString("session_token");
                             int userId = jsonObject.getInt("user_id");
+                            String planExpiration = jsonObject.optString("plan_expiration", "");
                             
                             // Salvar dados da sessão
                             SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
@@ -117,7 +118,17 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putString("session_token", sessionToken);
                             editor.apply();
 
-                            Toast.makeText(LoginActivity.this, "Login bem-sucedido!", Toast.LENGTH_SHORT).show();
+                            // Verificar se o plano expirou
+                            if (!jsonObject.has("xtream_server")) {
+                                // Plano expirado - redirecionar para tela de renovação
+                                Toast.makeText(LoginActivity.this, "Plano expirado! Renove para continuar.", Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(LoginActivity.this, PlanExpiredActivity.class);
+                                startActivity(intent);
+                                finish();
+                                return;
+                            }
+
+                            Toast.makeText(LoginActivity.this, "Login bem-sucedido! Lista IPTV selecionada automaticamente.", Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(LoginActivity.this, HostActivity.class);
 
                             if (jsonObject.has("xtream_server")) {
