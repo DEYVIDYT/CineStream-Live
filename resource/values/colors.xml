@@ -8,51 +8,92 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- Cores principais modernizadas -->
-    <color name="primary_purple">#8B5CF6</color>
-    <color name="dark_purple">#5B21B6</color>
+    <!-- Design System - Baseado nas referências -->
+    <!-- Cor Principal: Laranja (baseado no design de referência) -->
+    <color name="primary_orange">#FF9500</color>
+    <color name="primary_orange_dark">#E6850E</color>
+    <color name="primary_orange_light">#FFB84D</color>
     
-    <!-- Gradientes modernos para login -->
-    <color name="gradient_start">#667eea</color>
-    <color name="gradient_end">#764ba2</color>
-    <color name="gradient_secondary_start">#f093fb</color>
-    <color name="gradient_secondary_end">#f5576c</color>
-    <color name="gradient_accent_start">#4facfe</color>
-    <color name="gradient_accent_end">#00f2fe</color>
-    
-    <!-- Backgrounds modernos -->
-    <color name="background_dark">#0a0a0a</color>
-    <color name="background_darker">#000000</color>
-    <color name="background_overlay">#1a1a1a</color>
+    <!-- Backgrounds - Tema Escuro -->
+    <color name="background_primary">#000000</color>
+    <color name="background_secondary">#111111</color>
+    <color name="background_tertiary">#1A1A1A</color>
+    <color name="background_card">#252525</color>
+    <color name="background_overlay">#1f1f1f</color>
     <color name="surface_dark">#1f1f1f</color>
     <color name="surface_glassmorphism">#40ffffff</color>
     <color name="surface_glassmorphism_dark">#20000000</color>
     
     <!-- Textos -->
     <color name="text_primary">#FFFFFF</color>
-    <color name="text_secondary">#B3B3B3</color>
-    <color name="text_tertiary">#666666</color>
-    <color name="text_hint">#888888</color>
+    <color name="text_secondary">#CCCCCC</color>
+    <color name="text_tertiary">#999999</color>
+    <color name="text_hint">#666666</color>
+    <color name="text_disabled">#444444</color>
     
-    <!-- Cores de destaque -->
-    <color name="accent_color">#667eea</color>
-    <color name="accent_secondary">#f093fb</color>
-    <color name="accent">#FF9800</color>
+    <!-- Cores de Destaque -->
+    <color name="accent_color">#FF9500</color>
+    <color name="accent_secondary">#FFB84D</color>
+    <color name="accent">#FF9500</color>
     <color name="success_color">#4CAF50</color>
-    <color name="error_color">#f5576c</color>
+    <color name="error_color">#FF5252</color>
     <color name="warning_color">#FFC107</color>
     
-    <!-- Cores especiais para UI -->
-    <color name="button_gradient_start">#667eea</color>
-    <color name="button_gradient_end">#764ba2</color>
-    <color name="input_background">#25ffffff</color>
-    <color name="input_border">#40ffffff</color>
-    <color name="input_border_focused">#667eea</color>
+    <!-- Rating Colors -->
+    <color name="rating_star">#FF9500</color>
+    <color name="rating_background">#4CAF50</color>
+    <color name="rating_high">#4CAF50</color>
+    <color name="rating_medium">#FF9500</color>
+    <color name="rating_low">#FF5252</color>
+    
+    <!-- Search & Input -->
+    <color name="search_background">#333333</color>
+    <color name="search_hint">#888888</color>
+    <color name="input_background">#333333</color>
+    <color name="input_border">#555555</color>
+    <color name="input_border_focused">#FF9500</color>
+    
+    <!-- Cards & Containers -->
+    <color name="card_background">#1E1E1E</color>
+    <color name="card_background_elevated">#2A2A2A</color>
+    <color name="divider_color">#333333</color>
+    
+    <!-- Buttons -->
+    <color name="button_primary">#FF9500</color>
+    <color name="button_primary_pressed">#E6850E</color>
+    <color name="button_secondary">#333333</color>
+    <color name="button_secondary_pressed">#444444</color>
+    
+    <!-- Navigation -->
+    <color name="navigation_background">#111111</color>
+    <color name="navigation_active">#FF9500</color>
+    <color name="navigation_inactive">#666666</color>
     
     <!-- Transparências -->
     <color name="overlay_light">#40ffffff</color>
     <color name="overlay_dark">#60000000</color>
+    <color name="overlay_black">#80000000</color>
     <color name="ripple_color">#30ffffff</color>
+    <color name="ripple_orange">#30FF9500</color>
     
+    <!-- Legacy colors -->
     <color name="recharge_button_color">#4CAF50</color>
+    
+    <!-- Gradientes modernos para login -->
+    <color name="gradient_start">#FF9500</color>
+    <color name="gradient_end">#E6850E</color>
+    <color name="gradient_secondary_start">#f093fb</color>
+    <color name="gradient_secondary_end">#f5576c</color>
+    <color name="gradient_accent_start">#FF9500</color>
+    <color name="gradient_accent_end">#FFB84D</color>
+    
+    <!-- Cores especiais para UI -->
+    <color name="button_gradient_start">#FF9500</color>
+    <color name="button_gradient_end">#E6850E</color>
+    
+    <!-- Compatibilidade com design antigo -->
+    <color name="background_dark">#000000</color>
+    <color name="background_darker">#000000</color>
+    <color name="primary_purple">#FF9500</color>
+    <color name="dark_purple">#E6850E</color>
 </resources>

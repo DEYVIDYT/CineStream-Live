@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_dark">
+    android:background="@color/background_primary">
 
     <!-- VLC Video Player -->
     <org.videolan.libvlc.util.VLCVideoLayout
@@ -24,21 +24,29 @@
         <LinearLayout
             android:id="@+id/searchContainer"
             android:layout_width="0dp"
-            android:layout_height="40dp"
+            android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@drawable/search_background"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginEnd="8dp"
             android:visibility="gone">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_search"
+                android:tint="@color/search_hint"
+                android:layout_marginEnd="8dp" />
 
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/searchView"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:queryHint="@string/search_hint"
+                android:queryHint="Buscar filmes e séries..."
                 android:iconifiedByDefault="false"
                 android:background="@android:color/transparent" />
 
@@ -53,14 +61,47 @@
 
         </LinearLayout>
 
+        <!-- Search Bar quando não ativo -->
+        <LinearLayout
+            android:id="@+id/searchBarInactive"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/search_background"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginEnd="8dp"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_search"
+                android:tint="@color/search_hint"
+                android:layout_marginEnd="12dp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Search"
+                android:textColor="@color/search_hint"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
         <ImageView
             android:id="@+id/searchIcon"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/ic_search"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:padding="8dp"
-            android:tint="@color/text_secondary" />
+            android:padding="12dp"
+            android:tint="@color/text_secondary"
+            android:visibility="gone" />
 
     </LinearLayout>
 
@@ -74,16 +115,36 @@
         android:paddingBottom="8dp" />
 
     <!-- Genre Section -->
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Por gênero"
-        android:textColor="@color/text_primary"
-        android:textSize="18sp"
-        android:textStyle="bold"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Por gênero"
+            android:textColor="@color/text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/moreGenresText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mais"
+            android:textColor="@color/accent_color"
+            android:textSize="14sp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:padding="8dp" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/genreRecyclerView"

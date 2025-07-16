@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_dark">
+    android:background="@color/background_primary">
 
     <!-- Header -->
     <LinearLayout
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/background_dark">
+        android:background="@color/background_primary">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -137,7 +137,7 @@
             android:layout_width="120dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:background="@color/background_dark"
+            android:background="@color/background_primary"
             android:paddingTop="16dp"
             android:paddingStart="16dp">
 

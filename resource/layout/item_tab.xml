@@ -2,8 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_marginEnd="12dp">
+    android:orientation="vertical"
+    android:layout_marginEnd="24dp"
+    android:gravity="center">
 
     <TextView
         android:id="@+id/tabTextView"
@@ -13,10 +14,17 @@
         android:textColor="@color/text_secondary"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:background="@android:color/transparent" />
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="8dp" />
+
+    <!-- Indicator line -->
+    <View
+        android:id="@+id/tabIndicator"
+        android:layout_width="30dp"
+        android:layout_height="3dp"
+        android:background="@color/accent_color"
+        android:visibility="invisible" />
 
 </LinearLayout>
