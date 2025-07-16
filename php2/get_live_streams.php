@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'supabase_config.php';
 
 header('Content-Type: application/json');
 
@@ -12,21 +12,12 @@ if (empty($user_id) || empty($session_token)) {
 }
 
 // Verificar sessão
-$sql = "SELECT id FROM sessions WHERE user_id = ? AND session_token = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("is", $user_id, $session_token);
-$stmt->execute();
-$stmt->store_result();
+$session = supabase_request('GET', 'sessions', [], ['user_id' => 'eq.' . $user_id, 'session_token' => 'eq.' . $session_token]);
 
-if ($stmt->num_rows == 0) {
+if (empty($session)) {
     echo json_encode(['status' => 'error', 'message' => 'Sessão inválida.']);
-    $stmt->close();
-    $conn->close();
     exit;
 }
-
-$stmt->close();
-$conn->close();
 
 // Credenciais do Xtream - PREENCHA COM SEUS DADOS
 $xtream_server = 'http://xtream.example.com';

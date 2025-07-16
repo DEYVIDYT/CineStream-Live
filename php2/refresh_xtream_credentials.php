@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'supabase_config.php';
 
 header('Content-Type: application/json');
 
@@ -12,36 +12,23 @@ if (empty($user_id) || empty($session_token)) {
 }
 
 // Verificar sessão
-$sql = "SELECT id FROM sessions WHERE user_id = ? AND session_token = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("is", $user_id, $session_token);
-$stmt->execute();
-$stmt->store_result();
+$session = supabase_request('GET', 'sessions', [], ['user_id' => 'eq.' . $user_id, 'session_token' => 'eq.' . $session_token]);
 
-if ($stmt->num_rows == 0) {
+if (empty($session)) {
     echo json_encode(['status' => 'error', 'message' => 'Sessão inválida.']);
-    $stmt->close();
-    $conn->close();
     exit;
 }
 
-$stmt->close();
-
 // Buscar dados do usuário
-$sql = "SELECT plan_expiration, is_banned FROM users WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$stmt->bind_result($plan_expiration, $is_banned);
-$stmt->fetch();
-$stmt->close();
+$user_data = supabase_request('GET', 'users', [], ['id' => 'eq.' . $user_id, 'select' => 'plan_expiration,is_banned']);
+$user = $user_data[0];
 
-if ($is_banned) {
+if ($user['is_banned']) {
     echo json_encode(['status' => 'banned', 'message' => 'Este usuário está banido.']);
     exit;
 }
 
-if (strtotime($plan_expiration) < time()) {
+if (strtotime($user['plan_expiration']) < time()) {
     echo json_encode(['status' => 'expired', 'message' => 'Seu plano expirou.']);
     exit;
 }
@@ -68,6 +55,4 @@ if (isset($xtream_server)) {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Nenhum login do Xtream disponível.']);
 }
-
-$conn->close();
 ?>

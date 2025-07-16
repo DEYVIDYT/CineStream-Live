@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'supabase_config.php';
 
 header('Content-Type: application/json');
 
@@ -13,52 +13,34 @@ if (empty($email) || empty($password) || empty($device_id)) {
 }
 
 // Verificar se o ID do dispositivo já existe
-$sql = "SELECT id FROM users WHERE device_id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $device_id);
-$stmt->execute();
-$stmt->store_result();
-
-if ($stmt->num_rows > 0) {
+$existing_device = supabase_request('GET', 'users', [], ['device_id' => 'eq.' . $device_id]);
+if (!empty($existing_device)) {
     echo json_encode(['status' => 'error', 'message' => 'Este dispositivo já está registrado.']);
-    $stmt->close();
-    $conn->close();
     exit;
 }
-
-$stmt->close();
 
 // Verificar se o e-mail já existe
-$sql = "SELECT id FROM users WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
-
-if ($stmt->num_rows > 0) {
+$existing_email = supabase_request('GET', 'users', [], ['email' => 'eq.' . $email]);
+if (!empty($existing_email)) {
     echo json_encode(['status' => 'error', 'message' => 'Este e-mail já está cadastrado.']);
-    $stmt->close();
-    $conn->close();
     exit;
 }
-
-$stmt->close();
 
 // Hash da senha
 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 $plan_expiration = date('Y-m-d', strtotime('+2 days'));
 
 // Inserir novo usuário
-$sql = "INSERT INTO users (email, password, device_id, plan_expiration) VALUES (?, ?, ?, ?)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ssss", $email, $hashed_password, $device_id, $plan_expiration);
+$result = supabase_request('POST', 'users', [
+    'email' => $email,
+    'password' => $hashed_password,
+    'device_id' => $device_id,
+    'plan_expiration' => $plan_expiration
+]);
 
-if ($stmt->execute()) {
+if (!isset($result['error'])) {
     echo json_encode(['status' => 'success', 'message' => 'Usuário registrado com sucesso.']);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Erro ao registrar o usuário.']);
 }
-
-$stmt->close();
-$conn->close();
 ?>

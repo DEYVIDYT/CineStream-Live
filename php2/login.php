@@ -1,5 +1,5 @@
 <?php
-include 'db_config.php';
+include 'supabase_config.php';
 session_start();
 
 header('Content-Type: application/json');
@@ -13,81 +13,55 @@ if (empty($email) || empty($password) || empty($device_id)) {
     exit;
 }
 
-// Buscar usuário
-$sql = "SELECT id, password, plan_expiration, is_banned FROM users WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
-$stmt->bind_result($user_id, $hashed_password, $plan_expiration, $is_banned);
+// Buscar usuário no Supabase
+$users = supabase_request('GET', 'users', [], ['email' => 'eq.' . $email]);
 
-if ($stmt->num_rows > 0) {
-    $stmt->fetch();
-    if (password_verify($password, $hashed_password)) {
-        if ($is_banned) {
+if (!empty($users)) {
+    $user = $users[0];
+    if (password_verify($password, $user['password'])) {
+        if ($user['is_banned']) {
             echo json_encode(['status' => 'banned', 'message' => 'Este usuário está banido.']);
             exit;
         }
 
         // Verificar se o dispositivo está banido
-        $sql = "SELECT id FROM users WHERE device_id = ? AND is_banned = 1";
-        $stmt_device = $conn->prepare($sql);
-        $stmt_device->bind_param("s", $device_id);
-        $stmt_device->execute();
-        $stmt_device->store_result();
-
-        if ($stmt_device->num_rows > 0) {
+        $banned_devices = supabase_request('GET', 'users', [], ['device_id' => 'eq.' . $device_id, 'is_banned' => 'eq.true']);
+        if (!empty($banned_devices)) {
             echo json_encode(['status' => 'banned', 'message' => 'Este dispositivo está banido.']);
-            $stmt_device->close();
             exit;
         }
-        $stmt_device->close();
 
         // Verificar se já existe uma sessão para este dispositivo
-        $sql = "SELECT id FROM sessions WHERE user_id = ? AND device_id = ?";
-        $session_stmt = $conn->prepare($sql);
-        $session_stmt->bind_param("is", $user_id, $device_id);
-        $session_stmt->execute();
-        $session_stmt->store_result();
+        $sessions = supabase_request('GET', 'sessions', [], ['user_id' => 'eq.' . $user['id'], 'device_id' => 'eq.' . $device_id]);
 
-        if ($session_stmt->num_rows > 0) {
-            // A sessão para este dispositivo já existe, não é necessário criar uma nova
-        } else {
+        if (empty($sessions)) {
             // Excluir sessões antigas para outros dispositivos
-            $sql = "DELETE FROM sessions WHERE user_id = ?";
-            $delete_stmt = $conn->prepare($sql);
-            $delete_stmt->bind_param("i", $user_id);
-            $delete_stmt->execute();
-            $delete_stmt->close();
+            supabase_request('DELETE', 'sessions', [], ['user_id' => 'eq.' . $user['id']]);
         }
 
         // Gerar token de sessão
         $session_token = bin2hex(random_bytes(32));
 
         // Inserir nova sessão
-        $sql = "INSERT INTO sessions (user_id, session_token, device_id) VALUES (?, ?, ?)";
-        $insert_stmt = $conn->prepare($sql);
-        $insert_stmt->bind_param("iss", $user_id, $session_token, $device_id);
-        $insert_stmt->execute();
-        $insert_stmt->close();
+        supabase_request('POST', 'sessions', [
+            'user_id' => $user['id'],
+            'session_token' => $session_token,
+            'device_id' => $device_id
+        ]);
 
         // Registrar atividade
-        $sql = "INSERT INTO activity_logs (user_id) VALUES (?)";
-        $activity_stmt = $conn->prepare($sql);
-        $activity_stmt->bind_param("i", $user_id);
-        $activity_stmt->execute();
-        $activity_stmt->close();
+        supabase_request('POST', 'activity_logs', ['user_id' => $user['id']]);
 
         $response = [
             'status' => 'success',
             'message' => 'Login bem-sucedido.',
-            'user_id' => $user_id,
+            'user_id' => $user['id'],
             'session_token' => $session_token,
-            'plan_expiration' => $plan_expiration,
+            'plan_expiration' => $user['plan_expiration'],
         ];
 
         // Se o plano não estiver expirado, fornecer credenciais do Xtream
-        if (strtotime($plan_expiration) >= time()) {
+        if (strtotime($user['plan_expiration']) >= time()) {
             $xtream_logins_file = 'xtream_logins.json';
             if (file_exists($xtream_logins_file)) {
                 $xtream_logins = json_decode(file_get_contents($xtream_logins_file), true);
@@ -107,7 +81,4 @@ if ($stmt->num_rows > 0) {
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Usuário não encontrado.']);
 }
-
-$stmt->close();
-$conn->close();
 ?>

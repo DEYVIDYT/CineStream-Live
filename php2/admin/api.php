@@ -1,5 +1,5 @@
 <?php
-include '../db_config.php';
+include '../supabase_config.php';
 
 header('Content-Type: application/json');
 
@@ -15,58 +15,60 @@ $action = $_GET['action'] ?? '';
 
 switch ($action) {
     case 'get_stats':
-        getStats($conn);
+        getStats();
         break;
     case 'get_users':
-        getUsers($conn);
-        break;
-    case 'get_enhanced_stats':
-        getEnhancedStats($conn);
+        getUsers();
         break;
     case 'search_users':
-        searchUsers($conn);
+        searchUsers();
         break;
     case 'add_plan':
-        addPlan($conn);
+        addPlan();
         break;
     case 'toggle_ban':
-        toggleBan($conn);
+        toggleBan();
         break;
     case 'delete_user':
-        deleteUser($conn);
+        deleteUser();
         break;
     case 'remove_days':
-        removeDays($conn);
+        removeDays();
         break;
     default:
         echo json_encode(['status' => 'error', 'message' => 'Ação inválida.']);
 }
 
-function getStats($conn) {
+function getStats() {
     // Usuários online (sessões ativas nos últimos 5 minutos)
-    $sql = "SELECT COUNT(DISTINCT user_id) as online_users FROM sessions WHERE created_at >= NOW() - INTERVAL 5 MINUTE";
-    $result = $conn->query($sql);
-    $online_users = $result->fetch_assoc()['online_users'] ?? 0;
+    $online_users_data = supabase_request('GET', 'sessions', [], [
+        'created_at' => 'gte.' . date('Y-m-d\TH:i:s', strtotime('-5 minutes'))
+    ]);
+    $online_users = count(array_unique(array_column($online_users_data, 'user_id')));
 
     // Usuários hoje
-    $sql = "SELECT COUNT(DISTINCT user_id) as today_users FROM activity_logs WHERE login_time >= CURDATE()";
-    $result = $conn->query($sql);
-    $today_users = $result->fetch_assoc()['today_users'] ?? 0;
-    
+    $today_users_data = supabase_request('GET', 'activity_logs', [], [
+        'login_time' => 'gte.' . date('Y-m-d')
+    ]);
+    $today_users = count(array_unique(array_column($today_users_data, 'user_id')));
+
     // Total de usuários
-    $sql = "SELECT COUNT(*) as total_users FROM users";
-    $result = $conn->query($sql);
-    $total_users = $result->fetch_assoc()['total_users'] ?? 0;
-    
+    $total_users_data = supabase_request('GET', 'users', [], ['select' => 'count']);
+    $total_users = $total_users_data[0]['count'] ?? 0;
+
     // Usuários com plano ativo
-    $sql = "SELECT COUNT(*) as active_plans FROM users WHERE plan_expiration >= CURDATE() AND plan_expiration != '1970-01-01'";
-    $result = $conn->query($sql);
-    $active_plans = $result->fetch_assoc()['active_plans'] ?? 0;
-    
+    $active_plans_data = supabase_request('GET', 'users', [], [
+        'plan_expiration' => 'gte.' . date('Y-m-d'),
+        'select' => 'count'
+    ]);
+    $active_plans = $active_plans_data[0]['count'] ?? 0;
+
     // Usuários banidos
-    $sql = "SELECT COUNT(*) as banned_users FROM users WHERE is_banned = 1";
-    $result = $conn->query($sql);
-    $banned_users = $result->fetch_assoc()['banned_users'] ?? 0;
+    $banned_users_data = supabase_request('GET', 'users', [], [
+        'is_banned' => 'eq.true',
+        'select' => 'count'
+    ]);
+    $banned_users = $banned_users_data[0]['count'] ?? 0;
 
     echo json_encode([
         'online_users' => $online_users,
@@ -77,60 +79,44 @@ function getStats($conn) {
     ]);
 }
 
-function getUsers($conn) {
+function getUsers() {
     $search = $_GET['search'] ?? '';
     $status = $_GET['status'] ?? 'all';
     $plan_status = $_GET['plan_status'] ?? 'all';
-    
-    $sql = "SELECT id, email, plan_expiration, is_banned FROM users WHERE 1=1";
+
     $params = [];
-    $types = '';
-    
+
     // Filtro por email
     if (!empty($search)) {
-        $sql .= " AND email LIKE ?";
-        $params[] = "%$search%";
-        $types .= 's';
+        $params['email'] = 'like.*' . $search . '*';
     }
-    
+
     // Filtro por status de ban
     if ($status === 'banned') {
-        $sql .= " AND is_banned = 1";
+        $params['is_banned'] = 'eq.true';
     } elseif ($status === 'active') {
-        $sql .= " AND is_banned = 0";
+        $params['is_banned'] = 'eq.false';
     }
-    
+
     // Filtro por status do plano
     if ($plan_status === 'active') {
-        $sql .= " AND plan_expiration >= CURDATE()";
+        $params['plan_expiration'] = 'gte.' . date('Y-m-d');
     } elseif ($plan_status === 'expired') {
-        $sql .= " AND (plan_expiration < CURDATE() OR plan_expiration IS NULL OR plan_expiration = '1970-01-01')";
+        $params['plan_expiration'] = 'lt.' . date('Y-m-d');
     }
-    
-    $sql .= " ORDER BY id DESC";
-    
-    if (!empty($params)) {
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param($types, ...$params);
-        $stmt->execute();
-        $result = $stmt->get_result();
-    } else {
-        $result = $conn->query($sql);
+
+    $users = supabase_request('GET', 'users', [], $params);
+
+    foreach ($users as &$user) {
+        $user['plan_active'] = ($user['plan_expiration'] &&
+                              $user['plan_expiration'] !== '1970-01-01' &&
+                              strtotime($user['plan_expiration']) >= time());
     }
-    
-    $users = [];
-    while ($row = $result->fetch_assoc()) {
-        // Adicionar informação se o plano está ativo
-        $row['plan_active'] = ($row['plan_expiration'] && 
-                              $row['plan_expiration'] !== '1970-01-01' && 
-                              strtotime($row['plan_expiration']) >= time());
-        $users[] = $row;
-    }
-    
+
     echo json_encode($users);
 }
 
-function toggleBan($conn) {
+function toggleBan() {
     $data = json_decode(file_get_contents('php://input'), true);
     $userId = $data['user_id'] ?? 0;
 
@@ -139,20 +125,19 @@ function toggleBan($conn) {
         return;
     }
 
-    $sql = "UPDATE users SET is_banned = 1 - is_banned WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $userId);
+    $user = supabase_request('GET', 'users', [], ['id' => 'eq.' . $userId])[0];
+    $new_ban_status = !$user['is_banned'];
 
-    if ($stmt->execute()) {
+    $result = supabase_request('PATCH', 'users', ['is_banned' => $new_ban_status], ['id' => 'eq.' . $userId]);
+
+    if (!isset($result['error'])) {
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Erro ao alterar o status de banido.']);
     }
-
-    $stmt->close();
 }
 
-function removeDays($conn) {
+function removeDays() {
     $data = json_decode(file_get_contents('php://input'), true);
     $userId = $data['user_id'] ?? 0;
 
@@ -161,20 +146,16 @@ function removeDays($conn) {
         return;
     }
 
-    $sql = "UPDATE users SET plan_expiration = '1970-01-01' WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $userId);
+    $result = supabase_request('PATCH', 'users', ['plan_expiration' => '1970-01-01'], ['id' => 'eq.' . $userId]);
 
-    if ($stmt->execute()) {
+    if (!isset($result['error'])) {
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Erro ao remover os dias.']);
     }
-
-    $stmt->close();
 }
 
-function deleteUser($conn) {
+function deleteUser() {
     $data = json_decode(file_get_contents('php://input'), true);
     $userId = $data['user_id'] ?? 0;
 
@@ -183,20 +164,16 @@ function deleteUser($conn) {
         return;
     }
 
-    $sql = "DELETE FROM users WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $userId);
+    $result = supabase_request('DELETE', 'users', [], ['id' => 'eq.' . $userId]);
 
-    if ($stmt->execute()) {
+    if (!isset($result['error'])) {
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Erro ao remover o usuário.']);
     }
-
-    $stmt->close();
 }
 
-function addPlan($conn) {
+function addPlan() {
     $data = json_decode(file_get_contents('php://input'), true);
     $email = $data['email'] ?? '';
     $days = $data['days'] ?? 0;
@@ -207,13 +184,8 @@ function addPlan($conn) {
     }
 
     // Obter data de expiração atual
-    $sql = "SELECT plan_expiration FROM users WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->bind_result($current_expiration);
-    $stmt->fetch();
-    $stmt->close();
+    $user_data = supabase_request('GET', 'users', [], ['email' => 'eq.' . $email]);
+    $current_expiration = $user_data[0]['plan_expiration'] ?? null;
 
     $new_expiration = date('Y-m-d', strtotime("+$days days"));
     if ($current_expiration && strtotime($current_expiration) > time()) {
@@ -222,18 +194,12 @@ function addPlan($conn) {
     }
 
     // Atualizar plano do usuário
-    $sql = "UPDATE users SET plan_expiration = ? WHERE email = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $new_expiration, $email);
+    $result = supabase_request('PATCH', 'users', ['plan_expiration' => $new_expiration], ['email' => 'eq.' . $email]);
 
-    if ($stmt->execute()) {
+    if (!isset($result['error'])) {
         echo json_encode(['status' => 'success']);
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Erro ao adicionar o plano.']);
     }
-
-    $stmt->close();
 }
-
-$conn->close();
 ?>
