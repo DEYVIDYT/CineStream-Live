@@ -130,7 +130,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
     
     private void loadUserData() {
-        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("VplayPrefs", MODE_PRIVATE);
         int userId = prefs.getInt("user_id", -1);
         String sessionToken = prefs.getString("session_token", null);
 
@@ -209,7 +209,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void logout() {
-        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("VplayPrefs", MODE_PRIVATE);
         int userId = prefs.getInt("user_id", -1);
         String sessionToken = prefs.getString("session_token", null);
 
@@ -238,7 +238,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void clearSessionAndExit() {
-        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("VplayPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
         editor.apply();

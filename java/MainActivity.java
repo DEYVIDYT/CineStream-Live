@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Simple splash screen
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences("VplayPrefs", MODE_PRIVATE);
             int userId = prefs.getInt("user_id", -1);
             String sessionToken = prefs.getString("session_token", null);
 
@@ -75,8 +75,12 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("xtream_password", xtreamPassword);
                         startActivity(intent);
                         finish();
+                    } else if (status.equals("plan_expired")) {
+                        // Plano expirado - redirecionar para tela de renovação
+                        startActivity(new Intent(MainActivity.this, PlanExpirationActivity.class));
+                        finish();
                     } else {
-                        // Se a sessão for inválida ou o plano expirou, ir para a tela de login
+                        // Se a sessão for inválida, ir para a tela de login
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         finish();
                     }

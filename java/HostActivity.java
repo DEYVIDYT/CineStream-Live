@@ -131,7 +131,7 @@ public class HostActivity extends AppCompatActivity {
     }
 
     private void checkSession() {
-        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("VplayPrefs", MODE_PRIVATE);
         int userId = prefs.getInt("user_id", -1);
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -189,7 +189,7 @@ public class HostActivity extends AppCompatActivity {
     }
 
     private void checkBanStatus() {
-        SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("VplayPrefs", MODE_PRIVATE);
         int userId = prefs.getInt("user_id", -1);
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 

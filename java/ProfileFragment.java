@@ -71,7 +71,8 @@ public class ProfileFragment extends Fragment {
     
     private void setupClickListeners() {
         rechargeButton.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/VPlay0"));
+            // Navegar para a tela de expiração/renovação
+            Intent intent = new Intent(requireContext(), PlanExpirationActivity.class);
             startActivity(intent);
         });
         
@@ -114,7 +115,7 @@ public class ProfileFragment extends Fragment {
     }
     
     private void loadUserData() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("CineStreamPrefs", requireContext().MODE_PRIVATE);
+        SharedPreferences prefs = requireContext().getSharedPreferences("VplayPrefs", requireContext().MODE_PRIVATE);
         int userId = prefs.getInt("user_id", -1);
         String sessionToken = prefs.getString("session_token", null);
 
@@ -161,6 +162,14 @@ public class ProfileFragment extends Fragment {
                                 expirationText.setText("Data de expiração " + planExpiration);
                             });
                         }
+                    } else if (status.equals("plan_expired")) {
+                        if (getActivity() != null) {
+                            getActivity().runOnUiThread(() -> {
+                                Toast.makeText(requireContext(), "Seu plano expirou. Renove para continuar.", Toast.LENGTH_SHORT).show();
+                                startActivity(new Intent(requireContext(), PlanExpirationActivity.class));
+                                requireActivity().finish();
+                            });
+                        }
                     } else {
                         if (getActivity() != null) {
                             getActivity().runOnUiThread(() -> {
@@ -190,7 +199,7 @@ public class ProfileFragment extends Fragment {
     private void showInformationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Informações do App")
-                .setMessage("CineStream Live\n\nVersão: 1.0.0\n\nDesenvolvido para streaming de canais de TV ao vivo.\n\nPara suporte, entre em contato através do email oficial.")
+                .setMessage("Vplay\n\nVersão: 1.0\n\nDesenvolvido para streaming de canais de TV ao vivo.\n\nO Vplay coleta várias listas IPTV para oferecer a melhor experiência de streaming.")
                 .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                 .show();
     }
@@ -207,7 +216,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logout() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("CineStreamPrefs", requireContext().MODE_PRIVATE);
+        SharedPreferences prefs = requireContext().getSharedPreferences("VplayPrefs", requireContext().MODE_PRIVATE);
         int userId = prefs.getInt("user_id", -1);
         String sessionToken = prefs.getString("session_token", null);
 
@@ -241,7 +250,7 @@ public class ProfileFragment extends Fragment {
     }
 
     private void clearSessionAndExit() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("CineStreamPrefs", requireContext().MODE_PRIVATE);
+        SharedPreferences prefs = requireContext().getSharedPreferences("VplayPrefs", requireContext().MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.clear();
         editor.apply();

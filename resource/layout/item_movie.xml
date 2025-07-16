@@ -4,97 +4,134 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/background_dark">
+    app:cardCornerRadius="20dp"
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="@color/surface_card"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/posterImageView"
+        <FrameLayout
+            android:id="@+id/posterContainer"
             android:layout_width="match_parent"
-            android:layout_height="240dp"
-            android:scaleType="centerCrop"
-            android:background="@color/background_darker" />
+            android:layout_height="280dp">
+            
+            <ImageView
+                android:id="@+id/posterImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="@color/background_darker" />
+                
+            <!-- Gradiente overlay sutil -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/gradient_overlay"
+                android:alpha="0.3" />
+                
+        </FrameLayout>
 
-        <!-- Rating Badge -->
+        <!-- Rating Badge Modernizado -->
         <LinearLayout
             android:id="@+id/ratingContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:layout_margin="8dp"
+            android:layout_margin="12dp"
             android:background="@drawable/rounded_background"
-            android:backgroundTint="@color/accent_color"
+            android:backgroundTint="@color/overlay_dark"
             android:orientation="horizontal"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:gravity="center_vertical">
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:gravity="center_vertical"
+            android:elevation="4dp">
 
             <ImageView
-                android:layout_width="12dp"
-                android:layout_height="12dp"
-                android:src="@drawable/ic_favorite"
-                android:tint="@android:color/white"
-                android:layout_marginEnd="2dp" />
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_star"
+                android:tint="@color/warning_color"
+                android:layout_marginEnd="4dp" />
 
             <TextView
                 android:id="@+id/ratingTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="8.5"
-                android:textColor="@android:color/white"
-                android:textSize="10sp"
-                android:textStyle="bold" />
+                style="@style/RatingBadgeStyle" />
 
         </LinearLayout>
 
-        <!-- Favorite Icon -->
+        <!-- Favorite Icon Modernizado -->
         <ImageView
             android:id="@+id/favoriteImageView"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_margin="8dp"
+            android:layout_margin="12dp"
             android:src="@drawable/ic_favorite_border"
             android:background="@drawable/rounded_background"
-            android:backgroundTint="#80000000"
-            android:padding="6dp"
-            android:tint="@android:color/white" />
+            android:backgroundTint="@color/overlay_dark"
+            android:padding="8dp"
+            android:tint="@color/white"
+            android:elevation="4dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless" />
 
-        <!-- Title and Year -->
+        <!-- Title and Year Modernizado -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/posterImageView"
+            android:layout_below="@+id/posterContainer"
             android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/titleTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Título do Filme"
-                android:textColor="@color/text_primary"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:maxLines="2"
-                android:ellipsize="end" />
+                style="@style/MovieTitleStyle" />
 
-            <TextView
-                android:id="@+id/yearTextView"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="2023"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:layout_marginTop="4dp" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="6dp">
+                
+                <TextView
+                    android:id="@+id/yearTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2023"
+                    style="@style/MovieYearStyle" />
+                    
+                <!-- Separador -->
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="4dp"
+                    android:layout_marginHorizontal="8dp"
+                    android:background="@drawable/rounded_background"
+                    android:backgroundTint="@color/text_tertiary" />
+                    
+                <TextView
+                    android:id="@+id/genreTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Ação"
+                    style="@style/MovieYearStyle"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
+                    
+            </LinearLayout>
 
         </LinearLayout>
 

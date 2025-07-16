@@ -113,7 +113,7 @@ public class LoginActivity extends AppCompatActivity {
                             int userId = jsonObject.getInt("user_id");
                             
                             // Salvar dados da sessão
-                            SharedPreferences prefs = getSharedPreferences("CineStreamPrefs", MODE_PRIVATE);
+                            SharedPreferences prefs = getSharedPreferences("VplayPrefs", MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();
                             editor.putInt("user_id", userId);
                             editor.putString("session_token", sessionToken);

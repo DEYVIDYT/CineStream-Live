@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">CineStream Live Mobile</string>
+    <string name="app_name">Vplay</string>
     <string name="loading_data">Carregando dados</string>
-    <string name="version">Versão 4.5.0</string>
+    <string name="version">Versão 1.0</string>
     <string name="tv_live">TV AO VIVO</string>
     <string name="live_tab">Ao vivo</string>
     <string name="movies_series_tab">Filmes&amp;Séries</string>
@@ -22,7 +22,7 @@
     
     <!-- Profile -->
     <string name="profile">PERFIL</string>
-    <string name="recharge_text">Clique em Recarregar para fazer o pagamento no site oficial</string>
+    <string name="recharge_text">Renove seu plano por apenas R$ 4,00 para continuar aproveitando todo o conteúdo</string>
     <string name="email">E-MAIL</string>
     <string name="expiration_date">Data de expiração 29/11/2026</string>
     <string name="recharge">Recarregar</string>
@@ -103,4 +103,15 @@
     <string name="no_movies">Nenhum filme encontrado</string>
     <string name="no_series">Nenhuma série encontrada</string>
     <string name="search_movies_series">Buscar filmes e séries...</string>
+    
+    <!-- Plan Expiration -->
+    <string name="renew_plan">Renovar Plano</string>
+    <string name="plan_expired_title">Plano Expirado</string>
+    <string name="plan_expired_message">Seu plano expirou. Renove para continuar aproveitando o melhor do streaming.</string>
+    <string name="renew_now">RENOVAR AGORA</string>
+    <string name="contact_support">FALAR COM SUPORTE</string>
+    <string name="monthly_price">R$ 4,00/mês</string>
+    <string name="plan_benefits">✓ Acesso a todos os canais\n✓ Filmes e séries em HD\n✓ Conteúdo sempre atualizado\n✓ Suporte técnico\n✓ Múltiplas listas IPTV\n✓ Sem anúncios</string>
+    <string name="why_this_price">Por que apenas R$ 4,00?</string>
+    <string name="price_explanation">O Vplay coleta e organiza múltiplas listas IPTV gratuitas disponíveis na internet, oferecendo uma experiência unificada e de qualidade. Por isso conseguimos manter esse preço acessível.</string>
 </resources>
