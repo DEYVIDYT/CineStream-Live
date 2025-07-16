@@ -421,16 +421,8 @@ public class MoviesSeriesFragment extends Fragment implements
                 }
                 if (currentTab.equals("Filmes") && allMovies != null) {
                     movieAdapter.setMovies(allMovies);
-                    // Se estamos visualizando um gênero específico, refiltrar
-                    if (!currentGenre.equals("TODOS")) {
-                        movieAdapter.filterByGenre(currentGenre);
-                    }
                 } else if (currentTab.equals("Séries") && allSeries != null) {
                     seriesAdapter.setSeries(allSeries);
-                    // Se estamos visualizando um gênero específico, refiltrar
-                    if (!currentGenre.equals("TODOS")) {
-                        seriesAdapter.filterByGenre(currentGenre);
-                    }
                 }
             }
         });
