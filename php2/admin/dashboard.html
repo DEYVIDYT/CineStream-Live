@@ -783,6 +783,12 @@
                                 </div>
                             </div>
                         </form>
+                        <div style="margin-top: 2rem; text-align: center;">
+                            <p>Precisa recarregar seu plano?</p>
+                            <a href="recharge.html" class="btn btn-warning">
+                                <i class="fas fa-credit-card"></i> Recarregar Agora
+                            </a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -1164,6 +1170,29 @@
 
         // Auto refresh stats every 30 seconds
         setInterval(loadStats, 30000);
+
+        function checkPlanStatus() {
+            const user = currentUsers.find(u => u.email === prompt("Por favor, insira seu e-mail para verificar o plano:"));
+            if (user && !user.plan_active) {
+                window.location.href = 'recharge.html';
+            }
+        }
+
+        // Adicionar nota sobre as listas de IPTV
+        const footer = document.createElement('footer');
+        footer.style.textAlign = 'center';
+        footer.style.padding = '1rem';
+        footer.style.marginTop = '2rem';
+        footer.style.borderTop = '1px solid var(--border-color)';
+        footer.innerHTML = `
+            <p style="font-size: 0.875rem; color: #6b7280;">
+                Nosso aplicativo coleta e seleciona aleatoriamente listas de IPTV de várias fontes para oferecer a melhor experiência de streaming.
+            </p>
+        `;
+        document.querySelector('.container').appendChild(footer);
+
+        // Verificar o status do plano ao carregar a página
+        checkPlanStatus();
     </script>
 </body>
 </html>
