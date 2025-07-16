@@ -417,7 +417,8 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
     protected void onPause() {
         super.onPause();
         pauseHideControlsTimer();
-        if (vlcVideoPlayer != null) {
+        // Não pausar o vídeo quando entrar em modo PIP
+        if (vlcVideoPlayer != null && !isInPictureInPictureMode) {
             vlcVideoPlayer.pause();
         }
     }

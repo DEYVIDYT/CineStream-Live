@@ -305,7 +305,7 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
                     switch (currentAspectRatio) {
                         case 0: // Original
                             params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            params.height = 220; // altura original fixada no layout
+                            params.height = 250; // altura original fixada no layout
                             break;
                         case 1: // 16:9
                             params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -433,7 +433,8 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
     protected void onPause() {
         super.onPause();
         pauseHideControlsTimer();
-        if (vlcVideoPlayer != null) {
+        // Não pausar o vídeo quando entrar em modo PIP
+        if (vlcVideoPlayer != null && !isInPictureInPictureMode) {
             vlcVideoPlayer.pause();
         }
     }
