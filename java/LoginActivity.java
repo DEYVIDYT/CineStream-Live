@@ -1,4 +1,4 @@
-package com.cinestream.live;
+package com.vplay.live;
 
 import android.content.Intent;
 import android.content.SharedPreferences;

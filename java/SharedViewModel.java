@@ -1,4 +1,4 @@
-package com.cinestream.live;
+package com.vplay.live;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

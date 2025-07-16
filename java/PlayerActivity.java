@@ -1,4 +1,4 @@
-package com.cinestream.live;
+package com.vplay.live;
 
 import android.app.PictureInPictureParams;
 import android.content.Intent;

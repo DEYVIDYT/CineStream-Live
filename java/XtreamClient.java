@@ -1,4 +1,4 @@
-package com.cinestream.live;
+package com.vplay.live;
 
 import android.util.Base64;
 import android.util.Log;

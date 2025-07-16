@@ -1,4 +1,4 @@
-package com.cinestream.live;
+package com.vplay.live;
 
 public class Credential {
     private String id;
