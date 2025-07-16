@@ -66,6 +66,7 @@ public class MoviesSeriesFragment extends Fragment implements
         initViews(view);
         setupRecyclerViews();
         setupSearch();
+        observeViewModel();
         loadData();
 
         return view;
@@ -408,6 +409,31 @@ public class MoviesSeriesFragment extends Fragment implements
         // Implementation for favorites
         String message = isFavorite ? "Removido dos favoritos" : "Adicionado aos favoritos";
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
+    }
+    
+    private void observeViewModel() {
+        // Observar mudanças na configuração de conteúdo adulto
+        sharedViewModel.getAdultContentSettingChanged().observe(getViewLifecycleOwner(), changed -> {
+            if (changed != null && changed) {
+                // Atualizar as listas quando a configuração de conteúdo adulto mudar
+                if (allGenres != null) {
+                    genreAdapter.setGenres(allGenres);
+                }
+                if (currentTab.equals("Filmes") && allMovies != null) {
+                    movieAdapter.setMovies(allMovies);
+                    // Se estamos visualizando um gênero específico, refiltrar
+                    if (!currentGenre.equals("TODOS")) {
+                        movieAdapter.filterByGenre(currentGenre);
+                    }
+                } else if (currentTab.equals("Séries") && allSeries != null) {
+                    seriesAdapter.setSeries(allSeries);
+                    // Se estamos visualizando um gênero específico, refiltrar
+                    if (!currentGenre.equals("TODOS")) {
+                        seriesAdapter.filterByGenre(currentGenre);
+                    }
+                }
+            }
+        });
     }
 
 }

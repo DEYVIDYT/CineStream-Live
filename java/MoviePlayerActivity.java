@@ -1,9 +1,15 @@
 package com.cinestream.live;
 
 import android.app.PictureInPictureParams;
+import android.app.PendingIntent;
+import android.app.RemoteAction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,6 +27,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import org.videolan.libvlc.util.VLCVideoLayout;
+
+import java.util.ArrayList;
 
 public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPlayer.PlayerControlsListener {
 
@@ -42,8 +50,8 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
     private TextView currentTimeTextView;
     private TextView totalTimeTextView;
     
-    private int currentAspectRatio = 0; // 0: Original, 1: 16:9, 2: 4:3, 3: Stretch
-    private String[] aspectRatioNames = {"Original", "16:9", "4:3", "Esticado"};
+    private int currentAspectRatio = 0; // 0: Original, 1: 16:9, 2: 4:3, 3: Stretch, 4: Preencher Tela
+    private String[] aspectRatioNames = {"Original", "16:9", "4:3", "Esticado", "Preencher Tela"};
     private boolean isInPictureInPictureMode = false;
     private boolean isFullscreen = false;
     private boolean controlsVisible = true;
@@ -52,6 +60,15 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
     private Handler hideControlsHandler;
     private Runnable hideControlsRunnable;
     private GestureDetector gestureDetector;
+    private BroadcastReceiver pipReceiver;
+    
+    // Constantes para ações PIP
+    private static final String ACTION_MEDIA_CONTROL = "media_control";
+    private static final String EXTRA_CONTROL_TYPE = "control_type";
+    private static final int CONTROL_TYPE_PLAY = 1;
+    private static final int CONTROL_TYPE_PAUSE = 2;
+    private static final int REQUEST_PLAY = 1;
+    private static final int REQUEST_PAUSE = 2;
     
     private static final int HIDE_CONTROLS_DELAY = 3000; // 3 segundos
 
@@ -73,6 +90,7 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
         initViews();
         setupControlsHandling();
         setupListeners();
+        setupPipReceiver();
         startPlayer();
     }
     
@@ -175,8 +193,83 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
         vlcVideoPlayer.setControlsListener(this);
         vlcVideoPlayer.play(streamUrl);
         
+        // Reset aspect ratio para defaults ao iniciar
+        currentAspectRatio = 0;
+        
         videoLoadingProgressBar.setVisibility(View.GONE);
         startHideControlsTimer();
+    }
+    
+    private void setupPipReceiver() {
+        pipReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (ACTION_MEDIA_CONTROL.equals(intent.getAction())) {
+                    int controlType = intent.getIntExtra(EXTRA_CONTROL_TYPE, 0);
+                    switch (controlType) {
+                        case CONTROL_TYPE_PLAY:
+                            if (vlcVideoPlayer != null && !vlcVideoPlayer.isPlaying()) {
+                                vlcVideoPlayer.resume();
+                                updatePipActions();
+                            }
+                            break;
+                        case CONTROL_TYPE_PAUSE:
+                            if (vlcVideoPlayer != null && vlcVideoPlayer.isPlaying()) {
+                                vlcVideoPlayer.pause();
+                                updatePipActions();
+                            }
+                            break;
+                    }
+                }
+            }
+        };
+        
+        IntentFilter filter = new IntentFilter(ACTION_MEDIA_CONTROL);
+        registerReceiver(pipReceiver, filter);
+    }
+    
+    private ArrayList<RemoteAction> createPipActions() {
+        ArrayList<RemoteAction> actions = new ArrayList<>();
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (vlcVideoPlayer != null && vlcVideoPlayer.isPlaying()) {
+                // Botão de pause
+                Intent pauseIntent = new Intent(ACTION_MEDIA_CONTROL);
+                pauseIntent.putExtra(EXTRA_CONTROL_TYPE, CONTROL_TYPE_PAUSE);
+                PendingIntent pausePendingIntent = PendingIntent.getBroadcast(
+                    this, REQUEST_PAUSE, pauseIntent, 
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                
+                Icon pauseIcon = Icon.createWithResource(this, R.drawable.ic_pause);
+                RemoteAction pauseAction = new RemoteAction(pauseIcon, "Pausar", "Pausar vídeo", pausePendingIntent);
+                actions.add(pauseAction);
+            } else {
+                // Botão de play
+                Intent playIntent = new Intent(ACTION_MEDIA_CONTROL);
+                playIntent.putExtra(EXTRA_CONTROL_TYPE, CONTROL_TYPE_PLAY);
+                PendingIntent playPendingIntent = PendingIntent.getBroadcast(
+                    this, REQUEST_PLAY, playIntent, 
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                
+                Icon playIcon = Icon.createWithResource(this, R.drawable.ic_play_arrow);
+                RemoteAction playAction = new RemoteAction(playIcon, "Reproduzir", "Reproduzir vídeo", playPendingIntent);
+                actions.add(playAction);
+            }
+        }
+        
+        return actions;
+    }
+    
+    private void updatePipActions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && isInPictureInPictureMode()) {
+            try {
+                PictureInPictureParams.Builder paramsBuilder = new PictureInPictureParams.Builder();
+                paramsBuilder.setActions(createPipActions());
+                setPictureInPictureParams(paramsBuilder.build());
+            } catch (Exception e) {
+                // Ignorar erro de atualização PIP
+            }
+        }
     }
     
     // Implementação da interface PlayerControlsListener
@@ -213,6 +306,11 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
                 playPauseButton.setImageResource(R.drawable.ic_pause);
             } else {
                 playPauseButton.setImageResource(R.drawable.ic_play_arrow);
+            }
+            
+            // Atualizar controles PIP se estivermos em modo PIP
+            if (isInPictureInPictureMode()) {
+                updatePipActions();
             }
         });
     }
@@ -321,40 +419,62 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
     }
     
     private void applyAspectRatio() {
-        if (vlcVideoLayout != null) {
+        if (vlcVideoPlayer != null && vlcVideoLayout != null) {
             try {
-                android.view.ViewGroup.LayoutParams params = vlcVideoLayout.getLayoutParams();
-                
-                if (params != null) {
-                    int screenWidth = getResources().getDisplayMetrics().widthPixels;
-                    
-                    switch (currentAspectRatio) {
-                        case 0: // Original
-                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            params.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            break;
-                        case 1: // 16:9
-                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            params.height = (int) (screenWidth * 9.0 / 16.0);
-                            break;
-                        case 2: // 4:3
-                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            params.height = (int) (screenWidth * 3.0 / 4.0);
-                            break;
-                        case 3: // Stretch
-                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            params.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            if (vlcVideoPlayer != null) {
-                                vlcVideoPlayer.setAspectRatio(null);
-                            }
-                            break;
+                // Aguardar um momento para garantir que o player está pronto
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        applyAspectRatioInternal();
                     }
-                    
-                    vlcVideoLayout.setLayoutParams(params);
-                }
+                }, 100);
+                
             } catch (Exception e) {
-                // Log error and show message
-                Toast.makeText(this, "Erro ao alterar proporção", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Erro ao alterar proporção: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    
+    private void applyAspectRatioInternal() {
+        if (vlcVideoPlayer != null && vlcVideoLayout != null) {
+            try {
+                // Reset para defaults primeiro
+                vlcVideoPlayer.setScale(0); // 0 = auto scale
+                
+                switch (currentAspectRatio) {
+                    case 0: // Original
+                        vlcVideoPlayer.setAspectRatio(null); // null = aspect ratio original
+                        vlcVideoPlayer.setScale(0);
+                        break;
+                    case 1: // 16:9
+                        vlcVideoPlayer.setAspectRatio("16:9");
+                        vlcVideoPlayer.setScale(0);
+                        break;
+                    case 2: // 4:3
+                        vlcVideoPlayer.setAspectRatio("4:3");
+                        vlcVideoPlayer.setScale(0);
+                        break;
+                    case 3: // Stretch (Esticado)
+                        vlcVideoPlayer.setAspectRatio(null);
+                        vlcVideoPlayer.setScale(1.0f); // Scale para preencher mantendo proporção
+                        break;
+                    case 4: // Preencher Tela
+                        vlcVideoPlayer.setAspectRatio(null);
+                        // Para filme em tela cheia, usar toda a tela
+                        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+                        int screenHeight = getResources().getDisplayMetrics().heightPixels;
+                        // Calcular scale para garantir que o vídeo preencha toda a tela
+                        float scale = Math.max(1.2f, Math.max((float)screenWidth / 1920f, (float)screenHeight / 1080f));
+                        vlcVideoPlayer.setScale(scale);
+                        break;
+                }
+                
+                // Força refresh do layout
+                vlcVideoLayout.requestLayout();
+                vlcVideoLayout.invalidate();
+                
+            } catch (Exception e) {
+                Toast.makeText(this, "Erro ao alterar proporção: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -374,6 +494,12 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
                     
                     // Adicionar parâmetros com validação
                     paramsBuilder.setAspectRatio(aspectRatio);
+                    
+                    // Adicionar ações de controle
+                    ArrayList<RemoteAction> actions = createPipActions();
+                    if (!actions.isEmpty()) {
+                        paramsBuilder.setActions(actions);
+                    }
                     
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                         paramsBuilder.setSeamlessResizeEnabled(true);
@@ -417,7 +543,8 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
     protected void onPause() {
         super.onPause();
         pauseHideControlsTimer();
-        if (vlcVideoPlayer != null) {
+        // Não pausar o vídeo quando entrar em modo PIP
+        if (vlcVideoPlayer != null && !isInPictureInPictureMode) {
             vlcVideoPlayer.pause();
         }
     }
@@ -426,6 +553,16 @@ public class MoviePlayerActivity extends AppCompatActivity implements VlcVideoPl
     protected void onDestroy() {
         super.onDestroy();
         pauseHideControlsTimer();
+        
+        // Desregistrar o receiver PIP
+        if (pipReceiver != null) {
+            try {
+                unregisterReceiver(pipReceiver);
+            } catch (Exception e) {
+                // Ignorar erro se já foi desregistrado
+            }
+        }
+        
         if (vlcVideoPlayer != null) {
             vlcVideoPlayer.release();
         }
