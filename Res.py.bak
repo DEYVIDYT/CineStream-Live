@@ -1,0 +1,19 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+# Configura o Chrome headless
+options = Options()
+options.headless = True
+
+# Inicia o navegador
+driver = webdriver.Chrome(options=options)
+
+# Acessa o site
+driver.get("https://vplay.liveblog365.com/login.php")
+
+# Espera e pega o HTML renderizado
+html = driver.page_source
+print(html)
+
+# Encerra
+driver.quit()

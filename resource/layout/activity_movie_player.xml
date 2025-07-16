@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <!-- VLC Video Player -->
+    <org.videolan.libvlc.util.VLCVideoLayout
+        android:id="@+id/vlcVideoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
+
+    <!-- Loading indicator -->
+    <ProgressBar
+        android:id="@+id/videoLoadingProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone" />
+
+    <!-- Player controls overlay -->
+    <LinearLayout
+        android:id="@+id/playerControlsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible"
+        android:clickable="true"
+        android:focusable="true">
+
+        <!-- Top controls -->
+        <LinearLayout
+            android:id="@+id/topControlsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:background="@drawable/gradient_overlay"
+            android:gravity="center_vertical">
+
+            <!-- Back button -->
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_arrow_back"
+                android:tint="@color/white"
+                android:contentDescription="Voltar" />
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="Título do Filme"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:ellipsize="end" />
+
+            <!-- Aspect ratio button -->
+            <ImageButton
+                android:id="@+id/aspectRatioButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_aspect_ratio"
+                android:tint="@color/white"
+                android:contentDescription="Alterar proporção" />
+
+            <!-- PIP mode button -->
+            <ImageButton
+                android:id="@+id/pipButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginEnd="8dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_pip_mode"
+                android:tint="@color/white"
+                android:contentDescription="Modo PIP" />
+
+            <!-- Fullscreen button -->
+            <ImageButton
+                android:id="@+id/fullscreenButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_fullscreen"
+                android:tint="@color/white"
+                android:contentDescription="Tela cheia" />
+
+        </LinearLayout>
+
+        <!-- Spacer to push bottom controls down -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Center controls -->
+        <LinearLayout
+            android:id="@+id/centerControlsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingVertical="32dp">
+
+            <!-- Rewind 10s button -->
+            <ImageButton
+                android:id="@+id/rewindButton"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginEnd="48dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_replay_10"
+                android:tint="@color/white"
+                android:scaleType="centerInside"
+                android:contentDescription="Retroceder 10 segundos" />
+
+            <!-- Play/Pause button -->
+            <ImageButton
+                android:id="@+id/playPauseButton"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_pause"
+                android:tint="@color/white"
+                android:scaleType="centerInside"
+                android:contentDescription="Play/Pause" />
+
+            <!-- Forward 10s button -->
+            <ImageButton
+                android:id="@+id/forwardButton"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginStart="48dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_forward_10"
+                android:tint="@color/white"
+                android:scaleType="centerInside"
+                android:contentDescription="Avançar 10 segundos" />
+
+        </LinearLayout>
+
+        <!-- Spacer to push bottom controls down -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <!-- Bottom controls -->
+        <LinearLayout
+            android:id="@+id/bottomControlsContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/gradient_overlay">
+
+            <!-- Progress bar and time -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Current time -->
+                <TextView
+                    android:id="@+id/currentTimeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="monospace" />
+
+                <!-- Progress bar -->
+                <SeekBar
+                    android:id="@+id/progressSeekBar"
+                    style="@style/VideoSeekBarStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="16dp"
+                    android:max="100"
+                    android:progress="0" />
+
+                <!-- Total time -->
+                <TextView
+                    android:id="@+id/totalTimeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:fontFamily="monospace" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>
