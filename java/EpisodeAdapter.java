@@ -80,21 +80,26 @@ public class EpisodeAdapter extends RecyclerView.Adapter<EpisodeAdapter.EpisodeV
         }
 
         public void bind(Episode episode) {
-            // Episode number
+            // Episode number with enhanced formatting
             String episodeNumber = episode.getFormattedEpisodeNumber();
             if (!episodeNumber.isEmpty()) {
                 episodeNumberTextView.setText(episodeNumber);
+                episodeNumberTextView.setVisibility(View.VISIBLE);
+            } else if (episode.getEpisode_num() != null && !episode.getEpisode_num().isEmpty()) {
+                episodeNumberTextView.setText("E" + episode.getEpisode_num());
                 episodeNumberTextView.setVisibility(View.VISIBLE);
             } else {
                 episodeNumberTextView.setVisibility(View.GONE);
             }
 
-            // Title
+            // Title with fallback to episode number
             if (episode.getTitle() != null && !episode.getTitle().isEmpty()) {
                 titleTextView.setText(episode.getTitle());
                 titleTextView.setVisibility(View.VISIBLE);
-            } else {
+            } else if (episode.getEpisode_num() != null) {
                 titleTextView.setText("Episódio " + episode.getEpisode_num());
+            } else {
+                titleTextView.setText("Episódio");
             }
 
             // Duration

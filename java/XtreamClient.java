@@ -57,6 +57,11 @@ public class XtreamClient {
         void onSuccess(List<Episode> episodes);
         void onError(String error);
     }
+    
+    public interface SeasonsCallback {
+        void onSuccess(List<Season> seasons);
+        void onError(String error);
+    }
 
     public XtreamClient() {
         httpClient = new OkHttpClient.Builder()
@@ -740,6 +745,121 @@ public class XtreamClient {
                 } catch (Exception e) {
                     Log.e(TAG, "Error parsing series info", e);
                     callback.onError("Erro ao processar informações da série: " + e.getMessage());
+                }
+            }
+        });
+    }
+    
+    public void fetchSeriesSeasons(String seriesId, SeasonsCallback callback) {
+        Log.d(TAG, "Attempting to fetch series seasons for ID: " + seriesId);
+        
+        if (currentCredential == null) {
+            Log.e(TAG, "No credentials available for fetching series seasons");
+            callback.onError("Credenciais não carregadas");
+            return;
+        }
+        
+        Log.d(TAG, "Using credentials - Server: " + currentCredential.getServer() + ", Username: " + currentCredential.getUsername());
+
+        String url = currentCredential.getServer() + "/player_api.php" +
+                "?username=" + currentCredential.getUsername() +
+                "&password=" + currentCredential.getPassword() +
+                "&action=get_series_info" +
+                "&series_id=" + seriesId;
+        
+        // Try to get more episodes by adding additional parameters that some servers support
+        // url += "&limit=999";  // Some servers support pagination
+        // url += "&sort=season";  // Some servers support sorting
+        
+        Log.d(TAG, "Series seasons URL: " + url.replaceAll("password=[^&]*", "password=***"));
+
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        
+        httpClient.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "Error fetching series seasons", e);
+                callback.onError("Erro ao buscar temporadas da série: " + e.getMessage());
+            }
+            
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    callback.onError("Erro HTTP: " + response.code());
+                    return;
+                }
+                
+                try {
+                    String jsonData = response.body().string();
+                    Log.d(TAG, "Series seasons JSON response (length: " + jsonData.length() + "): " + 
+                          jsonData.substring(0, Math.min(jsonData.length(), 500)) + "...");
+                    
+                    // Parse the complex series info JSON structure
+                    org.json.JSONObject jsonObject = new org.json.JSONObject(jsonData);
+                    List<Season> allSeasons = new ArrayList<>();
+                    
+                    if (jsonObject.has("episodes")) {
+                        Log.d(TAG, "Found episodes object in JSON");
+                        org.json.JSONObject episodes = jsonObject.getJSONObject("episodes");
+                        java.util.Iterator<String> seasonKeys = episodes.keys();
+                        
+                        // Sort season keys numerically
+                        List<String> sortedSeasonKeys = new ArrayList<>();
+                        while (seasonKeys.hasNext()) {
+                            sortedSeasonKeys.add(seasonKeys.next());
+                        }
+                        
+                        // Sort seasons numerically
+                        sortedSeasonKeys.sort((s1, s2) -> {
+                            try {
+                                return Integer.compare(Integer.parseInt(s1), Integer.parseInt(s2));
+                            } catch (NumberFormatException e) {
+                                return s1.compareTo(s2);
+                            }
+                        });
+                        
+                        for (String seasonNum : sortedSeasonKeys) {
+                            Season season = new Season(seasonNum);
+                            org.json.JSONArray seasonEpisodes = episodes.getJSONArray(seasonNum);
+                            Log.d(TAG, "Season " + seasonNum + " has " + seasonEpisodes.length() + " episodes");
+                            
+                            List<Episode> episodeList = new ArrayList<>();
+                            for (int i = 0; i < seasonEpisodes.length(); i++) {
+                                org.json.JSONObject episodeObj = seasonEpisodes.getJSONObject(i);
+                                Episode episode = new Episode();
+                                
+                                episode.setId(episodeObj.optString("id"));
+                                episode.setEpisode_num(episodeObj.optString("episode_num"));
+                                episode.setTitle(episodeObj.optString("title"));
+                                episode.setContainer_extension(episodeObj.optString("container_extension"));
+                                episode.setMovie_image(episodeObj.optString("movie_image"));
+                                episode.setPlot(episodeObj.optString("plot"));
+                                episode.setDuration_secs(episodeObj.optString("duration_secs"));
+                                episode.setDuration(episodeObj.optString("duration"));
+                                episode.setVideo_quality(episodeObj.optString("video_quality"));
+                                episode.setRelease_date(episodeObj.optString("release_date"));
+                                episode.setRating(episodeObj.optString("rating"));
+                                episode.setSeason_num(seasonNum);
+                                episode.setSeries_id(seriesId);
+                                
+                                episodeList.add(episode);
+                            }
+                            
+                            season.setEpisodes(episodeList);
+                            allSeasons.add(season);
+                        }
+                        
+                        Log.i(TAG, "Successfully parsed " + allSeasons.size() + " seasons for series " + seriesId);
+                    } else {
+                        Log.w(TAG, "No episodes found in JSON response");
+                    }
+                    
+                    callback.onSuccess(allSeasons);
+                } catch (Exception e) {
+                    Log.e(TAG, "Error parsing series seasons", e);
+                    callback.onError("Erro ao processar temporadas da série: " + e.getMessage());
                 }
             }
         });

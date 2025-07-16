@@ -22,7 +22,7 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeAdapter.OnEpisodeClickListener {
+public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeAdapter.OnEpisodeClickListener, SeasonAdapter.OnSeasonClickListener {
 
     private Series series;
     private Credential credential;
@@ -36,10 +36,16 @@ public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeA
     private TextView genreTextView;
     private Button playButton;
     private ImageButton backButton;
+    private RecyclerView seasonsRecyclerView;
     private RecyclerView episodesRecyclerView;
+    private TextView totalSeasonsTextView;
+    private TextView episodesHeaderTextView;
+    private SeasonAdapter seasonAdapter;
     private EpisodeAdapter episodeAdapter;
     private ProgressBar loadingProgressBar;
     private SharedViewModel sharedViewModel;
+    private List<Season> allSeasons;
+    private Season currentSeason;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,14 +95,26 @@ public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeA
         genreTextView = findViewById(R.id.genreTextView);
         playButton = findViewById(R.id.playButton);
         backButton = findViewById(R.id.backButton);
+        seasonsRecyclerView = findViewById(R.id.seasonsRecyclerView);
         episodesRecyclerView = findViewById(R.id.episodesRecyclerView);
+        totalSeasonsTextView = findViewById(R.id.totalSeasonsTextView);
+        episodesHeaderTextView = findViewById(R.id.episodesHeaderTextView);
         loadingProgressBar = findViewById(R.id.loadingProgressBar);
 
         backButton.setOnClickListener(v -> finish());
 
+        // Setup seasons adapter
+        seasonAdapter = new SeasonAdapter(this, this);
+        seasonsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        seasonsRecyclerView.setAdapter(seasonAdapter);
+        
+        // Setup episodes adapter
         episodeAdapter = new EpisodeAdapter(this, this);
         episodesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         episodesRecyclerView.setAdapter(episodeAdapter);
+        
+        // Initialize data
+        allSeasons = new ArrayList<>();
     }
 
     private void setupSeriesInfo() {
@@ -167,20 +185,32 @@ public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeA
 
         loadingProgressBar.setVisibility(View.VISIBLE);
 
-        sharedViewModel.getXtreamClient().fetchSeriesInfo(series.getSeries_id(), new XtreamClient.EpisodesCallback() {
+        sharedViewModel.getXtreamClient().fetchSeriesSeasons(series.getSeries_id(), new XtreamClient.SeasonsCallback() {
             @Override
-            public void onSuccess(List<Episode> episodes) {
+            public void onSuccess(List<Season> seasons) {
                 runOnUiThread(() -> {
                     loadingProgressBar.setVisibility(View.GONE);
-                    episodeAdapter.setEpisodes(episodes);
+                    allSeasons = seasons;
                     
-                    // Setup play button to play first episode if available
-                    if (!episodes.isEmpty()) {
-                        Episode firstEpisode = episodes.get(0);
-                        playButton.setText("REPRODUZIR " + firstEpisode.getFormattedEpisodeNumber());
-                        playButton.setOnClickListener(v -> playEpisode(firstEpisode));
+                    if (!seasons.isEmpty()) {
+                        setupSeasonsDisplay(seasons);
+                        
+                        // Select first season by default
+                        currentSeason = seasons.get(0);
+                        episodeAdapter.setEpisodes(currentSeason.getEpisodes());
+                        updateEpisodesHeader(currentSeason);
+                        
+                        // Setup play button with first episode
+                        Episode firstEpisode = currentSeason.getFirstEpisode();
+                        if (firstEpisode != null) {
+                            playButton.setText("REPRODUZIR " + firstEpisode.getFormattedEpisodeNumber());
+                            playButton.setOnClickListener(v -> playEpisode(firstEpisode));
+                        } else {
+                            playButton.setText("Nenhum episódio disponível");
+                            playButton.setEnabled(false);
+                        }
                     } else {
-                        playButton.setText("Nenhum episódio disponível");
+                        playButton.setText("Nenhuma temporada disponível");
                         playButton.setEnabled(false);
                     }
                 });
@@ -191,16 +221,52 @@ public class SeriesDetailsActivity extends AppCompatActivity implements EpisodeA
                 runOnUiThread(() -> {
                     loadingProgressBar.setVisibility(View.GONE);
                     Toast.makeText(SeriesDetailsActivity.this, error, Toast.LENGTH_SHORT).show();
-                    playButton.setText("Erro ao carregar episódios");
+                    playButton.setText("Erro ao carregar temporadas");
                     playButton.setEnabled(false);
                 });
             }
         });
     }
+    
+    private void setupSeasonsDisplay(List<Season> seasons) {
+        if (seasons.size() > 1) {
+            // Multiple seasons - show season selector
+            seasonAdapter.setSeasons(seasons);
+            seasonsRecyclerView.setVisibility(View.VISIBLE);
+            totalSeasonsTextView.setText(seasons.size() + (seasons.size() == 1 ? " temporada" : " temporadas"));
+            totalSeasonsTextView.setVisibility(View.VISIBLE);
+        } else {
+            // Single season - hide season selector
+            seasonsRecyclerView.setVisibility(View.GONE);
+            totalSeasonsTextView.setVisibility(View.GONE);
+        }
+    }
+    
+    private void updateEpisodesHeader(Season season) {
+        if (allSeasons.size() > 1) {
+            episodesHeaderTextView.setText(season.getFormattedSeasonInfo());
+        } else {
+            episodesHeaderTextView.setText("Episódios (" + season.getTotalEpisodes() + ")");
+        }
+    }
 
     @Override
     public void onEpisodeClick(Episode episode) {
         playEpisode(episode);
+    }
+    
+    @Override
+    public void onSeasonClick(Season season, int position) {
+        currentSeason = season;
+        episodeAdapter.setEpisodes(season.getEpisodes());
+        updateEpisodesHeader(season);
+        
+        // Update play button with first episode of selected season
+        Episode firstEpisode = season.getFirstEpisode();
+        if (firstEpisode != null) {
+            playButton.setText("REPRODUZIR " + firstEpisode.getFormattedEpisodeNumber());
+            playButton.setOnClickListener(v -> playEpisode(firstEpisode));
+        }
     }
 
     private void playEpisode(Episode episode) {

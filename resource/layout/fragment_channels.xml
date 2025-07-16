@@ -26,9 +26,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/tv_live"
-                android:textColor="@color/white"
-                android:textSize="20sp"
-                android:fontFamily="sans-serif-medium" />
+                style="@style/HeadlineSmallStyle"
+                android:letterSpacing="0.02" />
 
             <ImageView
                 android:id="@+id/searchIcon"
@@ -100,12 +99,17 @@
 
         <ImageView
             android:id="@+id/fullscreenButton"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_gravity="bottom|end"
-            android:layout_margin="8dp"
+            android:layout_margin="16dp"
             android:src="@drawable/ic_fullscreen"
-            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/rounded_background"
+            android:backgroundTint="@color/overlay_dark"
+            android:tint="@color/white"
+            android:padding="8dp"
+            android:elevation="4dp"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/fullscreen" />
 
         <TextView
