@@ -33,6 +33,8 @@ public class VlcVideoPlayer {
         options.add("--android-display-chroma=RV32"); // Melhor performance em Android
         options.add("--audio-time-stretch"); // Suporte a stretching de áudio
         options.add("--avcodec-skiploopfilter=0"); // Melhor qualidade de vídeo
+        options.add("--vout=android_display"); // Melhor suporte para Android
+        options.add("--aout=opensles"); // Melhor áudio para Android
         libVLC = new LibVLC(context, options);
         mediaPlayer = new MediaPlayer(libVLC);
         mediaPlayer.attachViews(videoLayout, null, false, false);
@@ -100,11 +102,37 @@ public class VlcVideoPlayer {
     }
     
     public void setAspectRatio(String aspectRatio) {
-        mediaPlayer.setAspectRatio(aspectRatio);
+        if (mediaPlayer != null) {
+            mediaPlayer.setAspectRatio(aspectRatio);
+        }
     }
     
     public void setScale(float scale) {
-        mediaPlayer.setScale(scale);
+        if (mediaPlayer != null) {
+            mediaPlayer.setScale(scale);
+        }
+    }
+    
+    public String getAspectRatio() {
+        if (mediaPlayer != null) {
+            return mediaPlayer.getAspectRatio();
+        }
+        return null;
+    }
+    
+    public float getScale() {
+        if (mediaPlayer != null) {
+            return mediaPlayer.getScale();
+        }
+        return 1.0f;
+    }
+    
+    // Método para resetar aspect ratio e scale para defaults
+    public void resetAspectRatio() {
+        if (mediaPlayer != null) {
+            mediaPlayer.setAspectRatio(null);
+            mediaPlayer.setScale(0);
+        }
     }
     
     public MediaPlayer getMediaPlayer() {

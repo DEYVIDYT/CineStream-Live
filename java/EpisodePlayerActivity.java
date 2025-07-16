@@ -43,8 +43,8 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
     private TextView currentTimeTextView;
     private TextView totalTimeTextView;
     
-    private int currentAspectRatio = 0; // 0: Original, 1: 16:9, 2: 4:3, 3: Stretch
-    private String[] aspectRatioNames = {"Original", "16:9", "4:3", "Esticado"};
+    private int currentAspectRatio = 0; // 0: Original, 1: 16:9, 2: 4:3, 3: Stretch, 4: Preencher Tela
+    private String[] aspectRatioNames = {"Original", "16:9", "4:3", "Esticado", "Preencher Tela"};
     private boolean isInPictureInPictureMode = false;
     private boolean isFullscreen = false;
     private boolean controlsVisible = true;
@@ -144,6 +144,10 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
         vlcVideoPlayer = new VlcVideoPlayer(this, vlcVideoLayout);
         vlcVideoPlayer.setControlsListener(this);
         vlcVideoPlayer.play(streamUrl);
+        
+        // Reset aspect ratio para defaults ao iniciar
+        currentAspectRatio = 0;
+        
         startHideControlsTimer();
     }
     
@@ -295,40 +299,67 @@ public class EpisodePlayerActivity extends AppCompatActivity implements VlcVideo
     }
     
     private void applyAspectRatio() {
-        if (vlcVideoLayout != null) {
+        if (vlcVideoPlayer != null && vlcVideoLayout != null) {
             try {
-                android.view.ViewGroup.LayoutParams params = vlcVideoLayout.getLayoutParams();
-                
-                if (params != null) {
-                    int screenWidth = getResources().getDisplayMetrics().widthPixels;
-                    
-                    switch (currentAspectRatio) {
-                        case 0: // Original
-                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            params.height = 250; // altura original fixada no layout
-                            break;
-                        case 1: // 16:9
-                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            params.height = (int) (screenWidth * 9.0 / 16.0);
-                            break;
-                        case 2: // 4:3
-                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            params.height = (int) (screenWidth * 3.0 / 4.0);
-                            break;
-                        case 3: // Stretch
-                            params.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-                            params.height = 300; // altura aumentada para stretch
-                            if (vlcVideoPlayer != null) {
-                                vlcVideoPlayer.setAspectRatio(null);
-                            }
-                            break;
+                // Aguardar um momento para garantir que o player está pronto
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        applyAspectRatioInternal();
                     }
-                    
-                    vlcVideoLayout.setLayoutParams(params);
-                }
+                }, 100);
+                
             } catch (Exception e) {
-                // Log error and show message
-                Toast.makeText(this, "Erro ao alterar proporção", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Erro ao alterar proporção: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    
+    private void applyAspectRatioInternal() {
+        if (vlcVideoPlayer != null && vlcVideoLayout != null) {
+            try {
+                // Reset para defaults primeiro
+                vlcVideoPlayer.setScale(0); // 0 = auto scale
+                
+                switch (currentAspectRatio) {
+                    case 0: // Original
+                        vlcVideoPlayer.setAspectRatio(null); // null = aspect ratio original
+                        vlcVideoPlayer.setScale(0);
+                        break;
+                    case 1: // 16:9
+                        vlcVideoPlayer.setAspectRatio("16:9");
+                        vlcVideoPlayer.setScale(0);
+                        break;
+                    case 2: // 4:3
+                        vlcVideoPlayer.setAspectRatio("4:3");
+                        vlcVideoPlayer.setScale(0);
+                        break;
+                    case 3: // Stretch (Esticado)
+                        vlcVideoPlayer.setAspectRatio(null);
+                        vlcVideoPlayer.setScale(1.0f); // Scale para preencher mantendo proporção
+                        break;
+                    case 4: // Preencher Tela
+                        vlcVideoPlayer.setAspectRatio(null);
+                        // Calcular scale para preencher toda a tela
+                        android.view.ViewGroup.LayoutParams params = vlcVideoLayout.getLayoutParams();
+                        if (params != null) {
+                            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+                            int screenHeight = getResources().getDisplayMetrics().heightPixels;
+                            // Para o player de séries, vamos usar toda a área disponível do player
+                            float scaleX = (float) screenWidth / 250f;
+                            float scaleY = (float) 250f / 250f;
+                            float scale = Math.max(scaleX, scaleY);
+                            vlcVideoPlayer.setScale(scale);
+                        }
+                        break;
+                }
+                
+                // Força refresh do layout
+                vlcVideoLayout.requestLayout();
+                vlcVideoLayout.invalidate();
+                
+            } catch (Exception e) {
+                Toast.makeText(this, "Erro ao alterar proporção: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
     }
