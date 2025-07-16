@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_dark"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Header loading -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="24dp"
+        android:gravity="center_vertical">
+        
+        <View
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/shimmer_placeholder" />
+            
+        <View
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:layout_weight="1"
+            android:background="@drawable/shimmer_placeholder" />
+            
+    </LinearLayout>
+
+    <!-- Content loading grid -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Repeat this block multiple times for loading effect -->
+            <include layout="@layout/loading_movie_item" />
+            <include layout="@layout/loading_movie_item" />
+            <include layout="@layout/loading_movie_item" />
+            <include layout="@layout/loading_channel_item" />
+            <include layout="@layout/loading_channel_item" />
+            <include layout="@layout/loading_channel_item" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>
