@@ -156,7 +156,7 @@
 
         </LinearLayout>
 
-        <!-- Episodes Section -->
+        <!-- Seasons and Episodes Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -165,15 +165,52 @@
             android:paddingEnd="16dp"
             android:paddingBottom="16dp">
 
+            <!-- Seasons Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="12dp">
+                
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Temporadas"
+                    style="@style/HeadlineSmallStyle"
+                    android:textSize="18sp" />
+                    
+                <TextView
+                    android:id="@+id/totalSeasonsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3 temporadas"
+                    style="@style/ChannelSubtitleStyle"
+                    android:visibility="gone" />
+                    
+            </LinearLayout>
+
+            <!-- Seasons Selector -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/seasonsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone" />
+
+            <!-- Episodes Header -->
             <TextView
+                android:id="@+id/episodesHeaderTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Episódios"
-                android:textColor="@color/text_primary"
+                style="@style/HeadlineSmallStyle"
                 android:textSize="18sp"
-                android:textStyle="bold"
                 android:layout_marginBottom="12dp" />
 
+            <!-- Episodes List -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/episodesRecyclerView"
                 android:layout_width="match_parent"
