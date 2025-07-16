@@ -1,0 +1,36 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+# Cores ANSI
+VERDE="\033[1;32m"
+AZUL="\033[1;34m"
+AMARELO="\033[1;33m"
+VERMELHO="\033[1;31m"
+RESET="\033[0m"
+
+# Caminho do projeto
+DIRETORIO="/storage/emulated/0/.sketchware/data/947/files/php/"
+
+echo -e "${AZUL}[*] Acessando diretório do servidor...${RESET}"
+cd "$DIRETORIO" || { echo -e "${VERMELHO}[!] Erro: Diretório não encontrado.${RESET}"; exit 1; }
+
+# Inicia PHP em segundo plano
+echo -e "${VERDE}[✓] Servidor PHP iniciado em 127.0.0.1:8080${RESET}"
+php -S 127.0.0.1:8080 > /dev/null 2>&1 &
+
+# Espera 2 segundos antes de abrir o túnel
+sleep 2
+
+echo -e "${AZUL}[*] Criando túnel com Cloudflared...${RESET}"
+
+# Executa o Cloudflared e captura a URL pública
+CLOUDFLARE_OUTPUT=$(cloudflared tunnel --url http://127.0.0.1:8080 2>&1)
+
+# Extrai a URL do output
+URL=$(echo "$CLOUDFLARE_OUTPUT" | grep -o 'https://[a-zA-Z0-9.-]*\.trycloudflare\.com' | head -n 1)
+
+# Exibe a URL final com destaque
+if [ -n "$URL" ]; then
+    echo -e "${AMARELO}[🌐] Sua URL pública:${RESET} ${VERDE}$URL${RESET}"
+else
+    echo -e "${VERMELHO}[!] Não foi possível capturar a URL pública do Cloudflared.${RESET}"
+fi
