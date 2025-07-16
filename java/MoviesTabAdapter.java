@@ -59,10 +59,13 @@ public class MoviesTabAdapter extends RecyclerView.Adapter<MoviesTabAdapter.TabV
 
     class TabViewHolder extends RecyclerView.ViewHolder {
         private TextView tabTextView;
+        private ImageView tabIcon;
 
         public TabViewHolder(@NonNull View itemView) {
             super(itemView);
-            tabTextView = itemView.findViewById(R.id.tabTextView);
+            tabTextView = itemView.findViewById(R.id.tab_title);
+            tabIcon = itemView.findViewById(R.id.tab_icon);
+            tabIcon.setVisibility(View.GONE); // Hide icon for now
 
             itemView.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -78,10 +81,8 @@ public class MoviesTabAdapter extends RecyclerView.Adapter<MoviesTabAdapter.TabV
             boolean isSelected = tab.equals(selectedTab);
             if (isSelected) {
                 tabTextView.setTextColor(ContextCompat.getColor(context, R.color.accent_color));
-                tabTextView.setBackgroundResource(R.drawable.rounded_background);
             } else {
                 tabTextView.setTextColor(ContextCompat.getColor(context, R.color.text_secondary));
-                tabTextView.setBackground(null);
             }
         }
     }

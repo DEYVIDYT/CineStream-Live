@@ -1,40 +1,33 @@
 package com.cinestream.live;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
-import android.widget.ImageView;
-import android.widget.TextView;
-import androidx.core.content.ContextCompat;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.Settings;
-import android.content.SharedPreferences;
-import android.widget.Toast;
-import android.content.Intent;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import okhttp3.FormBody;
 
 public class HostActivity extends AppCompatActivity {
 
     private SharedViewModel sharedViewModel;
-    private FragmentManager fragmentManager;
-    private Fragment channelsFragment;
-    private Fragment moviesSeriesFragment;
-    private Fragment profileFragment;
-    private Fragment activeFragment;
-
-    private LinearLayout liveTab;
-    private LinearLayout moviesSeriesTab;
-    private LinearLayout profileTab;
+    private ViewPager2 viewPager;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +35,6 @@ public class HostActivity extends AppCompatActivity {
         setContentView(R.layout.activity_host);
 
         sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
-        fragmentManager = getSupportFragmentManager();
 
         // Start loading data
         Intent intent = getIntent();
@@ -60,64 +52,71 @@ public class HostActivity extends AppCompatActivity {
 
         sharedViewModel.loadData();
 
-        liveTab = findViewById(R.id.liveTab);
-        moviesSeriesTab = findViewById(R.id.moviesSeriesTab);
-        profileTab = findViewById(R.id.profileTab);
+        viewPager = findViewById(R.id.view_pager);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
 
-        if (savedInstanceState == null) {
-            channelsFragment = new ChannelsFragment();
-            moviesSeriesFragment = new MoviesSeriesFragment();
-            profileFragment = new ProfileFragment();
-            fragmentManager.beginTransaction()
-                    .add(R.id.fragment_container, profileFragment, "3").hide(profileFragment)
-                    .add(R.id.fragment_container, moviesSeriesFragment, "2").hide(moviesSeriesFragment)
-                    .add(R.id.fragment_container, channelsFragment, "1").commit();
-            activeFragment = channelsFragment;
-        } else {
-            channelsFragment = fragmentManager.findFragmentByTag("1");
-            moviesSeriesFragment = fragmentManager.findFragmentByTag("2");
-            profileFragment = fragmentManager.findFragmentByTag("3");
-            activeFragment = (profileFragment != null && profileFragment.isVisible()) ? profileFragment : 
-                            (moviesSeriesFragment != null && moviesSeriesFragment.isVisible()) ? moviesSeriesFragment : channelsFragment;
-        }
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this);
+        viewPager.setAdapter(adapter);
 
-        liveTab.setOnClickListener(v -> switchFragment(channelsFragment));
-        moviesSeriesTab.setOnClickListener(v -> switchFragment(moviesSeriesFragment));
-        profileTab.setOnClickListener(v -> switchFragment(profileFragment));
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.navigation_live) {
+                viewPager.setCurrentItem(0);
+                return true;
+            } else if (itemId == R.id.navigation_movies_series) {
+                viewPager.setCurrentItem(1);
+                return true;
+            } else if (itemId == R.id.navigation_profile) {
+                viewPager.setCurrentItem(2);
+                return true;
+            }
+            return false;
+        });
 
-        updateTabAppearance();
+        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                switch (position) {
+                    case 0:
+                        bottomNavigationView.setSelectedItemId(R.id.navigation_live);
+                        break;
+                    case 1:
+                        bottomNavigationView.setSelectedItemId(R.id.navigation_movies_series);
+                        break;
+                    case 2:
+                        bottomNavigationView.setSelectedItemId(R.id.navigation_profile);
+                        break;
+                }
+            }
+        });
     }
 
-    private void switchFragment(Fragment fragment) {
-        if (fragment != activeFragment) {
-            fragmentManager.beginTransaction().hide(activeFragment).show(fragment).commit();
-            activeFragment = fragment;
-            updateTabAppearance();
+    private static class ViewPagerAdapter extends FragmentStateAdapter {
+
+        public ViewPagerAdapter(@NonNull AppCompatActivity activity) {
+            super(activity);
         }
-    }
 
-    private void updateTabAppearance() {
-        // Reset all tabs to default color
-        setTabColor(liveTab, R.color.text_secondary);
-        setTabColor(moviesSeriesTab, R.color.text_secondary);
-        setTabColor(profileTab, R.color.text_secondary);
-
-        // Set the active tab to the accent color
-        if (activeFragment == channelsFragment) {
-            setTabColor(liveTab, R.color.accent_color);
-        } else if (activeFragment == moviesSeriesFragment) {
-            setTabColor(moviesSeriesTab, R.color.accent_color);
-        } else if (activeFragment == profileFragment) {
-            setTabColor(profileTab, R.color.accent_color);
+        @NonNull
+        @Override
+        public Fragment createFragment(int position) {
+            switch (position) {
+                case 0:
+                    return new ChannelsFragment();
+                case 1:
+                    return new MoviesSeriesFragment();
+                case 2:
+                    return new ProfileFragment();
+                default:
+                    return new Fragment();
+            }
         }
-    }
 
-    private void setTabColor(LinearLayout tab, int colorResId) {
-        ImageView icon = (ImageView) tab.getChildAt(0);
-        TextView text = (TextView) tab.getChildAt(1);
-        int color = ContextCompat.getColor(this, colorResId);
-        icon.setColorFilter(color);
-        text.setTextColor(color);
+        @Override
+        public int getItemCount() {
+            return 3;
+        }
     }
 
     private void startSessionCheck() {
@@ -230,8 +229,8 @@ public class HostActivity extends AppCompatActivity {
                             editor.apply();
                             // Fechar o app após um pequeno atraso para o usuário ler a mensagem
                             new android.os.Handler().postDelayed(
-                                () -> finishAffinity(),
-                                3000
+                                    () -> finishAffinity(),
+                                    3000
                             );
                         });
                     }
@@ -244,14 +243,15 @@ public class HostActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Verificar se o ChannelsFragment está ativo e em fullscreen
-        if (activeFragment == channelsFragment && channelsFragment instanceof ChannelsFragment) {
-            ChannelsFragment cf = (ChannelsFragment) channelsFragment;
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment currentFragment = fm.findFragmentByTag("f" + viewPager.getCurrentItem());
+        if (currentFragment instanceof ChannelsFragment) {
+            ChannelsFragment cf = (ChannelsFragment) currentFragment;
             if (cf.onBackPressed()) {
                 return; // O evento foi consumido pelo fragment
             }
         }
-        
+
         // Comportamento padrão do botão voltar
         super.onBackPressed();
     }

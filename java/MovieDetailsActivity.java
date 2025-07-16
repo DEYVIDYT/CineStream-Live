@@ -31,15 +31,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
     private TextView plotTextView;
     private TextView castTextView;
     private TextView genreTextView;
-    private TextView countryTextView;
-    private TextView ageRatingTextView;
     private Button playButton;
-    private ImageButton backButton;
-    private ImageButton favoriteButton;
-    private ImageButton shareButton;
-    private ImageButton downloadButton;
-    private boolean isFavorite = false;
-    private FavoritesManager favoritesManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +56,8 @@ public class MovieDetailsActivity extends AppCompatActivity {
             return;
         }
 
-        favoritesManager = new FavoritesManager(this);
-
         initViews();
         setupMovieInfo();
-        setupListeners();
-        updateFavoriteButton();
     }
 
     private void initViews() {
@@ -83,13 +71,7 @@ public class MovieDetailsActivity extends AppCompatActivity {
         plotTextView = findViewById(R.id.plotTextView);
         castTextView = findViewById(R.id.castTextView);
         genreTextView = findViewById(R.id.genreTextView);
-        countryTextView = findViewById(R.id.countryTextView);
-        ageRatingTextView = findViewById(R.id.ageRatingTextView);
         playButton = findViewById(R.id.playButton);
-        backButton = findViewById(R.id.backButton);
-        favoriteButton = findViewById(R.id.favoriteButton);
-        shareButton = findViewById(R.id.shareButton);
-        downloadButton = findViewById(R.id.downloadButton);
     }
 
     private void setupMovieInfo() {
@@ -176,20 +158,6 @@ public class MovieDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void setupListeners() {
-        backButton.setOnClickListener(v -> finish());
-
-        playButton.setOnClickListener(v -> playMovie());
-
-        favoriteButton.setOnClickListener(v -> toggleFavorite());
-
-        shareButton.setOnClickListener(v -> shareMovie());
-
-        downloadButton.setOnClickListener(v -> {
-            Toast.makeText(this, "Funcionalidade de download em desenvolvimento", Toast.LENGTH_SHORT).show();
-        });
-    }
-
     private void playMovie() {
         String streamUrl = movie.getStreamUrl(server, username, password);
 
@@ -201,42 +169,5 @@ public class MovieDetailsActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "URL do filme não disponível", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void toggleFavorite() {
-        if (isFavorite) {
-            favoritesManager.removeFavorite(movie.getStream_id());
-            isFavorite = false;
-            Toast.makeText(this, "Removido dos favoritos", Toast.LENGTH_SHORT).show();
-        } else {
-            favoritesManager.addFavorite(movie);
-            isFavorite = true;
-            Toast.makeText(this, "Adicionado aos favoritos", Toast.LENGTH_SHORT).show();
-        }
-        updateFavoriteButton();
-    }
-
-    private void updateFavoriteButton() {
-        isFavorite = favoritesManager.isFavorite(movie.getStream_id());
-        if (isFavorite) {
-            favoriteButton.setImageResource(R.drawable.ic_favorite_filled);
-        } else {
-            favoriteButton.setImageResource(R.drawable.ic_favorite_outline);
-        }
-    }
-
-    private void shareMovie() {
-        String shareText = "Confira este filme: " + movie.getName();
-        if (movie.getYear() != null) {
-            shareText += " (" + movie.getYear() + ")";
-        }
-        if (movie.getPlot() != null && !movie.getPlot().isEmpty()) {
-            shareText += "\n\n" + movie.getPlot();
-        }
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-        startActivity(Intent.createChooser(shareIntent, "Compartilhar filme"));
     }
 }

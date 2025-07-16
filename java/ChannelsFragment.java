@@ -191,9 +191,9 @@ public class ChannelsFragment extends Fragment implements
         
         // Esconder navegação da activity
         if (getActivity() != null) {
-            View navigationTabs = getActivity().findViewById(R.id.navigation_tabs);
-            if (navigationTabs != null) {
-                navigationTabs.setVisibility(View.GONE);
+            View bottomNavigation = getActivity().findViewById(R.id.bottom_navigation);
+            if (bottomNavigation != null) {
+                bottomNavigation.setVisibility(View.GONE);
             }
         }
         
@@ -296,9 +296,9 @@ public class ChannelsFragment extends Fragment implements
         
         // Mostrar navegação da activity
         if (getActivity() != null) {
-            View navigationTabs = getActivity().findViewById(R.id.navigation_tabs);
-            if (navigationTabs != null) {
-                navigationTabs.setVisibility(View.VISIBLE);
+            View bottomNavigation = getActivity().findViewById(R.id.bottom_navigation);
+            if (bottomNavigation != null) {
+                bottomNavigation.setVisibility(View.VISIBLE);
             }
         }
 
