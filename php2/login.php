@@ -1,6 +1,10 @@
 <?php
 include 'supabase_config.php';
+include_once 'init_db.php';
 session_start();
+
+// Inicializar o banco de dados, se necessário
+initialize_database();
 
 header('Content-Type: application/json');
 

@@ -39,4 +39,27 @@ function supabase_request($method, $table, $data = [], $params = []) {
 
     return json_decode($response, true);
 }
+
+function supabase_sql_request($sql) {
+    global $supabase_url, $supabase_key;
+
+    $url = "$supabase_url/rest/v1/rpc/execute_sql";
+
+    $headers = [
+        'apikey: ' . $supabase_key,
+        'Authorization: Bearer ' . $supabase_key,
+        'Content-Type: application/json',
+    ];
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode(['sql' => $sql]));
+
+    $response = curl_exec($ch);
+    curl_close($ch);
+
+    return json_decode($response, true);
+}
 ?>
