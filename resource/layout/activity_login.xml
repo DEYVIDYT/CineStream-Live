@@ -58,14 +58,14 @@
 
             </LinearLayout>
 
-            <!-- Card de login com glassmorphism -->
+            <!-- Card de login com glassmorphism aprimorado -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/glassmorphism_card"
-                android:elevation="12dp"
+                android:background="@drawable/glassmorphism_card_enhanced"
+                android:elevation="16dp"
                 android:orientation="vertical"
-                android:padding="24dp"
+                android:padding="28dp"
                 android:layout_marginBottom="24dp"
                 android:animateLayoutChanges="true">
 
@@ -82,17 +82,18 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/email"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:background="@drawable/modern_input_background"
+                        android:layout_height="60dp"
+                        android:background="@drawable/modern_input_field"
                         android:hint="Email"
                         android:inputType="textEmailAddress"
                         android:paddingStart="48dp"
-                        android:paddingTop="16dp"
+                        android:paddingTop="18dp"
                         android:paddingEnd="16dp"
-                        android:paddingBottom="16dp"
+                        android:paddingBottom="18dp"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_hint"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -111,17 +112,18 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/password"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:background="@drawable/modern_input_background"
+                        android:layout_height="60dp"
+                        android:background="@drawable/modern_input_field"
                         android:hint="Senha"
                         android:inputType="textPassword"
                         android:paddingStart="48dp"
-                        android:paddingTop="16dp"
+                        android:paddingTop="18dp"
                         android:paddingEnd="48dp"
-                        android:paddingBottom="16dp"
+                        android:paddingBottom="18dp"
                         android:textColor="@color/text_primary"
                         android:textColorHint="@color/text_hint"
-                        android:textSize="16sp" />
+                        android:textSize="16sp"
+                        android:fontFamily="sans-serif" />
 
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -138,19 +140,21 @@
                     android:textSize="14sp"
                     android:fontFamily="sans-serif-medium" />
 
-                <!-- Botão de login -->
+                <!-- Botão de login modernizado -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/login_button"
                     android:layout_width="match_parent"
-                    android:layout_height="56dp"
-                    android:background="@drawable/button_ripple"
-                    android:elevation="4dp"
+                    android:layout_height="60dp"
+                    android:background="@drawable/modern_button_selector"
+                    android:elevation="8dp"
                     android:stateListAnimator="@null"
-                    android:text="ENTRAR"
-                    android:textColor="@color/text_primary"
+                    android:text="Entrar"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:fontFamily="sans-serif-medium"
-                    app:backgroundTint="@null" />
+                    android:letterSpacing="0.05"
+                    app:backgroundTint="@null"
+                    app:rippleColor="@color/ripple_accent" />
 
             </LinearLayout>
 
