@@ -49,6 +49,11 @@
     <color name="input_border">#40ffffff</color>
     <color name="input_border_focused">#667eea</color>
     
+    <!-- Loading states -->
+    <color name="shimmer_base">#E0E0E0</color>
+    <color name="shimmer_highlight">#F5F5F5</color>
+    <color name="loading_background">#F8F9FA</color>
+    
     <!-- Transparências -->
     <color name="overlay_light">#40ffffff</color>
     <color name="overlay_dark">#60000000</color>

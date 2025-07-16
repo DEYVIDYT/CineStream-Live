@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp"
+    android:background="@color/background_dark">
+
+    <ImageView
+        android:id="@+id/errorIcon"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_marginBottom="24dp"
+        android:src="@drawable/ic_error"
+        android:alpha="0.8" />
+
+    <TextView
+        android:id="@+id/errorTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ops! Algo deu errado"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_primary"
+        android:layout_marginBottom="12dp"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Não foi possível carregar o conteúdo. Verifique sua conexão com a internet e tente novamente."
+        android:textSize="16sp"
+        android:textColor="@color/text_secondary"
+        android:layout_marginBottom="32dp"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/retryButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TENTAR NOVAMENTE"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/accent_color"
+        android:drawableLeft="@drawable/ic_refresh"
+        android:drawablePadding="8dp"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="12dp"
+        android:layout_marginBottom="16dp"
+        app:cornerRadius="8dp"
+        app:rippleColor="@color/ripple_color" />
+
+    <TextView
+        android:id="@+id/helpText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Se o problema persistir, entre em contato conosco"
+        android:textSize="12sp"
+        android:textColor="@color/text_hint"
+        android:gravity="center" />
+
+</LinearLayout>
