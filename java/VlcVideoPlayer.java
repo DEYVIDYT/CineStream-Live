@@ -35,6 +35,8 @@ public class VlcVideoPlayer {
         options.add("--avcodec-skiploopfilter=0"); // Melhor qualidade de vídeo
         options.add("--vout=android_display"); // Melhor suporte para Android
         options.add("--aout=opensles"); // Melhor áudio para Android
+        options.add("--video-filter=croppadd"); // Permite crop e padding
+        options.add("--crop-mode=1"); // Crop automático
         libVLC = new LibVLC(context, options);
         mediaPlayer = new MediaPlayer(libVLC);
         mediaPlayer.attachViews(videoLayout, null, false, false);
@@ -132,6 +134,23 @@ public class VlcVideoPlayer {
         if (mediaPlayer != null) {
             mediaPlayer.setAspectRatio(null);
             mediaPlayer.setScale(0);
+        }
+    }
+    
+    // Método para configurar o player para preencher o container
+    public void configureForContainerFill() {
+        if (mediaPlayer != null) {
+            // Configurar para preencher o container mantendo proporção
+            mediaPlayer.setAspectRatio(null); // Aspect ratio automático
+            mediaPlayer.setScale(0); // Scale automático para preencher
+            
+            // Forçar reconfiguração do layout
+            if (videoLayout != null) {
+                videoLayout.post(() -> {
+                    videoLayout.requestLayout();
+                    videoLayout.invalidate();
+                });
+            }
         }
     }
     

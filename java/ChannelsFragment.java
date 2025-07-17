@@ -314,10 +314,15 @@ public class ChannelsFragment extends Fragment implements
             videoContainer.setKeepScreenOn(false);
         }
         
-        // Restaurar configurações do VLC
+        // Restaurar configurações do VLC para modo normal
         if (vlcVideoPlayer != null) {
             vlcVideoPlayer.setAspectRatio(null);
             vlcVideoPlayer.setScale(0);
+            
+            // Reconfigurar para modo normal após um pequeno delay
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                configurePlayerForNormalMode();
+            }, 300);
         }
         
         // Atualizar ícone do botão
@@ -415,6 +420,25 @@ public class ChannelsFragment extends Fragment implements
         });
     }
     
+    private void configurePlayerForNormalMode() {
+        if (vlcVideoPlayer != null) {
+            // Pequeno delay para garantir que o player foi inicializado
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                if (vlcVideoPlayer != null && !isFullscreen) {
+                    // Usar o novo método para configurar preenchimento do container
+                    vlcVideoPlayer.configureForContainerFill();
+                    
+                    // Garantir que o video layout esteja configurado corretamente
+                    if (vlcVideoLayout != null) {
+                        vlcVideoLayout.setKeepScreenOn(false);
+                        vlcVideoLayout.requestLayout();
+                        vlcVideoLayout.invalidate();
+                    }
+                }
+            }, 500);
+        }
+    }
+    
     private void playStream(String streamUrl) {
         if (streamUrl != null && !streamUrl.isEmpty()) {
             videoLoadingProgressBar.setVisibility(View.VISIBLE);
@@ -424,6 +448,10 @@ public class ChannelsFragment extends Fragment implements
                 vlcVideoPlayer = new VlcVideoPlayer(requireContext(), vlcVideoLayout);
             }
             vlcVideoPlayer.play(streamUrl);
+            
+            // Configurar player para modo normal (não fullscreen)
+            configurePlayerForNormalMode();
+            
             videoLoadingProgressBar.setVisibility(View.GONE);
             networkSpeedTextView.setVisibility(View.VISIBLE);
             networkSpeedMonitor.start();
