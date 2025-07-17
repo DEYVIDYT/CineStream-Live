@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="4dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/surface_card"
+    android:foreground="?android:attr/selectableItemBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <!-- Thumbnail -->
+        <FrameLayout
+            android:layout_width="100dp"
+            android:layout_height="75dp"
+            android:layout_marginEnd="16dp">
+            
+            <ImageView
+                android:id="@+id/thumbnailImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="@drawable/rounded_background"
+                android:backgroundTint="@color/background_dark" />
+                
+            <!-- Play overlay -->
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_play_arrow"
+                android:tint="@color/white"
+                android:background="@drawable/rounded_background"
+                android:backgroundTint="@color/overlay_dark"
+                android:padding="4dp"
+                android:alpha="0.9" />
+                
+        </FrameLayout>
+
+        <!-- Episode Info -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Episode Number and Title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:id="@+id/episodeNumberTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="S1E1"
+                    android:background="@drawable/rounded_background"
+                    android:backgroundTint="@color/accent_color"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:layout_marginEnd="8dp" />
+
+                <TextView
+                    android:id="@+id/durationTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="45 min"
+                    style="@style/ChannelSubtitleStyle"
+                    android:textSize="11sp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/titleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Título do Episódio"
+                style="@style/ChannelTitleStyle"
+                android:textSize="15sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:id="@+id/plotTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sinopse do episódio..."
+                style="@style/ChannelSubtitleStyle"
+                android:textSize="13sp"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:lineSpacingExtra="2dp"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:id="@+id/releaseDateTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2023-01-01"
+                style="@style/ChannelSubtitleStyle"
+                android:textSize="11sp"
+                android:alpha="0.8" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
