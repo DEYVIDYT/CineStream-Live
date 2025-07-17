@@ -153,11 +153,10 @@
         </LinearLayout>
 
         <!-- Channels List -->
-        <LinearLayout
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:orientation="vertical"
             android:background="@color/surface_dark">
 
             <!-- Channels RecyclerView -->
@@ -165,9 +164,14 @@
                 android:id="@+id/channelsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="8dp" />
+                android:paddingStart="2dp"
+                android:paddingEnd="2dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:clipToPadding="false"
+                android:layout_gravity="center" />
 
-        </LinearLayout>
+        </FrameLayout>
 
     </LinearLayout>
 
