@@ -14,14 +14,81 @@ import org.json.JSONObject;
 import org.json.JSONException;
 import java.io.IOException;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import androidx.appcompat.app.AlertDialog;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String UPDATE_URL = "https://raw.githubusercontent.com/DEYVIDYT/Server_vplay/refs/heads/main/Update.json";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        checkForUpdate();
+    }
+
+    private void checkForUpdate() {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(UPDATE_URL).build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, java.io.IOException e) {
+                // Se a verificação de atualização falhar, prossiga com o fluxo normal
+                proceedWithAppFlow();
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws java.io.IOException {
+                if (response.isSuccessful()) {
+                    String responseBody = response.body().string();
+                    try {
+                        JSONObject jsonObject = new JSONObject(responseBody);
+                        String latestVersion = jsonObject.getString("versao");
+                        String updateUrl = jsonObject.getString("url");
+
+                        if (isUpdateRequired(latestVersion)) {
+                            showUpdateDialog(updateUrl);
+                        } else {
+                            proceedWithAppFlow();
+                        }
+                    } catch (JSONException e) {
+                        proceedWithAppFlow();
+                    }
+                } else {
+                    proceedWithAppFlow();
+                }
+            }
+        });
+    }
+
+    private boolean isUpdateRequired(String latestVersion) {
+        try {
+            PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            String currentVersion = pInfo.versionName;
+            return !currentVersion.equals(latestVersion);
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    private void showUpdateDialog(String updateUrl) {
+        runOnUiThread(() -> new AlertDialog.Builder(this)
+                .setTitle("Atualização Disponível")
+                .setMessage("Uma nova versão do aplicativo está disponível. Por favor, atualize para continuar.")
+                .setCancelable(false)
+                .setPositiveButton("Atualizar", (dialog, which) -> {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl));
+                    startActivity(browserIntent);
+                    finish();
+                }).show());
+    }
+
+    private void proceedWithAppFlow() {
         // Simple splash screen
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             SharedPreferences prefs = getSharedPreferences("VplayPrefs", MODE_PRIVATE);

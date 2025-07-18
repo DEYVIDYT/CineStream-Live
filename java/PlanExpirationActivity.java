@@ -43,9 +43,7 @@ public class PlanExpirationActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
         
         renewPlanButton.setOnClickListener(v -> {
-            // Aqui você pode implementar a lógica de pagamento
-            // Por exemplo, abrir um link de pagamento ou integrar com uma API de pagamento
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://checkout.vplay.com.br"));
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/VPlay0"));
             startActivity(intent);
         });
         
