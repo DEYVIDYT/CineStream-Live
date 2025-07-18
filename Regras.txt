@@ -1,0 +1,28 @@
+1. Você só podderar modificar a pasta Java e resources 
+2. Crie um arquivo Todo.md que você deve colocar tudo o que for fazer a apois cada coisa que você fizer e concluir você volta no Todo.md e da um check no que fez
+3. Corrija esse erros [ ----------
+1. ERROR in /storage/emulated/0/.sketchware/data/947/files/java/MoviesSeriesFragment.java (at line 76)
+	tabsRecyclerView = view.findViewById(R.id.tabsRecyclerView);
+	                                          ^^^^^^^^^^^^^^^^
+tabsRecyclerView cannot be resolved or is not a field
+----------
+----------
+2. ERROR in /storage/emulated/0/.sketchware/data/947/files/java/SeriesDetailsActivity.java (at line 98)
+	seasonsRecyclerView = findViewById(R.id.seasonsRecyclerView);
+	                                        ^^^^^^^^^^^^^^^^^^^
+seasonsRecyclerView cannot be resolved or is not a field
+----------
+3. ERROR in /storage/emulated/0/.sketchware/data/947/files/java/SeriesDetailsActivity.java (at line 100)
+	totalSeasonsTextView = findViewById(R.id.totalSeasonsTextView);
+	                                         ^^^^^^^^^^^^^^^^^^^^
+totalSeasonsTextView cannot be resolved or is not a field
+----------
+4. ERROR in /storage/emulated/0/.sketchware/data/947/files/java/SeriesDetailsActivity.java (at line 101)
+	episodesHeaderTextView = findViewById(R.id.episodesHeaderTextView);
+	                                           ^^^^^^^^^^^^^^^^^^^^^^
+episodesHeaderTextView cannot be resolved or is not a field
+----------
+4 problems (4 errors)
+ ]
+ 
+4. apois corrigir Você deve ficar 1 Hora sem parar pesquisando na internet corrigido possíveis problemas adicionando melhorerias e elaborando coisas para fazer no código elaborando e fazendo as coisas 

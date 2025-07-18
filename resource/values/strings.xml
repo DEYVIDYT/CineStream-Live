@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Vplay</string>
+    <string name="loading_data">Carregando dados</string>
+    <string name="version">Versão 1.0</string>
+    <string name="tv_live">TV AO VIVO</string>
+    <string name="live_tab">Ao vivo</string>
+    <string name="movies_series_tab">Filmes&amp;Séries</string>
+    <string name="profile_tab">Perfil</string>
+    <string name="search">Pesquisar</string>
+    
+    <!-- Categories -->
+    <string name="category_musica">MÚSICA</string>
+    <string name="category_uhd">UHD</string>
+    <string name="category_noticias">NOTÍCIAS</string>
+    <string name="category_regionais">REGIONAIS</string>
+    <string name="category_infantil">INFANTIL</string>
+    <string name="category_cultura">CULTURA</string>
+    <string name="category_variedades">VARIEDADES</string>
+    <string name="category_youtube">YOUTUBE</string>
+    <string name="category_tve_hot">TVE HOT</string>
+    
+    <!-- Profile -->
+    <string name="profile">PERFIL</string>
+    <string name="recharge_text">Renove seu plano por apenas R$ 4,00 para continuar aproveitando todo o conteúdo</string>
+    <string name="email">E-MAIL</string>
+    <string name="expiration_date">Data de expiração 29/11/2026</string>
+    <string name="recharge">Recarregar</string>
+    <string name="invite_friends">Convide amigos: uk5wn64</string>
+    <string name="history">Histórico</string>
+    <string name="favorites">Favoritos</string>
+    <string name="reminder">Lembrete</string>
+    <string name="adult_content">Conteúdo adulto</string>
+    <string name="information">Informação</string>
+    <string name="exit">Sair</string>
+    
+    <!-- Messages -->
+    <string name="loading_channels">Carregando canais...</string>
+    <string name="error_loading">Erro ao carregar dados</string>
+    <string name="no_internet">Sem conexão com a internet</string>
+    <string name="retry">Tentar novamente</string>
+    
+    <!-- Search -->
+    <string name="search_hint">Buscar canais...</string>
+    <string name="no_results">Nenhum canal encontrado</string>
+    <string name="clear_search">Limpar busca</string>
+    
+    <!-- Favorites -->
+    <string name="add_to_favorites">Adicionar aos favoritos</string>
+    <string name="remove_from_favorites">Remover dos favoritos</string>
+    <string name="no_favorites">Nenhum canal favorito</string>
+    <string name="favorites_empty_message">Você ainda não adicionou canais aos favoritos.\nToque no coração em qualquer canal para adicioná-lo.</string>
+    
+    <!-- History -->
+    <string name="no_history">Nenhum histórico</string>
+    <string name="history_empty_message">Você ainda não assistiu nenhum canal.\nO histórico aparecerá aqui conforme você assiste.</string>
+    <string name="clear_history">Limpar histórico</string>
+    <string name="clear_favorites">Limpar favoritos</string>
+    
+    <!-- Categories -->
+    <string name="category_favorites">FAVORITOS</string>
+    <string name="category_history">HISTÓRICO</string>
+    
+    <!-- Confirmations -->
+    <string name="confirm_clear_history">Deseja limpar todo o histórico?</string>
+    <string name="confirm_clear_favorites">Deseja limpar todos os favoritos?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
+    <string name="cancel">Cancelar</string>
+    <string name="fullscreen">Tela cheia</string>
+    
+    <!-- Movies and Series -->
+    <string name="movies">Filmes</string>
+    <string name="series">Séries</string>
+    <string name="animation">Animação</string>
+    <string name="my_lists">Minhas listas</string>
+    <string name="by_genre">Por gênero</string>
+    <string name="action">Ação</string>
+    <string name="adventure">Aventura</string>
+    <string name="comedy">Comédia</string>
+    <string name="drama">Drama</string>
+    <string name="horror">Terror</string>
+    <string name="popular">Populares</string>
+    <string name="in_theaters">Nos cinemas</string>
+    <string name="on_tv">Na TV</string>
+    <string name="watch_now">REPRODUZIR</string>
+    <string name="play_series">REPRODUZIR S1E1</string>
+    <string name="cast_and_crew">Elenco &amp; Produção</string>
+    <string name="trailer">Trailer</string>
+    <string name="similar">Similares</string>
+    <string name="comments">Comentários</string>
+    <string name="seasons">Temporadas</string>
+    <string name="episodes">Episódios</string>
+    <string name="season">Temporada</string>
+    <string name="episode">Episódio</string>
+    <string name="duration">Duração</string>
+    <string name="year">Ano</string>
+    <string name="rating">Avaliação</string>
+    <string name="genre">Gênero</string>
+    <string name="director">Diretor</string>
+    <string name="loading_movies">Carregando filmes...</string>
+    <string name="loading_series">Carregando séries...</string>
+    <string name="no_movies">Nenhum filme encontrado</string>
+    <string name="no_series">Nenhuma série encontrada</string>
+    <string name="search_movies_series">Buscar filmes e séries...</string>
+    
+    <!-- Plan Expiration -->
+    <string name="renew_plan">Renovar Plano</string>
+    <string name="plan_expired_title">Plano Expirado</string>
+    <string name="plan_expired_message">Seu plano expirou. Renove para continuar aproveitando o melhor do streaming.</string>
+    <string name="renew_now">RENOVAR AGORA</string>
+    <string name="contact_support">FALAR COM SUPORTE</string>
+    <string name="monthly_price">R$ 4,00/mês</string>
+    <string name="plan_benefits">✓ Acesso a todos os canais\n✓ Filmes e séries em HD\n✓ Conteúdo sempre atualizado\n✓ Suporte técnico\n✓ Múltiplas listas IPTV\n✓ Sem anúncios</string>
+    <string name="why_this_price">Por que apenas R$ 4,00?</string>
+    <string name="price_explanation">O Vplay coleta e organiza múltiplas listas IPTV gratuitas disponíveis na internet, oferecendo uma experiência unificada e de qualidade. Por isso conseguimos manter esse preço acessível.</string>
+</resources>
